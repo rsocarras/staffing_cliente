@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sass": "sass web/assets/scss/main.scss:web/assets/css/style.css",
+    "sass:watch": "sass web/assets/scss/main.scss:web/assets/css/style.css --watch",
+    "sass:no-map": "sass web/assets/scss/main.scss:web/assets/css/style.css --style=compressed --no-source-map"
+  }
+}

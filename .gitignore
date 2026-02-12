@@ -1,0 +1,50 @@
+# IDE and Editor files
+.idea
+.vscode/
+nbproject
+.buildpath
+.project
+.settings
+
+# OS generated files
+Thumbs.db
+.DS_Store
+._*
+
+# Composer
+/vendor
+composer.phar
+composer.lock
+
+/node_modules
+package-lock.json
+
+# PHPUnit
+phpunit.phar
+/phpunit.xml
+tests/_output/*
+tests/_support/_generated
+
+# Vagrant
+/.vagrant
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Yii Framework specific
+/runtime/*
+*.log
+/logs
+
+# Backup and temporary files
+*.bak
+*.tmp
+*.swp
+*~
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
