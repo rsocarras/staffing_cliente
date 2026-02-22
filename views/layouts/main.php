@@ -22,7 +22,11 @@ use yii\web\View;
         <?= $this->render('partials/topbar') ?>
         <?= $this->render('partials/sidebar') ?>
 
-        <?= $content ?> <!-- Main content of the page -->
+
+            <?= $content ?> <!-- Main content of the page -->
+      
+
+       
 
     </div>
     <!-- End Wrapper -->
