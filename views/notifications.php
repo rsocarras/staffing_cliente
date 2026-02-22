@@ -37,7 +37,7 @@
                                 <div class="d-flex align-items-center flex-wrap flex-md-nowrap">
                                     <div class="d-flex me-2">
                                         <a href="profile" class="avatar avatar-lg avatar-rounded">
-                                            <img src="assets/img/profiles/avatar-19.jpg" alt="Elwis Mathew">
+                                            <img src="/assets/img/profiles/avatar-19.jpg" alt="Elwis Mathew">
                                         </a>
                                     </div>
                                     <div class="flex-fill ml-3">
@@ -57,7 +57,7 @@
                                 <div class="d-flex align-items-center flex-wrap flex-md-nowrap">
                                     <div class="d-flex me-2">
                                         <a href="profile" class="avatar avatar-lg avatar-rounded">
-                                            <img src="assets/img/profiles/avatar-18.jpg" alt="Elizabeth Olsen">
+                                            <img src="/assets/img/profiles/avatar-18.jpg" alt="Elizabeth Olsen">
                                         </a>
                                     </div>
                                     <div class="flex-fill ml-3">
@@ -74,7 +74,7 @@
                                 <div class="d-flex align-items-center flex-wrap flex-md-nowrap">
                                     <div class="d-flex me-2">
                                         <a href="profile" class="avatar avatar-lg avatar-rounded">
-                                            <img src="assets/img/profiles/avatar-17.jpg" alt="William Smith">
+                                            <img src="/assets/img/profiles/avatar-17.jpg" alt="William Smith">
                                         </a>
                                     </div>
                                     <div class="flex-fill ml-3">
@@ -91,7 +91,7 @@
                                 <div class="d-flex align-items-center flex-wrap flex-md-nowrap">
                                     <div class="d-flex me-2">
                                         <a href="profile" class="avatar avatar-lg avatar-rounded">
-                                            <img src="assets/img/profiles/avatar-15.jpg" alt="Lesley Grauer">
+                                            <img src="/assets/img/profiles/avatar-15.jpg" alt="Lesley Grauer">
                                         </a>
                                     </div>
                                     <div class="flex-fill ml-3">

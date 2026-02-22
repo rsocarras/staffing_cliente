@@ -118,7 +118,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>07 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -157,7 +157,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>07 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -196,7 +196,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>07 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -248,7 +248,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>07 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-12.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-12.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -287,7 +287,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>07 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-01.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -339,7 +339,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>Today</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-08.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-08.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -378,7 +378,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>Today</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-09.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-09.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -417,7 +417,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>Tomorrow</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-03.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-03.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>
@@ -468,7 +468,7 @@
                                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                                 <p class="d-flex align-items-center mb-0"><i class="ti ti-flag text-danger me-1"></i>02 Jan 2025</p>
                                                 <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                    <img src="assets/img/users/user-09.jpg" alt="img" class="rounded-circle">
+                                                    <img src="/assets/img/users/user-09.jpg" alt="img" class="rounded-circle">
                                                 </a>
                                             </div>
                                         </div>

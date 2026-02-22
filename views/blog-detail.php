@@ -17,7 +17,7 @@
 
             <div class="card mb-0">
                 <div class="card-body">
-                    <div class="mb-3"><img src="assets/img/blog/blog-detail.jpg" class="rounded w-100" alt=""></div>
+                    <div class="mb-3"><img src="/assets/img/blog/blog-detail.jpg" class="rounded w-100" alt=""></div>
                     <div class="mb-3 pb-3 border-bottom">
 
                         <!-- start row -->
@@ -29,7 +29,7 @@
                                     <div class="d-flex align-items-center">
                                         <p class="me-2 mb-0 border-end pe-2"><i class="ti ti-calendar me-1 text-dark"></i>05 Dec 2025</p>
                                         <div class="d-flex align-items-center fw-normal mb-0">
-                                            <a href="javascript:void(0);"><img src="assets/img/users/user-01.jpg" class="avatar avatar-xs rounded-circle me-1" alt=""></a>
+                                            <a href="javascript:void(0);"><img src="/assets/img/users/user-01.jpg" class="avatar avatar-xs rounded-circle me-1" alt=""></a>
                                             <p class="mb-0"><a href="javascript:void(0);" class="text-default">Gertrude Bowie</a></p>
                                         </div>
                                     </div>

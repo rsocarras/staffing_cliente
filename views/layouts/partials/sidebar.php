@@ -15,17 +15,17 @@ $page = empty($path) ? 'index' : basename($path);
 
             <!-- Logo Normal -->
             <a href="index" class="logo logo-normal">
-                <img src="assets/img/logo.svg" alt="Logo">
+                <img src="/assets/img/logo.svg" alt="Logo">
             </a>
 
             <!-- Logo Small -->
             <a href="index" class="logo-small">
-                <img src="assets/img/logo-small.svg" alt="Logo">
+                <img src="/assets/img/logo-small.svg" alt="Logo">
             </a>
 
             <!-- Logo Dark -->
             <a href="index" class="dark-logo">
-                <img src="assets/img/logo-white.svg" alt="Logo">
+                <img src="/assets/img/logo-white.svg" alt="Logo">
             </a>
 
             <!-- Sidebar Menu Close -->

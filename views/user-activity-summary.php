@@ -69,7 +69,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium m-0 fs-14"><a href="#">Shaun Farley</a></h6>

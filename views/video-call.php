@@ -31,7 +31,7 @@
                     <div>
                         <div class="video-chat">
                             <div class="position-relative">
-                                <div class="mb-4 call-user-img"><img src="assets/img/users/video-call.jpg" class="img-fluid rounded" alt="user"></div>
+                                <div class="mb-4 call-user-img"><img src="/assets/img/users/video-call.jpg" class="img-fluid rounded" alt="user"></div>
                                 <div class="d-flex align-items-center justify-content-between position-absolute top-0 start-0 w-100 p-3">
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-white text-dark">Rachael Thomas</span>
@@ -45,38 +45,38 @@
                             <div class="swiper call-users">
                                 <div class="swiper-wrapper">
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-11.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-11.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">Rosa Shelby</span>
                                         </div>
                                     </div>
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-12.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-12.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">Allen Snyder</span>
                                         </div>
-                                        <span class="position-absolute top-0 start-0 p-2"><img src="assets/img/icons/audio-wave.svg" alt="audio wave"></span>
+                                        <span class="position-absolute top-0 start-0 p-2"><img src="/assets/img/icons/audio-wave.svg" alt="audio wave"></span>
                                     </div>
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-13.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-13.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">Charlotte Ayala</span>
                                         </div>
                                     </div>
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-14.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-14.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">Andrew Foster</span>
                                         </div>
                                     </div>
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-15.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-15.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">userRobert Fassett</span>
                                         </div>
                                     </div>
                                     <div class="swiper-slide">
-                                        <img src="assets/img/profiles/avatar-16.jpg" class="img-fluid rounded" alt="user">
+                                        <img src="/assets/img/profiles/avatar-16.jpg" class="img-fluid rounded" alt="user">
                                         <div class="position-absolute bottom-0 start-0 w-100 p-2">
                                             <span class="badge badge-lg bg-white text-dark w-100">Andrew Fletcher</span>
                                         </div>

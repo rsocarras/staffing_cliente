@@ -82,7 +82,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">John Mitchell</h6>
                                         </div>
@@ -130,7 +130,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Lisa Thompson</h6>
                                         </div>
@@ -178,7 +178,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Michael Rodriguez</h6>
                                         </div>
@@ -226,7 +226,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Sarah Lee</h6>
                                         </div>
@@ -274,7 +274,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Natalie Brooks</h6>
                                         </div>
@@ -322,7 +322,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">David Nguyen</h6>
                                         </div>
@@ -370,7 +370,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Emilen Parker</h6>
                                         </div>
@@ -418,7 +418,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Jason Carter</h6>
                                         </div>
@@ -466,7 +466,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-09.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-09.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Amanda Foster</h6>
                                         </div>
@@ -514,7 +514,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium m-0 fs-14"><a href="javascript:void(0);">Kevin Walker</h6>
                                         </div>

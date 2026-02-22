@@ -10,10 +10,10 @@
             <div class="col-md-8 d-flex justify-content-center align-items-center mx-auto">
                 <div>
                     <div class="p-4 text-center">
-                        <a href="index"><img src="assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
+                        <a href="index"><img src="/assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
                     </div>
                     <div class="error-images text-center mb-4">
-                        <img src="assets/img/auth/error-500.svg" alt="image" class="img-fluid">
+                        <img src="/assets/img/auth/error-500.svg" alt="image" class="img-fluid">
                     </div>
                     <div class="text-center">
                         <h1 class="mb-2">Oops, something went wrong</h1>

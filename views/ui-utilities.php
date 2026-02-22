@@ -550,13 +550,13 @@
                         <div class="card-body">
                             <p class="text-muted">Add classes to an element to easily round its corners.</p>
                             <div class="d-flex align-items-start flex-wrap gap-2">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded" alt="rounded">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-top" alt="rounded-top">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-end" alt="rounded-end">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-bottom" alt="rounded-bottom">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-start" alt="rounded-start">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-circle" alt="rounded-circle">
-                                <img src="assets/img/profiles/avatar-02.jpg" class="avatar-lg w-auto rounded-pill" alt="rounded-pill">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded" alt="rounded">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-top" alt="rounded-top">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-end" alt="rounded-end">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-bottom" alt="rounded-bottom">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-start" alt="rounded-start">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg rounded-circle" alt="rounded-circle">
+                                <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-lg w-auto rounded-pill" alt="rounded-pill">
                             </div>
 
                         </div> <!-- end card body -->
@@ -571,12 +571,12 @@
                         <div class="card-body">
                             <p class="text-muted">Use the scaling classes for larger or smaller rounded corners. Sizes range from <code>0</code> to <code>5</code>.</p>
                             <div class="d-flex align-items-start flex-wrap gap-2">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-0" alt="rounded-0">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-1" alt="rounded-1">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-2" alt="rounded-2">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-3" alt="rounded-3">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-4" alt="rounded-4">
-                                <img src="assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-5" alt="rounded-5">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-0" alt="rounded-0">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-1" alt="rounded-1">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-2" alt="rounded-2">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-3" alt="rounded-3">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-4" alt="rounded-4">
+                                <img src="/assets/img/profiles/avatar-04.jpg" class="avatar-lg rounded-5" alt="rounded-5">
                             </div>
                         </div> <!-- end card body -->
                     </div> <!-- end card -->
@@ -815,23 +815,23 @@
                             <p class="text-muted">Change the value of the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit"><code>object-fit</code> property</a> with our responsive <code>object-fit</code> utility classes. This property tells the content to fill the parent container in a variety of ways, such as preserving the aspect ratio or stretching to take up as much space as possible.</p>
                             <div class="d-flex align-items-start flex-wrap gap-3 text-center">
                                 <div>
-                                    <img src="assets/img/media/img-2.jpg" class="object-fit-contain border rounded avatar-xl" alt="...">
+                                    <img src="/assets/img/media/img-2.jpg" class="object-fit-contain border rounded avatar-xl" alt="...">
                                     <p class="mt-1 mb-0"><code class="user-select-all">.object-fit-contain</code></p>
                                 </div>
                                 <div>
-                                    <img src="assets/img/media/img-2.jpg" class="object-fit-cover border rounded avatar-xl" alt="...">
+                                    <img src="/assets/img/media/img-2.jpg" class="object-fit-cover border rounded avatar-xl" alt="...">
                                     <p class="mt-1 mb-0"><code class="user-select-all">.object-fit-cover</code></p>
                                 </div>
                                 <div>
-                                    <img src="assets/img/media/img-2.jpg" class="object-fit-fill border rounded avatar-xl" alt="...">
+                                    <img src="/assets/img/media/img-2.jpg" class="object-fit-fill border rounded avatar-xl" alt="...">
                                     <p class="mt-1 mb-0"><code class="user-select-all">.object-fit-fill</code></p>
                                 </div>
                                 <div>
-                                    <img src="assets/img/media/img-2.jpg" class="object-fit-scale border rounded avatar-xl" alt="...">
+                                    <img src="/assets/img/media/img-2.jpg" class="object-fit-scale border rounded avatar-xl" alt="...">
                                     <p class="mt-1 mb-0"><code class="user-select-all">.object-fit-scale</code></p>
                                 </div>
                                 <div>
-                                    <img src="assets/img/media/img-2.jpg" class="object-fit-none border rounded avatar-xl" alt="...">
+                                    <img src="/assets/img/media/img-2.jpg" class="object-fit-none border rounded avatar-xl" alt="...">
                                     <p class="mt-1 mb-0"><code class="user-select-all">.object-fit-none</code></p>
                                 </div>
                             </div>

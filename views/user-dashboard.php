@@ -37,7 +37,7 @@
                                 </span>
                             </div>
                         </div> <!-- end card body -->
-                        <img src="assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
+                        <img src="/assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
                     </div> <!-- end card -->
                 </div> <!-- end col -->
 
@@ -54,7 +54,7 @@
                                 </span>
                             </div>
                         </div> <!-- end card body -->
-                        <img src="assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
+                        <img src="/assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
                     </div> <!-- end card -->
                 </div> <!-- end col -->
 
@@ -71,7 +71,7 @@
                                 </span>
                             </div>
                         </div> <!-- end card body -->
-                        <img src="assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
+                        <img src="/assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
                     </div> <!-- end card -->
                 </div> <!-- end col -->
 
@@ -88,7 +88,7 @@
                                 </span>
                             </div>
                         </div> <!-- end card body -->
-                        <img src="assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
+                        <img src="/assets/img/icons/dash-icon.svg" alt="icon" class="position-absolute top-0 end-0 z-n1">
                     </div> <!-- end card -->
                 </div> <!-- end col -->
 
@@ -119,7 +119,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm avatar-rounded flex-shrink-0">
-                                        <img src="assets/img/icons/figma-icon.svg" alt="img">
+                                        <img src="/assets/img/icons/figma-icon.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Figma</h6>
@@ -137,7 +137,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm avatar-rounded flex-shrink-0">
-                                        <img src="assets/img/icons/google2.svg" alt="img">
+                                        <img src="/assets/img/icons/google2.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Google</h6>
@@ -155,7 +155,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/illustrator-01.svg" alt="img">
+                                        <img src="/assets/img/icons/illustrator-01.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Adobe illustrator</h6>
@@ -173,7 +173,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/slack-01.svg" alt="img">
+                                        <img src="/assets/img/icons/slack-01.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Slack</h6>
@@ -191,7 +191,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/teams.svg" alt="img">
+                                        <img src="/assets/img/icons/teams.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Teams</h6>
@@ -354,7 +354,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <div>
@@ -370,7 +370,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-20.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-20.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <div>
@@ -386,7 +386,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-26.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-26.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <div>
@@ -402,7 +402,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-23.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-23.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <div>
@@ -418,7 +418,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-22.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-22.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <div>

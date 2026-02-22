@@ -105,7 +105,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-01.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-01.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -153,7 +153,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-02.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-02.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -201,7 +201,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-03.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-03.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -247,7 +247,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-04.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-04.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -293,7 +293,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-05.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-05.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -339,7 +339,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-06.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-06.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -385,7 +385,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-07.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-07.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -431,7 +431,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-08.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-08.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -477,7 +477,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-09.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-09.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -523,7 +523,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/profiles/avatar-10.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/profiles/avatar-10.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -569,7 +569,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/users/user-03.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/users/user-03.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->
@@ -615,7 +615,7 @@
                                                         </a>
                                                     </div>
                                                     <a href="javascript:void(0);" class="avatar avatar-sm">
-                                                        <img src="./assets/img/users/user-02.jpg" alt="Profile" class="img-fluid">
+                                                        <img src="/./assets/img/users/user-02.jpg" alt="Profile" class="img-fluid">
                                                     </a>
                                                 </div>
                                             </div> <!-- end card body -->

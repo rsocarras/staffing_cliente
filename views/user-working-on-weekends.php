@@ -69,7 +69,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -118,7 +118,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task2-collapse" aria-expanded="false">Jenny Ellis<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -167,7 +167,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task3-collapse" aria-expanded="false">Leon Baxter<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -216,7 +216,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task4-collapse" aria-expanded="false">Karen Flores<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -265,7 +265,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task5-collapse" aria-expanded="false">Charles Cline<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -314,7 +314,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task6-collapse" aria-expanded="false">Aliza Duncan<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -412,7 +412,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task8-collapse" aria-expanded="false">Karen Galvan<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -461,7 +461,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task9-collapse" aria-expanded="false">Thomas Ward<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -510,7 +510,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-09.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-09.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" class="d-flex align-items-center collapsed task-collapse" data-bs-toggle="collapse" data-bs-target=".task10-collapse" aria-expanded="false">James Higham<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -597,7 +597,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -610,7 +610,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -623,7 +623,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>
@@ -642,7 +642,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -655,7 +655,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -668,7 +668,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>
@@ -687,7 +687,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -700,7 +700,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -713,7 +713,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>
@@ -732,7 +732,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -745,7 +745,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -758,7 +758,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>
@@ -777,7 +777,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -790,7 +790,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -803,7 +803,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>
@@ -822,7 +822,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Shaun Farley</a></h6>
@@ -835,7 +835,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Jenny Ellis</a></h6>
@@ -848,7 +848,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" class="d-flex align-items-center collapsed task-collapse text-gray" data-bs-toggle="collapse" data-bs-target=".task-collapse-content" aria-expanded="false">Leon Baxter</a></h6>

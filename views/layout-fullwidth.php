@@ -127,7 +127,7 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-0"><a href="#">Leon Baxter</a></h6>
@@ -142,7 +142,7 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-20.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-20.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-0"><a href="#">Charles Cline</a></h6>
@@ -157,7 +157,7 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-26.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-26.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-0"><a href="#">James Higham</a></h6>
@@ -172,7 +172,7 @@
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-23.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-23.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-0"><a href="#">Thomas Ward</a></h6>
@@ -187,7 +187,7 @@
                             <div class="d-flex align-items-center justify-content-between  flex-wrap gap-1">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-22.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-22.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-0"><a href="#">Aliza Duncan</a></h6>
@@ -223,7 +223,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-13.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-13.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-1"><a href="#">Jonathan King</a></h6>
@@ -238,7 +238,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-14.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-14.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-1"><a href="#">Peter Brooks</a></h6>
@@ -253,7 +253,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-11.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-11.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-1"><a href="#">Cindy Mateo</a></h6>
@@ -268,7 +268,7 @@
                             <div class="d-flex align-items-center justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-15.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-15.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-1"><a href="#">Thomas Walsh</a></h6>
@@ -287,7 +287,7 @@
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <a href="#" class="avatar flex-shrink-0">
-                                        <img src="assets/img/profiles/avatar-12.jpg" class="rounded-circle" alt="img">
+                                        <img src="/assets/img/profiles/avatar-12.jpg" class="rounded-circle" alt="img">
                                     </a>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium text-truncate mb-1"><a href="#">Eliz Hiltner</a></h6>
@@ -591,7 +591,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm avatar-rounded flex-shrink-0">
-                                        <img src="assets/img/icons/figma-icon.svg" alt="img">
+                                        <img src="/assets/img/icons/figma-icon.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Figma</h6>
@@ -609,7 +609,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm avatar-rounded flex-shrink-0">
-                                        <img src="assets/img/icons/google2.svg" alt="img">
+                                        <img src="/assets/img/icons/google2.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Google</h6>
@@ -627,7 +627,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/illustrator-01.svg" alt="img">
+                                        <img src="/assets/img/icons/illustrator-01.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Adobe illustrator</h6>
@@ -645,7 +645,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between mb-4">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/slack-01.svg" alt="img">
+                                        <img src="/assets/img/icons/slack-01.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Slack</h6>
@@ -663,7 +663,7 @@
                             <div class="d-flex align-items-center gap-2 justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-sm flex-shrink-0">
-                                        <img src="assets/img/icons/teams.svg" alt="img">
+                                        <img src="/assets/img/icons/teams.svg" alt="img">
                                     </span>
                                     <div class="ms-2">
                                         <h6 class="fs-14 fw-medium mb-1">Teams</h6>
@@ -712,7 +712,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fs-14 fw-medium mb-0"><a href="#">Shaun Farley</a></h6>
@@ -729,7 +729,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <a href="#" class="avatar online avatar-rounded"><img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img"></a>
+                                                    <a href="#" class="avatar online avatar-rounded"><img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img"></a>
                                                     <div class="ms-2">
                                                         <h6 class="fs-14 fw-medium mb-0"><a href="#">Jenny Ellis</a></h6>
                                                     </div>
@@ -745,7 +745,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <a href="#" class="avatar online avatar-rounded"><img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img"></a>
+                                                    <a href="#" class="avatar online avatar-rounded"><img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img"></a>
                                                     <div class="ms-2">
                                                         <h6 class="fs-14 fw-medium mb-0"><a href="#">Aliza Duncan</a></h6>
                                                     </div>
@@ -777,7 +777,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <a href="#" class="avatar online avatar-rounded"><img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img"></a>
+                                                    <a href="#" class="avatar online avatar-rounded"><img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img"></a>
                                                     <div class="ms-2">
                                                         <h6 class="fs-14 fw-medium mb-0"><a href="#">Karen Galvan</a></h6>
                                                     </div>

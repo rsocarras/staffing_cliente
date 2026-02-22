@@ -204,7 +204,7 @@
                                                                     <td>
                                                                         <div class="d-flex align-items-center">
                                                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                                                             </a>
                                                                             <div class="ms-2">
                                                                                 <h6 class="fw-medium m-0"><a href="javascript:void(0);">Leslie Hensley</a></h6>
@@ -224,7 +224,7 @@
                                                                     <td>
                                                                         <div class="d-flex align-items-center">
                                                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                                                             </a>
                                                                             <div class="ms-2">
                                                                                 <h6 class="fw-medium m-0"><a href="javascript:void(0);">Robert Brown</a></h6>
@@ -243,7 +243,7 @@
                                                                     <td>
                                                                         <div class="d-flex align-items-center">
                                                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                                                             </a>
                                                                             <div class="ms-2">
                                                                                 <h6 class="fw-medium"><a href="javascript:void(0);">Ashley Regan</a></h6>
@@ -262,7 +262,7 @@
                                                                     <td>
                                                                         <div class="d-flex align-items-center">
                                                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                                                             </a>
                                                                             <div class="ms-2">
                                                                                 <h6 class="fw-medium m-0"><a href="javascript:void(0);">Mike Moore</a></h6>
@@ -281,7 +281,7 @@
                                                                     <td>
                                                                         <div class="d-flex align-items-center">
                                                                             <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                                             </a>
                                                                             <div class="ms-2">
                                                                                 <h6 class="fw-medium m-0"><a href="javascript:void(0);">Michael Tanaka</a></h6>

@@ -23,8 +23,8 @@
 
                             <div class="col-md-6">
                                 <div class="invoice-logo mb-2">
-                                    <img src="assets/img/logo.svg" class="logo-white" alt="logo">
-                                    <img src="assets/img/logo-white.svg" class="logo-dark" alt="logo">
+                                    <img src="/assets/img/logo.svg" class="logo-white" alt="logo">
+                                    <img src="/assets/img/logo-white.svg" class="logo-dark" alt="logo">
                                 </div>
                                 <p>3099 Kennedy Court Framingham, MA 01702</p>
                             </div> <!-- end col -->
@@ -71,7 +71,7 @@
                                     <p class="text-title mb-2 fw-medium">Payment Status </p>
                                     <span class="badge bg-success fs-10"><i class="ti ti-point-filled me-1"></i>Paid</span>
                                     <div class="mt-3">
-                                        <img src="assets/img/icons/qr.svg" class="img-fluid" alt="QR">
+                                        <img src="/assets/img/icons/qr.svg" class="img-fluid" alt="QR">
                                     </div>
                                 </div>
                             </div> <!-- end col -->
@@ -176,7 +176,7 @@
 
                                 <div class="col-md-5">
                                     <div class="text-end">
-                                        <img src="assets/img/icons/sign.svg" class="img-fluid" alt="sign">
+                                        <img src="/assets/img/icons/sign.svg" class="img-fluid" alt="sign">
                                     </div>
                                     <div class="text-end mb-3">
                                         <h6 class="fs-14 fw-medium pe-3">Ted M. Davis</h6>
@@ -191,8 +191,8 @@
 
                         <div class="text-center">
                             <div class="invoice-logo mb-4 text-center">
-                                <img src="assets/img/logo.svg" class="logo-white" alt="logo">
-                                <img src="assets/img/logo-white.svg" class="logo-dark mx-auto" alt="logo">
+                                <img src="/assets/img/logo.svg" class="logo-white" alt="logo">
+                                <img src="/assets/img/logo-white.svg" class="logo-dark mx-auto" alt="logo">
                             </div>
                             <p class="text-dark mb-1">Payment Made Via bank transfer / Cheque in the name of Thomas Lawler</p>
                             <div class="d-flex justify-content-center align-items-center">

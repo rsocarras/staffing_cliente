@@ -380,7 +380,7 @@
                         <div class="row g-0 align-items-center">
 
                             <div class="col-md-4">
-                                <img src="assets/img/media/img-6.jpg" class="img-fluid rounded-start" alt="...">
+                                <img src="/assets/img/media/img-6.jpg" class="img-fluid rounded-start" alt="...">
                             </div>
 
                             <div class="col-md-8">
@@ -411,7 +411,7 @@
                             </div> <!-- end col -->
 
                             <div class="col-md-4">
-                                <img src="assets/img/media/img-7.jpg" class="img-fluid rounded-end" alt="...">
+                                <img src="/assets/img/media/img-7.jpg" class="img-fluid rounded-end" alt="...">
                             </div> <!-- end col -->
                             
                         </div> <!-- end row -->
@@ -434,7 +434,7 @@
 
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
-                        <img src="assets/img/media/img-2.jpg" class="card-img-top" alt="...">
+                        <img src="/assets/img/media/img-2.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title mb-2">Card with stretched link</h5>
                             <a href="#" class="btn btn-primary mt-2 stretched-link">Go somewhere</a>
@@ -444,7 +444,7 @@
                 
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
-                        <img src="assets/img/media/img-3.jpg" class="card-img-top" alt="...">
+                        <img src="/assets/img/media/img-3.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title mb-2"><a href="#" class="text-success stretched-link">Card with stretched link</a></h5>
                             <p class="card-text">
@@ -456,7 +456,7 @@
                 
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
-                        <img src="assets/img/media/img-4.jpg" class="card-img-top" alt="...">
+                        <img src="/assets/img/media/img-4.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title mb-2">Card with stretched link</h5>
                             <a href="#" class="btn btn-info mt-2 stretched-link">Go somewhere</a>
@@ -466,7 +466,7 @@
                 
                 <div class="col-sm-6 col-lg-3">
                     <div class="card">
-                        <img src="assets/img/media/img-1.jpg" class="card-img-top" alt="...">
+                        <img src="/assets/img/media/img-1.jpg" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title mb-2"><a href="#" class="stretched-link">Card with stretched link</a></h5>
                             <p class="card-text">

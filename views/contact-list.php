@@ -71,7 +71,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-13.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-13.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">James Jackson</a></h6>
                                         </div>
                                     </td>
@@ -103,7 +103,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-11.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-11.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Robin Coffin</a></h6>
                                         </div>
                                     </td>
@@ -135,7 +135,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-14.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-14.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Vincent Thornburg</a></h6>
                                         </div>
                                     </td>
@@ -167,7 +167,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-15.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-15.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Fran Faulkner</a></h6>
                                         </div>
                                     </td>
@@ -199,7 +199,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-16.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-16.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Ernestine Waller</a></h6>
                                         </div>
                                     </td>
@@ -231,7 +231,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-18.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-18.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Jared Adams</a></h6>
                                         </div>
                                     </td>
@@ -263,7 +263,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-17.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-17.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Reyna Pelfrey</a></h6>
                                         </div>
                                     </td>
@@ -295,7 +295,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-20.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-20.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Rafael Lowe</a></h6>
                                         </div>
                                     </td>
@@ -327,7 +327,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-24.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-24.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Enrique Ratcliff</a></h6>
                                         </div>
                                     </td>
@@ -359,7 +359,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-12.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-sm flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-12.jpg" alt="user"></a>
                                             <h6 class="fs-14 fw-semibold mb-0"><a href="javascript:void(0);">Elizabeth Pegues</a></h6>
                                         </div>
                                     </td>

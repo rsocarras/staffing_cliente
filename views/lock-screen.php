@@ -17,12 +17,12 @@
                             <div class="card p-3">
                                 <div class="card-body p-4">
                                     <div class="mx-auto mb-4 text-center">
-                                        <a href="index"><img src="assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
+                                        <a href="index"><img src="/assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
                                     </div>
 
                                     <div class=" mb-3 text-center">
                                         <h5 class="mb-3">Welcome Back! </h5>
-                                        <img src="assets/img/profiles/avatar-01.jpg" alt="img" class="img-fluid avatar avatar-xxl rounded-pill">
+                                        <img src="/assets/img/profiles/avatar-01.jpg" alt="img" class="img-fluid avatar avatar-xxl rounded-pill">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Password</label>

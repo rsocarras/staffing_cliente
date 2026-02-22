@@ -35,7 +35,7 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="d-flex align-items-center overflow-hidden">
                                                 <span class="avatar flex-shrink-0">
-                                                    <img src="assets/img/profiles/avatar-01.jpg" alt="user" class="rounded-circle">
+                                                    <img src="/assets/img/profiles/avatar-01.jpg" alt="user" class="rounded-circle">
                                                 </span>
                                                 <div class="overflow-hidden ms-2">
                                                     <h5 class="text-truncate mb-1">James Hong</h5>
@@ -56,7 +56,7 @@
                                         <a href="javascript:void(0);" class="d-flex align-items-center fw-medium p-2"><i class="ti ti-music me-2"></i>Media</a>
                                     </div>
                                     <div class="bg-light p-3 text-center rounded">
-                                        <div class="mb-3"><img src="assets/img/icons/file-manager-bg.svg" alt="file-manager-bg"></div>
+                                        <div class="mb-3"><img src="/assets/img/icons/file-manager-bg.svg" alt="file-manager-bg"></div>
                                         <h6 class="mb-2">Upgrade to Pro </h6>
                                         <p class="mb-0">Unlock Pro for faster transfers, stronger security, and unlimited storage.</p>
                                     </div>
@@ -79,7 +79,7 @@
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="assets/img/icons/dropbox.svg" alt="user">
+                                                            <img src="/assets/img/icons/dropbox.svg" alt="user">
                                                             <h6 class="ms-2 fs-14 mb-0">Dropbox</h6>
                                                         </div>
                                                         <div class="dropdown">
@@ -131,7 +131,7 @@
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="assets/img/icons/drive.svg" alt="user">
+                                                            <img src="/assets/img/icons/drive.svg" alt="user">
                                                             <h6 class="ms-2 fs-14 mb-0">Google Drive</h6>
                                                         </div>
                                                         <div class="dropdown">
@@ -183,7 +183,7 @@
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                                         <div class="d-flex align-items-center">
-                                                            <img src="assets/img/icons/cloud.svg" alt="user">
+                                                            <img src="/assets/img/icons/cloud.svg" alt="user">
                                                             <h6 class="ms-2 fs-14 mb-0">Cloud Storage</h6>
                                                         </div>
                                                         <div class="dropdown">
@@ -244,7 +244,7 @@
                                             <div class="card position-relative flex-fill">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <img src="assets/img/icons/file.svg" alt="user">
+                                                        <img src="/assets/img/icons/file.svg" alt="user">
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="dropdown">
                                                                 <button class="dropdown-toggle drop-arrow-none btn-icon btn-sm btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
@@ -275,7 +275,7 @@
                                             <div class="card position-relative flex-fill">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <img src="assets/img/icons/pdf-icon.svg" alt="user">
+                                                        <img src="/assets/img/icons/pdf-icon.svg" alt="user">
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="dropdown">
                                                                 <button class="dropdown-toggle drop-arrow-none btn-icon btn-sm btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
@@ -306,7 +306,7 @@
                                             <div class="card position-relative flex-fill">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <img src="assets/img/icons/image.svg" alt="user">
+                                                        <img src="/assets/img/icons/image.svg" alt="user">
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="dropdown">
                                                                 <button class="dropdown-toggle drop-arrow-none btn-icon btn-sm btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
@@ -337,7 +337,7 @@
                                             <div class="card position-relative flex-fill">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center justify-content-between mb-3">
-                                                        <img src="assets/img/icons/folder-icon.svg" alt="user">
+                                                        <img src="/assets/img/icons/folder-icon.svg" alt="user">
                                                         <div class="d-flex align-items-center gap-2">
                                                             <div class="dropdown">
                                                                 <button class="dropdown-toggle drop-arrow-none btn-icon btn-sm btn" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
@@ -395,7 +395,7 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <a href="#" class="avatar avatar-sm bg-light" data-bs-toggle="offcanvas" data-bs-target="#preview">
-                                                            <img src="assets/img/icons/file-01.svg" class="img-fluid w-auto h-auto" alt="user"></a>
+                                                            <img src="/assets/img/icons/file-01.svg" class="img-fluid w-auto h-auto" alt="user"></a>
                                                         <div class="ms-2">
                                                             <p class="text-dark fw-medium  mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#preview">Secret</a></p>
                                                         </div>
@@ -446,7 +446,7 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <a href="#" class="avatar avatar-sm bg-light" data-bs-toggle="offcanvas" data-bs-target="#preview">
-                                                            <img src="assets/img/icons/file-02.svg" class="img-fluid w-auto h-auto" alt="user"></a>
+                                                            <img src="/assets/img/icons/file-02.svg" class="img-fluid w-auto h-auto" alt="user"></a>
                                                         <div class="ms-2">
                                                             <p class="text-dark fw-medium  mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#preview">Sophie Headrick</a></p>
                                                         </div>
@@ -494,7 +494,7 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <a href="#" class="avatar avatar-sm bg-light" data-bs-toggle="offcanvas" data-bs-target="#preview">
-                                                            <img src="assets/img/icons/file-03.svg" class="img-fluid w-auto h-auto" alt="user"></a>
+                                                            <img src="/assets/img/icons/file-03.svg" class="img-fluid w-auto h-auto" alt="user"></a>
                                                         <div class="ms-2">
                                                             <p class="text-dark fw-medium  mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#preview">Gallery</a></p>
                                                         </div>
@@ -551,7 +551,7 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <a href="#" class="avatar avatar-sm bg-light" data-bs-toggle="offcanvas" data-bs-target="#preview">
-                                                            <img src="assets/img/icons/file-04.svg" class="img-fluid w-auto h-auto" alt="user"></a>
+                                                            <img src="/assets/img/icons/file-04.svg" class="img-fluid w-auto h-auto" alt="user"></a>
                                                         <div class="ms-2">
                                                             <p class="text-dark fw-medium  mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#preview">Doris Crowley</a></p>
                                                         </div>
@@ -602,7 +602,7 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <a href="#" class="avatar avatar-sm bg-light" data-bs-toggle="offcanvas" data-bs-target="#preview">
-                                                            <img src="assets/img/icons/file-05.svg" class="img-fluid w-auto h-auto" alt="user"></a>
+                                                            <img src="/assets/img/icons/file-05.svg" class="img-fluid w-auto h-auto" alt="user"></a>
                                                         <div class="ms-2">
                                                             <p class="text-dark fw-medium  mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#preview">Cheat_codez</a></p>
                                                         </div>

@@ -36,7 +36,7 @@
 
                                 <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
-                                        <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                        <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                         <strong class="me-auto">Admin</strong>
                                         <small>11 mins ago</small>
                                         <button type="button" class="ms-2 btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -63,7 +63,7 @@
                             <div class="p-3 bg-light bg-opacity-50">
                                 <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
-                                        <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                        <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                         <strong class="me-auto">Admin</strong>
                                         <small>11 mins ago</small>
                                         <button type="button" class="ms-2 btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -94,7 +94,7 @@
                                         <!-- Then put toasts within -->
                                         <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
                                             <div class="toast-header">
-                                                <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                                <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                                 <strong class="me-auto">Admin</strong>
                                                 <small class="text-muted">just now</small>
                                                 <button type="button" class="ms-2 btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -107,7 +107,7 @@
 
                                         <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
                                             <div class="toast-header">
-                                                <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                                <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                                 <strong class="me-auto">Admin</strong>
                                                 <small class="text-muted">2 seconds ago</small>
                                                 <button type="button" class="ms-2 btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -138,7 +138,7 @@
                                     <!-- Then put toasts within -->
                                     <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-toggle="toast">
                                         <div class="toast-header">
-                                            <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                            <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                             <strong class="me-auto">Admin</strong>
                                             <small>11 mins ago</small>
                                             <button type="button" class="ms-2 btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -239,7 +239,7 @@
                                 <div class="toast-container position-absolute p-3" id="toastPlacement">
                                     <div class="toast show">
                                         <div class="toast-header">
-                                            <img src="assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
+                                            <img src="/assets/img/logo-small.svg" alt="brand-logo" height="16" class="me-1">
                                             <strong class="me-auto">Admin</strong>
                                             <small>11 mins ago</small>
                                         </div>

@@ -31,49 +31,49 @@
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-01.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-01.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-01.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-02.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-02.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-02.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-03.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-03.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-03.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a> 
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-04.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-04.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-04.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-06.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-06.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-06.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-07.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-07.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-07.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-08.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-08.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-08.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col --> 
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-10.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-10.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-10.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
@@ -93,25 +93,25 @@
                             
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-11.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-11.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-11.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-12.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-12.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-12.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-13.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-13.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-13.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-md-6 col-lg-3">
                                     <a href="assets/img/gallery/gallery-15.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-15.jpg" class="img-fluid rounded w-100" alt="img">
+                                        <img src="/assets/img/gallery/gallery-15.jpg" class="img-fluid rounded w-100" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 

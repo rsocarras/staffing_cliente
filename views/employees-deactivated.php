@@ -27,7 +27,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Total Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2520<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>22.5%</span></h4>
@@ -40,7 +40,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Active Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2000<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>15.2%</span></h4>
@@ -53,7 +53,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Inactive Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">350<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>16.3%</span></h4>
@@ -66,7 +66,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Archieved Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">170<span class="fs-12 text-danger d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-down"></i>10.5%</span></h4>
@@ -149,7 +149,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img"></a>
+                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img"></a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="employee-details" class="text-dark">Aliza Duncan</a></h6>
                                                 <p class="fs-13 mb-0">Data Analyst</p>
@@ -182,7 +182,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img"></a>
+                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img"></a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="employee-details" class="text-dark">Leslie Hensley</a></h6>
                                                 <p class="fs-13 mb-0">Technician</p>
@@ -215,7 +215,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img"></a>
+                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img"></a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="employee-details" class="text-dark">Karen Galvan</a></h6>
                                                 <p class="fs-13 mb-0">Network Engineer</p>
@@ -248,7 +248,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="assets/img/users/user-09.jpg" class="img-fluid" alt="img"></a>
+                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="/assets/img/users/user-09.jpg" class="img-fluid" alt="img"></a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="employee-details" class="text-dark">James Higham</a></h6>
                                                 <p class="fs-13 mb-0">Android Developer</p>
@@ -281,7 +281,7 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img"></a>
+                                            <a href="employee-details" class="avatar online avatar-rounded"><img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img"></a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="employee-details" class="text-dark">Thomas Ward</a></h6>
                                                 <p class="fs-13 mb-0">UI Designer</p>

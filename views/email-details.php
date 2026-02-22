@@ -105,7 +105,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom flex-wrap flex-md-nowrap row-gap-2 pb-3">
                                             <div class="d-flex align-items-center">
-                                                <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-03.jpg" alt="user"></span>
+                                                <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-03.jpg" alt="user"></span>
                                                 <div>
                                                     <h6 class="fs-14 fw-semibold mb-1">Mark Smith</h6>
                                                     <p class="mb-0">From : adrian@example.com</p>
@@ -137,7 +137,7 @@
                                                 <div class="card flex-shrink-0 mb-0">
                                                     <div class="card-body p-3">
                                                         <div class="card-img mb-3">
-                                                            <img src="assets/img/social/attachment-01.jpg" class="rounded" alt="attachemnt">
+                                                            <img src="/assets/img/social/attachment-01.jpg" class="rounded" alt="attachemnt">
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <div>
@@ -151,7 +151,7 @@
                                                 <div class="card flex-shrink-0 mb-0">
                                                     <div class="card-body p-3">
                                                         <div class="card-img mb-3">
-                                                            <img src="assets/img/social/attachment-02.jpg" class="rounded" alt="attachemnt">
+                                                            <img src="/assets/img/social/attachment-02.jpg" class="rounded" alt="attachemnt">
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <div>

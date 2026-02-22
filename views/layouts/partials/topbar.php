@@ -17,13 +17,13 @@ $page = empty($path) ? 'index' : basename($path);
 
                     <!-- Logo Normal -->
                     <span class="logo-light">
-                        <span class="logo-lg"><img src="assets/img/logo.svg" alt="logo"></span>
-                        <span class="logo-sm"><img src="assets/img/logo-small.svg" alt="small logo"></span>
+                        <span class="logo-lg"><img src="/assets/img/logo.svg" alt="logo"></span>
+                        <span class="logo-sm"><img src="/assets/img/logo-small.svg" alt="small logo"></span>
                     </span>
 
                     <!-- Logo Dark -->
                     <span class="logo-dark">
-                        <span class="logo-lg"><img src="assets/img/logo-white.svg" alt="dark logo"></span>
+                        <span class="logo-lg"><img src="/assets/img/logo-white.svg" alt="dark logo"></span>
                     </span>
                 </a>
 
@@ -62,28 +62,28 @@ $page = empty($path) ? 'index' : basename($path);
                 <div class="header-item">
                     <div class="dropdown">
                         <button class="topbar-link btn btn-icon" data-bs-toggle="dropdown" data-bs-offset="0,24" type="button" aria-haspopup="false" aria-expanded="false">
-                            <img src="assets/img/flags/us.svg" alt="Language" height="16">
+                            <img src="/assets/img/flags/us.svg" alt="Language" height="16">
                         </button>
                         
                         <div class="dropdown-menu dropdown-menu-end p-2">
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item">
-                                <img src="assets/img/flags/us.svg" alt="" class="me-1" height="16"> <span class="align-middle">English</span>
+                                <img src="/assets/img/flags/us.svg" alt="" class="me-1" height="16"> <span class="align-middle">English</span>
                             </a>
 
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item">
-                                <img src="assets/img/flags/de.svg" alt="" class="me-1" height="16"> <span class="align-middle">German</span>
+                                <img src="/assets/img/flags/de.svg" alt="" class="me-1" height="16"> <span class="align-middle">German</span>
                             </a>
 
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item">
-                                <img src="assets/img/flags/fr.svg" alt="" class="me-1" height="16"> <span class="align-middle">French</span>
+                                <img src="/assets/img/flags/fr.svg" alt="" class="me-1" height="16"> <span class="align-middle">French</span>
                             </a>
 
                             <!-- item-->
                             <a href="javascript:void(0);" class="dropdown-item">
-                                <img src="assets/img/flags/ae.svg" alt="" class="me-1" height="16"> <span class="align-middle">Arabic</span>
+                                <img src="/assets/img/flags/ae.svg" alt="" class="me-1" height="16"> <span class="align-middle">Arabic</span>
                             </a>
                             
                         </div>
@@ -126,7 +126,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 <div class="dropdown-item notification-item py-2 text-wrap border-bottom" id="notification-1">
                                     <div class="d-flex">
                                         <div class="me-2 position-relative flex-shrink-0">
-                                            <img src="assets/img/profiles/avatar-02.jpg" class="avatar-md rounded-circle" alt="">
+                                            <img src="/assets/img/profiles/avatar-02.jpg" class="avatar-md rounded-circle" alt="">
                                         </div>
                                         <div class="flex-grow-1">
                                             <p class="mb-0 fw-semibold text-dark">Jerry Manas</p>
@@ -176,7 +176,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 <div class="dropdown-item notification-item py-2 text-wrap border-bottom" id="notification-3">
                                     <div class="d-flex">
                                         <span class="me-2 position-relative flex-shrink-0">
-                                            <img src="assets/img/profiles/avatar-10.jpg" class="avatar-md rounded-circle" alt="">
+                                            <img src="/assets/img/profiles/avatar-10.jpg" class="avatar-md rounded-circle" alt="">
                                         </span>
                                         <div class="flex-grow-1">
                                             <p class="mb-0 fw-semibold text-dark">Robert Fox </p>
@@ -223,7 +223,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 <div class="dropdown-item notification-item py-2 text-wrap border-bottom" id="notification-5">
                                     <div class="d-flex">
                                         <div class="me-2 position-relative flex-shrink-0">
-                                            <img src="assets/img/profiles/avatar-19.jpg" class="avatar-md rounded-circle" alt="">
+                                            <img src="/assets/img/profiles/avatar-19.jpg" class="avatar-md rounded-circle" alt="">
                                         </div>
                                         <div class="flex-grow-1">
                                             <p class="mb-0 fw-semibold text-dark">Robert Fox </p>
@@ -281,12 +281,12 @@ $page = empty($path) ? 'index' : basename($path);
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a class="topbar-link dropdown-toggle drop-arrow-none" href="#" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
-                        <img src="assets/img/profiles/avatar-01.jpg" width="24" class="rounded-circle d-flex" alt="user-image">
+                        <img src="/assets/img/profiles/avatar-01.jpg" width="24" class="rounded-circle d-flex" alt="user-image">
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg p-3">
                         <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
                             <div class="d-flex align-items-center">
-                                <img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="">
+                                <img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="">
                                 <div class="ms-2">
                                     <h5 class="mb-1 fs-14">Shaun Farley</h5>
                                     <span class="d-block fs-13">Manager</span>
