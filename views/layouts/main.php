@@ -1,4 +1,5 @@
 <?php
+
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -16,22 +17,25 @@ use yii\web\View;
 
 <?= $this->render('partials/body') ?>
 
-    <!-- Begin Wrapper -->
-    <div class="main-wrapper">
+<!-- Begin Wrapper -->
+<div class="main-wrapper">
 
-        <?= $this->render('partials/topbar') ?>
-        <?= $this->render('partials/sidebar') ?>
+    <?= $this->render('partials/topbar') ?>
+    <?= $this->render('partials/sidebar') ?>
 
 
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
             <?= $content ?> <!-- Main content of the page -->
-      
-
-       
-
+        </div>
     </div>
-    <!-- End Wrapper -->
+</div>
+<!-- End Wrapper -->
 
-    <?= $this->render('partials/modal-popup') ?>
-    <?= $this->render('partials/vendor-scripts') ?>
+<?= $this->render('partials/modal-popup') ?>
+<?= $this->render('partials/vendor-scripts') ?>
 </body>
+
 </html>
