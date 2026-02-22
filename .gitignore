@@ -48,3 +48,5 @@ tests/_support/_generated
 *.sqlite
 *.sqlite3
 *.db
+
+/web/assets/*
