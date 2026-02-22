@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use app\models\Archivos;
-use app\models\ArchivosSearch;
+use app\models\search\ArchivosSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -41,7 +41,6 @@ class ArchivosController extends Controller
         $searchModel = new ArchivosSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-         $this->layout = 'main';
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -56,7 +55,6 @@ class ArchivosController extends Controller
      */
     public function actionView($id)
     {
-         $this->layout = 'main';
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -79,7 +77,6 @@ class ArchivosController extends Controller
             $model->loadDefaultValues();
         }
 
-         $this->layout = 'main';
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -132,6 +129,6 @@ class ArchivosController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }
