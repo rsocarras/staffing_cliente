@@ -7,10 +7,10 @@ use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /** @var yii\web\View $this */
-/** @var app\models\ArchivosSearch $searchModel */
+/** @var app\models\search\ArchivosSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = Yii::t('app', 'Archivos');
+$this->title = 'Archivos';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="archivos-index">
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Archivos'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Archivos', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php Pjax::begin(); ?>
