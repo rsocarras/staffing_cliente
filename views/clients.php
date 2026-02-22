@@ -34,11 +34,11 @@
                                             <p class="mb-1 fs-14">Total Clients</p>
                                             <h4 class="mb-0">3500</h4>
                                         </div>
-                                        <img src="assets/img/icons/client-img-1.svg" alt="client-img-1" class="img-fluid">
+                                        <img src="/assets/img/icons/client-img-1.svg" alt="client-img-1" class="img-fluid">
                                     </div>
                                     <h6 class="fs-12 fw-normal d-flex align-items-center gap-1 mb-0 p-2 bg-light rounded text-body"> <i class="ti ti-trending-up text-success"></i><span class="text-success">12.5%</span>Last month</h6>
                                 </div>
-                                <img src="assets/img/icons/shadow-1.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
+                                <img src="/assets/img/icons/shadow-1.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
                             </div>
                         </div> <!-- end col -->
                         <!-- Item 2 -->
@@ -50,11 +50,11 @@
                                             <p class="mb-1 fs-14">Active Clients</p>
                                             <h4 class="mb-0">2900</h4>
                                         </div>
-                                        <img src="assets/img/icons/client-img-2.svg" alt="client-img-1" class="img-fluid">
+                                        <img src="/assets/img/icons/client-img-2.svg" alt="client-img-1" class="img-fluid">
                                     </div>
                                     <h6 class="fs-12 fw-normal d-flex align-items-center gap-1 mb-0 p-2 bg-light rounded text-body"> <i class="ti ti-trending-up text-success"></i><span class="text-success">15.5%</span>Last month</h6>
                                 </div>
-                                <img src="assets/img/icons/shadow-2.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
+                                <img src="/assets/img/icons/shadow-2.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
                             </div>
                         </div> <!-- end col -->
                         <!-- Item 3 -->
@@ -66,11 +66,11 @@
                                             <p class="mb-1 fs-14">Inactive Clients</p>
                                             <h4 class="mb-0">450</h4>
                                         </div>
-                                        <img src="assets/img/icons/client-img-3.svg" alt="client-img-1" class="img-fluid">
+                                        <img src="/assets/img/icons/client-img-3.svg" alt="client-img-1" class="img-fluid">
                                     </div>
                                     <h6 class="fs-12 fw-normal d-flex align-items-center gap-1 mb-0 p-2 bg-light rounded text-body"> <i class="ti ti-trending-up text-success"></i><span class="text-success">15.5%</span>Last month</h6>
                                 </div>
-                                <img src="assets/img/icons/shadow-3.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
+                                <img src="/assets/img/icons/shadow-3.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
                             </div>
                         </div> <!-- end col -->
                         <!-- Item 4 -->
@@ -82,11 +82,11 @@
                                             <p class="mb-1 fs-14">Archived Clients</p>
                                             <h4 class="mb-0">150</h4>
                                         </div>
-                                        <img src="assets/img/icons/client-img-4.svg" alt="client-img-1" class="img-fluid">
+                                        <img src="/assets/img/icons/client-img-4.svg" alt="client-img-1" class="img-fluid">
                                     </div>
                                     <h6 class="fs-12 fw-normal d-flex align-items-center gap-1 mb-0 p-2 bg-light rounded text-body"> <i class="ti ti-trending-down text-danger"></i><span class="text-danger">10.5%</span>Last month</h6>
                                 </div>
-                                <img src="assets/img/icons/shadow-4.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
+                                <img src="/assets/img/icons/shadow-4.svg" alt="shadow-1" class="img-fluid position-absolute top-0 end-0">
                             </div>
                         </div> <!-- end col -->
                     </div>
@@ -141,7 +141,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Brian Thompson</a></h6>
@@ -175,7 +175,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Florence Haith</a></h6>
@@ -209,7 +209,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Jerry Palmer</a></h6>
@@ -243,7 +243,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Mark Brainerd</a></h6>
@@ -277,7 +277,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Roy Thomas</a></h6>
@@ -311,7 +311,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Alisia Chen</a></h6>
@@ -379,7 +379,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">James Walton</a></h6>
@@ -413,7 +413,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">Dennis Smith</a></h6>
@@ -447,7 +447,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">
-                                                <img src="assets/img/users/user-09.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-09.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="javascript:void(0);" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#client_details" aria-controls="client_details">David Spiegel</a></h6>

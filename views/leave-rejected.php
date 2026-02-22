@@ -86,7 +86,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-15.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-15.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Karen Galvan</a></h6>
@@ -105,7 +105,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-16.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-16.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Thomas Ward</a></h6>
@@ -124,7 +124,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-12.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-12.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Karen Flores</a></h6>
@@ -143,7 +143,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-13.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-13.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Charles Cline</a></h6>
@@ -162,7 +162,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-14.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-14.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Aliza Duncan</a></h6>
@@ -181,7 +181,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-10.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-10.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Shaun Farley</a></h6>
@@ -200,7 +200,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-09.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-09.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Jenny Ellis</a></h6>
@@ -219,7 +219,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-11.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-11.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">Leon Baxter</a></h6>
@@ -259,7 +259,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-17.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/profiles/avatar-17.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-1 fs-14"><a href="#" class="text-dark">James Higham</a></h6>

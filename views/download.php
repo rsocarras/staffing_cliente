@@ -34,21 +34,21 @@
                                         <div class="row row-gap-3">
                                             <div class="col-xl-4 col-lg-6">
                                                 <a href="javascript:void(0);" class="btn w-100 text-center bg-white border rounded-3 p-3 flex-column">
-                                                    <img src="assets/img/icons/windows.svg" alt="img" class="img-fluid mb-3">
+                                                    <img src="/assets/img/icons/windows.svg" alt="img" class="img-fluid mb-3">
                                                     <h6 class="mb-0">Windows</h6>
                                                 </a>
                                             </div> <!-- end col -->
 
                                             <div class="col-xl-4 col-lg-6">
                                                 <a href="javascript:void(0);" class="btn w-100 text-center bg-white border rounded-3 p-3 flex-column">
-                                                    <img src="assets/img/icons/mac-os.svg" alt="img" class="img-fluid mb-3">
+                                                    <img src="/assets/img/icons/mac-os.svg" alt="img" class="img-fluid mb-3">
                                                     <h6 class="mb-0">MacOS</h6>
                                                 </a>
                                             </div> <!-- end col -->
 
                                             <div class="col-xl-4 col-lg-6">
                                                 <a href="javascript:void(0);" class="btn w-100 text-center bg-white border rounded-3 p-3 flex-column">
-                                                    <img src="assets/img/icons/linux.svg" alt="img" class="img-fluid mb-3">
+                                                    <img src="/assets/img/icons/linux.svg" alt="img" class="img-fluid mb-3">
                                                     <h6 class="mb-0">Linux</h6>
                                                 </a>
                                             </div> <!-- end col -->
@@ -62,14 +62,14 @@
                                         <div class="row row-gap-3">
                                             <div class="col-xl-4 col-lg-6">
                                                 <a href="javascript:void(0);" class="btn w-100 text-center bg-white border rounded-3 p-3 flex-column">
-                                                    <img src="assets/img/icons/android.svg" alt="img" class="img-fluid mb-3">
+                                                    <img src="/assets/img/icons/android.svg" alt="img" class="img-fluid mb-3">
                                                     <h6 class="mb-0">Android</h6>
                                                 </a>
                                             </div> <!-- end col -->
 
                                             <div class="col-xl-4 col-lg-6">
                                                 <a href="javascript:void(0);" class="btn w-100 text-center bg-white border rounded-3 p-3 flex-column">
-                                                    <img src="assets/img/icons/ios.svg" alt="img" class="img-fluid mb-3">
+                                                    <img src="/assets/img/icons/ios.svg" alt="img" class="img-fluid mb-3">
                                                     <h6 class="mb-0">Ios</h6>
                                                 </a>
                                             </div> <!-- end col -->

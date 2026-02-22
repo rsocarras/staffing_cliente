@@ -83,7 +83,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-success me-1">+424.5%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-01.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-01.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -103,7 +103,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-danger me-1">-15.2%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-02.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-02.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -123,7 +123,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-success me-1">+10.7%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-03.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-03.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -143,7 +143,7 @@
                                     <p class="d-inline-flex m-0 align-items-center flex-wrap position-relative z-1"><span class="text-success me-1">+35.8%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-04.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-04.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -193,21 +193,21 @@
                     <div class="table-responsive table-nowrap">
                         <div class="d-flex gap-3 chart-flag">
                             <div class="d-flex me-5 flex-shrink-0">
-                                <span class="flex-shrink-0 me-2"><img src="./assets/img/icons/chart-flag-03.svg" alt="img"></span>
+                                <span class="flex-shrink-0 me-2"><img src="/./assets/img/icons/chart-flag-03.svg" alt="img"></span>
                                 <div>
                                     <h6 class="fs-14">Project Kickoff</h6>
                                     <span>05 Dec 2024</span>
                                 </div>
                             </div>
                             <div class="d-flex flex-shrink-0">
-                                <span class="flex-shrink-0 me-2"><img src="./assets/img/icons/chart-flag-01.svg" alt="img"></span>
+                                <span class="flex-shrink-0 me-2"><img src="/./assets/img/icons/chart-flag-01.svg" alt="img"></span>
                                 <div>
                                     <h6 class="fs-14">Release</h6>
                                     <span>05 Mar 2025</span>
                                 </div>
                             </div>
                             <div class="d-flex flex-shrink-0">
-                                <span class="flex-shrink-0 me-2"><img src="./assets/img/icons/chart-flag-02.svg" alt="img"></span>
+                                <span class="flex-shrink-0 me-2"><img src="/./assets/img/icons/chart-flag-02.svg" alt="img"></span>
                                 <div>
                                     <h6 class="fs-14">Project Close</h6>
                                     <span>09 May 2025</span>

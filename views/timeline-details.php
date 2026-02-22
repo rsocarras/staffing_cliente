@@ -46,37 +46,37 @@
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-01.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Shaun Farley
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-01.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Shaun Farley
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-02.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Jenny Ellis
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-02.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Jenny Ellis
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-03.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Leon Baxter
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-03.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Leon Baxter
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-04.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Karen Flores
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-04.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Karen Flores
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-05.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Charles Cline
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-05.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Charles Cline
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-06.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Aliza Duncan
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-06.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Aliza Duncan
                                         </label>
                                     </li>
                                 </ul>
@@ -167,7 +167,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/img/icons/mail-icon.svg" alt="img">
+                                            <img src="/assets/img/icons/mail-icon.svg" alt="img">
                                             <span class="ms-1">Email</span>
                                         </div>
                                         <div class="form-check form-check-md">
@@ -176,7 +176,7 @@
                                     </div>
                                     <div class="card-img rounded-2 border mb-2">
                                         <a href="assets/img/screenshots/screenshot-large-01.jpg" data-fancybox="gallery" class="gallery-item">
-                                            <img src="assets/img/screenshots/screenshot-1.jpg" alt="img" class="rounded-2 img-fluid">
+                                            <img src="/assets/img/screenshots/screenshot-1.jpg" alt="img" class="rounded-2 img-fluid">
                                         </a>
                                         <div class="download-delete-icon">
                                             <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle"><i class="ti ti-download fs-13"></i></a>
@@ -217,7 +217,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/img/icons/freepik-icon.svg" alt="img">
+                                            <img src="/assets/img/icons/freepik-icon.svg" alt="img">
                                             <span class="ms-1">Freepik</span>
                                         </div>
                                         <div class="form-check form-check-md">
@@ -226,7 +226,7 @@
                                     </div>
                                     <div class="card-img rounded-2 border mb-2">
                                         <a href="assets/img/screenshots/screenshot-large-02.jpg" data-fancybox="gallery" class="gallery-item">
-                                            <img src="assets/img/screenshots/screenshot-2.jpg" alt="img" class="rounded-2 img-fluid">
+                                            <img src="/assets/img/screenshots/screenshot-2.jpg" alt="img" class="rounded-2 img-fluid">
                                         </a>
                                         <div class="download-delete-icon">
                                             <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle"><i class="ti ti-download fs-13"></i></a>
@@ -268,7 +268,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/img/icons/vc-icon.svg" alt="img">
+                                            <img src="/assets/img/icons/vc-icon.svg" alt="img">
                                             <span class="ms-1">Visual Composer</span>
                                         </div>
                                         <div class="form-check form-check-md">
@@ -277,7 +277,7 @@
                                     </div>
                                     <div class="card-img rounded-2 border mb-2">
                                         <a href="assets/img/screenshots/screenshot-large-03.jpg" data-fancybox="gallery" class="gallery-item">
-                                            <img src="assets/img/screenshots/screenshot-3.jpg" alt="img" class="rounded-2 img-fluid">
+                                            <img src="/assets/img/screenshots/screenshot-3.jpg" alt="img" class="rounded-2 img-fluid">
                                         </a>
                                         <div class="download-delete-icon">
                                             <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle"><i class="ti ti-download fs-13"></i></a>
@@ -318,7 +318,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <div class="d-flex align-items-center">
-                                            <img src="assets/img/icons/dribble-icon.svg" alt="img">
+                                            <img src="/assets/img/icons/dribble-icon.svg" alt="img">
                                             <span class="ms-1">Dribble</span>
                                         </div>
                                         <div class="form-check form-check-md">
@@ -327,7 +327,7 @@
                                     </div>
                                     <div class="card-img rounded-2 border mb-2">
                                         <a href="assets/img/screenshots/screenshot-large-04.jpg" data-fancybox="gallery" class="gallery-item">
-                                            <img src="assets/img/screenshots/screenshot-4.jpg" alt="img" class="rounded-2 img-fluid">
+                                            <img src="/assets/img/screenshots/screenshot-4.jpg" alt="img" class="rounded-2 img-fluid">
                                         </a>
                                         <div class="download-delete-icon">
                                             <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle"><i class="ti ti-download fs-13"></i></a>

@@ -78,7 +78,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <a href="#" class="avatar avatar-rounded">
-                                                                    <img src="assets/img/icons/figma.svg" class="img-fluid" alt="img">
+                                                                    <img src="/assets/img/icons/figma.svg" class="img-fluid" alt="img">
                                                                 </a>
                                                                 <div class="ms-2">
                                                                     <h6 class="fw-medium mb-1 fs-14"><a href="#">Figma</a></h6>
@@ -112,7 +112,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <a href="#" class="avatar avatar-rounded">
-                                                                    <img src="assets/img/icons/google.svg" class="img-fluid" alt="img">
+                                                                    <img src="/assets/img/icons/google.svg" class="img-fluid" alt="img">
                                                                 </a>
                                                                 <div class="ms-2">
                                                                     <h6 class="fw-medium mb-1 fs-14"><a href="#">Google Chrome</a></h6>
@@ -146,7 +146,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <a href="#" class="avatar avatar-rounded">
-                                                                    <img src="assets/img/icons/illustrator.svg" class="img-fluid" alt="img">
+                                                                    <img src="/assets/img/icons/illustrator.svg" class="img-fluid" alt="img">
                                                                 </a>
                                                                 <div class="ms-2">
                                                                     <h6 class="fw-medium mb-1 fs-14"><a href="#">Adobe Illustrator</a></h6>
@@ -180,7 +180,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <a href="#" class="avatar avatar-rounded">
-                                                                    <img src="assets/img/icons/slack.svg" class="img-fluid" alt="img">
+                                                                    <img src="/assets/img/icons/slack.svg" class="img-fluid" alt="img">
                                                                 </a>
                                                                 <div class="ms-2">
                                                                     <h6 class="fw-medium mb-1 fs-14"><a href="#">Slack</a></h6>
@@ -214,7 +214,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <a href="#" class="avatar avatar-rounded">
-                                                                    <img src="assets/img/icons/google-doc.svg" class="img-fluid" alt="img">
+                                                                    <img src="/assets/img/icons/google-doc.svg" class="img-fluid" alt="img">
                                                                 </a>
                                                                 <div class="ms-2">
                                                                     <h6 class="fw-medium mb-1 fs-14"><a href="#">Google Docs</a></h6>

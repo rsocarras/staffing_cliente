@@ -130,37 +130,37 @@
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-01.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-01.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-01.jpg" class="rounded img-fluid" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-02.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-02.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-02.jpg" class="rounded img-fluid" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-03.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-03.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-03.jpg" class="rounded img-fluid" alt="img">
                                     </a> 
                                 </div> <!-- end col -->
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-04.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-04.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-04.jpg" class="rounded img-fluid" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-05.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-05.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-05.jpg" class="rounded img-fluid" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 
                                 <div class="col-xl-2 col-md-4 col-6">
                                     <a href="assets/img/gallery/gallery-06.jpg" class="image-popup">
-                                        <img src="assets/img/gallery/gallery-06.jpg" class="rounded img-fluid" alt="img">
+                                        <img src="/assets/img/gallery/gallery-06.jpg" class="rounded img-fluid" alt="img">
                                     </a>
                                 </div> <!-- end col -->
 

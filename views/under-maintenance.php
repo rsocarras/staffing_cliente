@@ -10,10 +10,10 @@
             <div class="col-md-8 d-flex justify-content-center align-items-center mx-auto">
                 <div>
                     <div class="p-4 text-center">
-                        <img src="assets/img/logo.svg" alt="logo" class="img-fluid">
+                        <img src="/assets/img/logo.svg" alt="logo" class="img-fluid">
                     </div>
                     <div class="mb-4">
-                        <img src="assets/img/auth/under-construction.svg" alt="image" class="img-fluid" width="400">
+                        <img src="/assets/img/auth/under-construction.svg" alt="image" class="img-fluid" width="400">
                     </div>
                     <div class="text-center">
                         <h3 class="mb-3 fw-bold">Under Maintenance</h3>

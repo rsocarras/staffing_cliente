@@ -129,7 +129,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content12" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -275,7 +275,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content5" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -374,7 +374,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content12" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -520,7 +520,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -619,7 +619,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content5" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -718,7 +718,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content9" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -796,7 +796,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content12" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>
@@ -874,7 +874,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <a href="#" class="avatar online avatar-rounded">
-                                                        <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                        <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                     </a>
                                                     <div class="ms-2">
                                                         <h6 class="fw-medium m-0 fs-14"><a href="#" data-bs-target=".task-collapse-content15" data-bs-toggle="collapse" class="d-flex align-items-center collapsed task-collapse" aria-expanded="false">Shaun Farley<i class="ti ti-chevron-up ms-2"></i> </a></h6>

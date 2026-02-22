@@ -28,7 +28,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Total Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2520<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>22.5%</span></h4>
@@ -41,7 +41,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Active Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2000<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>15.2%</span></h4>
@@ -54,7 +54,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Inactive Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">350<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>16.3%</span></h4>
@@ -67,7 +67,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1">Archieved Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">170<span class="fs-12 text-danger d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-down"></i>10.5%</span></h4>
@@ -119,7 +119,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Shaun Farley</p>
@@ -166,7 +166,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Jenny Ellis</p>
@@ -213,7 +213,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Leon Baxter</p>
@@ -260,7 +260,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Adrian Travon</p>
@@ -307,7 +307,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Charles Cline</p>
@@ -354,7 +354,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Aliza Duncan</p>
@@ -448,7 +448,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Karen Galvan</p>
@@ -495,7 +495,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-23.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-23.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">James Higham</p>
@@ -542,7 +542,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-21.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-21.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Thomas Ward</p>
@@ -589,7 +589,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-11.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-11.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Megan Rawls</p>
@@ -636,7 +636,7 @@
                                     <div class="d-flex align-items-center justify-content-between flex-wrap mb-3 p-2 bg-light rounded">
                                         <div class="d-flex align-items-center gap-2 flex-wrap flex-xl-nowrap">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-12.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-12.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="w-100">
                                                 <p class="mb-1 fw-medium text-dark">Alan Taylor</p>

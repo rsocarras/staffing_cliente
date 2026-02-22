@@ -145,7 +145,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-01.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-01.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">Louis K. Bond</h5>
                                                             <p> Founder & CEO </p>
@@ -160,7 +160,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">Dennis N. Cloutier</h5>
                                                             <p> Software Engineer </p>
@@ -175,7 +175,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-03.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-03.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">Susan J. Sander</h5>
                                                             <p> Web Designer </p>
@@ -199,7 +199,7 @@
 
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-04.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-04.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">James M. Short</h5>
                                                             <p> Web Developer </p>
@@ -214,7 +214,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-05.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-05.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">Gabriel J. Snyder</h5>
                                                             <p> Business Analyst </p>
@@ -229,7 +229,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-start">
-                                                        <img src="assets/img/profiles/avatar-06.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-06.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1 mt-0">Louie C. Mason</h5>
                                                             <p>Human Resources</p>
@@ -279,7 +279,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-07.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-07.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">Louis K. Bond</h5>
                                                             <p class="mb-0"> Founder & CEO </p>
@@ -292,7 +292,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-08.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-08.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">Dennis N. Cloutier</h5>
                                                             <p class="mb-0"> Software Engineer </p>
@@ -305,7 +305,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-09.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-09.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">Susan J. Sander</h5>
                                                             <p class="mb-0"> Web Designer </p>
@@ -327,7 +327,7 @@
 
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-10.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-10.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">James M. Short</h5>
                                                             <p class="mb-0"> Web Developer </p>
@@ -340,7 +340,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-05.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-05.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">Gabriel J. Snyder</h5>
                                                             <p class="mb-0"> Business Analyst </p>
@@ -353,7 +353,7 @@
                                             <div class="card mb-0 mt-4">
                                                 <div class="card-body p-3">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="assets/img/profiles/avatar-03.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
+                                                        <img src="/assets/img/profiles/avatar-03.jpg" alt="image" class="me-3 d-none d-sm-block avatar-sm rounded-circle">
                                                         <div class="w-100 overflow-hidden">
                                                             <h5 class="mb-1">Louie C. Mason</h5>
                                                             <p class="mb-0">Human Resources</p>

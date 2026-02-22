@@ -27,7 +27,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="d-flex align-items-center">
                             <span class="avatar avatar-md me-2 online avatar-rounded">
-                                <img src="assets/img/users/user-01.jpg" alt="user">
+                                <img src="/assets/img/users/user-01.jpg" alt="user">
                             </span>
                             <div>
                                 <h6 class="mb-1"><a href="#">Edward Lietz</a></h6>
@@ -55,19 +55,19 @@
                         </div>
                     </div>
                     <div class="call-body border flex-grow-1 position-relative d-flex align-items-center justify-content-center mb-3 p-5">
-                        <img src="assets/img/bg/call-bg-01.png" class="position-absolute top-0 end-0 rounded-top img-fluid" alt="bg">
-                        <img src="assets/img/bg/call-bg-02.png" class="position-absolute bottom-0 start-0 rounded-bottom img-fluid" alt="bg">
+                        <img src="/assets/img/bg/call-bg-01.png" class="position-absolute top-0 end-0 rounded-top img-fluid" alt="bg">
+                        <img src="/assets/img/bg/call-bg-02.png" class="position-absolute bottom-0 start-0 rounded-bottom img-fluid" alt="bg">
                         <div class="flex-fill text-center">
                             <div class="animation-ripple call-avatar-outer d-flex align-items-center justify-content-center m-auto mb-4">
                                 <div class="avatar call-avatar d-flex mx-auto rounded-circle">
-                                    <img src="assets/img/users/user-01.jpg" class="img-fluid rounded-circle" alt="user">
+                                    <img src="/assets/img/users/user-01.jpg" class="img-fluid rounded-circle" alt="user">
                                 </div>
                             </div>
                             <span class="badge bg-white text-dark">01:45</span>
                             <div class="border rounded border-2 border-primary avatar avatar-xxl d-inline-flex position-absolute end-0 bottom-0 m-4">
                                 <div class="bg-light p-1 rounded-circle d-inline-flex align-items-center justify-content-center">
                                     <a href="#" class="avatar avatar-lg">
-                                        <img src="assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
                                     </a>
                                 </div>
                             </div>

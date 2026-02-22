@@ -141,7 +141,7 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo1.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo1.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Office Management</a></h6>
                                         </div>
@@ -179,16 +179,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo2.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo2.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Clinic Management</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-02.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-04.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-02.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-04.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                         </div>
                                     </td>
@@ -217,15 +217,15 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo3.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo3.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Educational Platform</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-06.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-06.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                         </div>
                                     </td>
@@ -254,15 +254,15 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo4.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo4.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Chat & Call Mobile App</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                         </div>
                                     </td>
@@ -291,16 +291,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo5.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo5.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Travel Planning Website</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+1</a>
                                         </div>
                                     </td>
@@ -329,16 +329,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo6.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo6.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Service Booking Software</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-13.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-13.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                         </div>
                                     </td>
@@ -367,16 +367,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo7.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo7.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details" data-bs-toggle="offcanvas" data-bs-target="#view_details">Car & Bike Rental Software</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-14.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-14.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+4</a>
                                         </div>
                                     </td>
@@ -405,16 +405,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo8.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo8.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Food Order App</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-16.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-17.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-16.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-17.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+1</a>
                                         </div>
                                     </td>
@@ -442,16 +442,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo9.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo9.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">Invoice & Billing Software</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-17.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-18.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-19.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-17.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-18.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-19.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                         </div>
                                     </td>
@@ -479,16 +479,16 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
                                             <a href="javascript:void(0);" class="avatar avatar-sm border avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
-                                                <img src="./assets/img/icons/project-logo10.svg" class="img-fluid" alt="img">
+                                                <img src="/./assets/img/icons/project-logo10.svg" class="img-fluid" alt="img">
                                             </a>
                                             <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#view_details">POS Admin Software</a></h6>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="avatar-list-stacked avatar-group-sm">
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-20.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-21.jpg" class="border border-white" alt="img"></span>
-                                            <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-22.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-20.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-21.jpg" class="border border-white" alt="img"></span>
+                                            <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-22.jpg" class="border border-white" alt="img"></span>
                                             <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+3</a>
                                         </div>
                                     </td>

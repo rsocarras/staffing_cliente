@@ -68,7 +68,7 @@
                                                                     <div class="card-body">
                                                                         <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
                                                                             <a href="javascript:void(0);" class="flex-shrink-0">
-                                                                                <img src="assets/img/icons/payment-icon-1.svg" class="img-fluid" alt="payment">
+                                                                                <img src="/assets/img/icons/payment-icon-1.svg" class="img-fluid" alt="payment">
                                                                             </a>
                                                                             <div>
                                                                                 <h6 class="fw-semibold mb-1 fs-14">Visa •••• 1568</h6>
@@ -91,7 +91,7 @@
                                                                     <div class="card-body">
                                                                         <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
                                                                             <a href="javascript:void(0);" class="flex-shrink-0">
-                                                                                <img src="assets/img/icons/payment-icon-2.svg" class="img-fluid" alt="payment">
+                                                                                <img src="/assets/img/icons/payment-icon-2.svg" class="img-fluid" alt="payment">
                                                                             </a>
                                                                             <div>
                                                                                 <h6 class="fw-medium mb-1 fs-14">Mastercard •••• 1279</h6>

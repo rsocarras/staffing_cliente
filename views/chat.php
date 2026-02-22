@@ -29,7 +29,7 @@
                             <div>
                                 <div class="d-flex align-items-center justify-content-between border-bottom p-3">
                                     <div class="d-flex align-items-center">
-                                        <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
+                                        <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
                                         <div>
                                             <h6 class="fs-14 mb-1">James Hong </h6>
                                             <p class="mb-0">Admin</p>
@@ -46,7 +46,7 @@
                                         <h6 class="mb-3">All Messages</h6>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list active mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Mark Smith</a></h6>
                                                     <p class="mb-0 text-truncate">Hey Sam! Did you Ch...</p>
@@ -59,7 +59,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-04.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-04.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Eugene Sikora</a></h6>
                                                     <p class="mb-0 text-truncate">How are your Today</p>
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-03.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-03.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Robert Fassett</a></h6>
                                                     <p class="mb-0 text-truncate">Here are some of ve...</p>
@@ -85,7 +85,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-05.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-05.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Andrew Fletcher</a></h6>
                                                     <p class="mb-0 text-truncate">Use tools like Trello...</p>
@@ -111,7 +111,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-06.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-06.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Anna Johnson</a></h6>
                                                     <p class="mb-0 text-truncate">How are your Today</p>
@@ -124,7 +124,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-07.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-07.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Emily Davis</a></h6>
                                                     <p class="mb-0 text-truncate">Sure, I can help with...</p>
@@ -137,7 +137,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list mb-1">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-08.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-08.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">Susan Denton</a></h6>
                                                     <p class="mb-0 text-truncate">I'll share the meeting...</p>
@@ -150,7 +150,7 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between rounded p-3 user-list">
                                             <div class="d-flex align-items-center">
-                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-10.jpg" class="rounded-circle" alt="user"></a>
+                                                <a href="#" class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-10.jpg" class="rounded-circle" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-14 mb-1"><a href="#">David Cruz</a></h6>
                                                     <p class="mb-0 text-truncate">Let me know if you...</p>
@@ -172,7 +172,7 @@
 
                                 <div class="card-header d-flex align-items-center justify-content-between flex-wrap row-gap-3 p-3">
                                     <div class="d-flex align-items-center">
-                                        <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" alt="user" class="rounded-circle"></span>
+                                        <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" alt="user" class="rounded-circle"></span>
                                         <div>
                                             <h6 class="fs-14 fw-semibold mb-1">Mark Smith</h6>
                                             <p class="mb-0 d-inline-flex align-items-center custom-dot"><i class="ti ti-point-filled fs-12 text-success"></i>Online</p>
@@ -190,7 +190,7 @@
                                     <div class="message-body p-4" data-simplebar>
                                         <div class="chat-list mb-3">
                                             <div class="d-flex align-items-start">
-                                                <span class="avatar online me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar online me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
                                                 <div>
                                                     <div class="d-flex align-items-center mb-1">
                                                         <h6 class="fs-14 mb-0">Mark Smith</h6>
@@ -247,12 +247,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="avatar ms-2 online flex-shrink-0"><img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar ms-2 online flex-shrink-0"><img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
                                             </div>
                                         </div>
                                         <div class="chat-list mb-3">
                                             <div class="d-flex align-items-start">
-                                                <span class="avatar online me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar online me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
                                                 <div>
                                                     <div class="d-flex align-items-center mb-1">
                                                         <h6 class="fs-14 mb-0">Mark Smith</h6>
@@ -262,8 +262,8 @@
                                                         <div class="message-box receive-message p-3">
                                                             <p class="mb-2 fs-14">Sure! Please check the below logo Attached!!!</p>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <span class="bg-white d-block rounded p-1"><img src="assets/img/social/attachment-03.jpg" class="rounded" alt="attachment"></span>
-                                                                <span class="bg-white d-block rounded p-1"><img src="assets/img/social/attachment-04.jpg" class="rounded" alt="attachment"></span>
+                                                                <span class="bg-white d-block rounded p-1"><img src="/assets/img/social/attachment-03.jpg" class="rounded" alt="attachment"></span>
+                                                                <span class="bg-white d-block rounded p-1"><img src="/assets/img/social/attachment-04.jpg" class="rounded" alt="attachment"></span>
                                                             </div>
                                                         </div>
                                                         <div class="ms-2">
@@ -314,12 +314,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="avatar ms-2 online flex-shrink-0"><img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar ms-2 online flex-shrink-0"><img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
                                             </div>
                                         </div>
                                         <div class="chat-list mb-3">
                                             <div class="d-flex align-items-start">
-                                                <span class="avatar online me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar online me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
                                                 <div>
                                                     <div class="d-flex align-items-center mb-1">
                                                         <h6 class="fs-14 mb-0">Mark Smith</h6>
@@ -376,12 +376,12 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <span class="avatar ms-2 online flex-shrink-0"><img src="assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar ms-2 online flex-shrink-0"><img src="/assets/img/profiles/avatar-02.jpg" class="rounded-circle" alt="user"></span>
                                             </div>
                                         </div>
                                         <div class="chat-list">
                                             <div class="d-flex align-items-start">
-                                                <span class="avatar online me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
+                                                <span class="avatar online me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" alt="user"></span>
                                                 <div>
                                                     <div class="d-flex align-items-center mb-1">
                                                         <h6 class="fs-14 mb-0">Mark Smith</h6>

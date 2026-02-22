@@ -39,7 +39,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-14.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-14.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">James Jackson</a></h6>
                                     <p class="fs-13 mb-0">jamesjackson@example.com</p>
@@ -72,7 +72,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-11.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-11.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Robin Coffin</a></h6>
                                     <p class="fs-13 mb-0">robin@example.com</p>
@@ -105,7 +105,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-13.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-13.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Vincent Thornburg</a></h6>
                                     <p class="fs-13 mb-0">vincent@example.com</p>
@@ -138,7 +138,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-15.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-15.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Fran Faulkner</a></h6>
                                     <p class="fs-13 mb-0">franfaulkner@example.com</p>
@@ -171,7 +171,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-16.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-16.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Ernestine Waller</a></h6>
                                     <p class="fs-13 mb-0">Waller@example.com</p>
@@ -204,7 +204,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-03.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-03.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Jared Adams</a></h6>
                                     <p class="fs-13 mb-0">jaredadams@example.com</p>
@@ -237,7 +237,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-11.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-11.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Reyna Pelfrey</a></h6>
                                     <p class="fs-13 mb-0">renyapelfrey@example.com</p>
@@ -270,7 +270,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-01.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-01.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Rafael Lowe</a></h6>
                                     <p class="fs-13 mb-0">rafeallowe@example.com</p>
@@ -303,7 +303,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-02.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-02.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Enrique Ratcliff</a></h6>
                                     <p class="fs-13 mb-0">enrique@example.com</p>
@@ -336,7 +336,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-17.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-17.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Elizabeth Pegues</a></h6>
                                     <p class="fs-13 mb-0">elizabeth@example.com</p>
@@ -369,7 +369,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-21.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-21.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Jenna Alford</a></h6>
                                     <p class="fs-13 mb-0">jennaalford@example.com</p>
@@ -402,7 +402,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex align-items-center mb-3">
-                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-18.jpg" alt="user"></a>
+                                <a href="javascript:void(0);" class="avatar flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-18.jpg" alt="user"></a>
                                 <div>
                                     <h6 class="fs-14 fw-semibold mb-1"><a href="javascript:void(0);">Teresa Boggs</a></h6>
                                     <p class="fs-13 mb-0">teresaboggs@example.com</p>

@@ -151,7 +151,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-09.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-09.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Sarah, me (7)</a></p>
                                                             </div>
                                                         </td>
@@ -174,7 +174,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-03.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-03.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Mike, team (5)</a></p>
                                                             </div>
                                                         </td>
@@ -197,7 +197,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-04.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-04.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Anna</a></p>
                                                             </div>
                                                         </td>
@@ -220,7 +220,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-05.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-05.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Tom</a></p>
                                                             </div>
                                                         </td>
@@ -243,7 +243,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-07.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-07.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Lisa</a></p>
                                                             </div>
                                                         </td>
@@ -266,7 +266,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-01.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-01.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Jason, me (9)</a></p>
                                                             </div>
                                                         </td>
@@ -289,7 +289,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-08.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-08.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Emily</a></p>
                                                             </div>
                                                         </td>
@@ -312,7 +312,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-10.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-10.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Kevin</a></p>
                                                             </div>
                                                         </td>
@@ -335,7 +335,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/profiles/avatar-09.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/profiles/avatar-09.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Rachel</a></p>
                                                             </div>
                                                         </td>
@@ -358,7 +358,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/users/user-01.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/users/user-01.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">David</a></p>
                                                             </div>
                                                         </td>
@@ -381,7 +381,7 @@
                                                         </td>
                                                         <td>
                                                             <div class="d-flex align-items-center gap-2">
-                                                                <a href="email-details" class="avatar avatar-sm"><img src="assets/img/users/user-02.jpg" alt="user"></a>
+                                                                <a href="email-details" class="avatar avatar-sm"><img src="/assets/img/users/user-02.jpg" alt="user"></a>
                                                                 <p class="fs-14 mb-0"><a href="email-details">Nina, me (9)</a></p>
                                                             </div>
                                                         </td>

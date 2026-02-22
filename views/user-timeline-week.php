@@ -137,7 +137,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Shaun Farley</a></h6>
@@ -172,7 +172,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Jenny Ellis</a></h6>
@@ -207,7 +207,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Leon Baxter</a></h6>
@@ -242,7 +242,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Karen Flores</a></h6>
@@ -277,7 +277,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Charles Cline</a></h6>
@@ -312,7 +312,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Aliza Duncan</a></h6>
@@ -382,7 +382,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Karen Galvan</a></h6>
@@ -417,7 +417,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">Thomas Ward</a></h6>
@@ -452,7 +452,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-09.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-09.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium fs-14 m-0"><a href="user-timeline-report">James Higham</a></h6>

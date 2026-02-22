@@ -68,7 +68,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -138,7 +138,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -209,7 +209,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -280,7 +280,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -351,7 +351,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -422,7 +422,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -493,7 +493,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -564,7 +564,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>
@@ -635,7 +635,7 @@
                                             </div>
                                             <div class="d-flex position-relative align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-xs avatar-rounded flex-shrink-0 me-1">
-                                                    <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <p class="mb-0"><a href="javascript:void(0);" class="text-gray-5">Gertrude Bowie</a></p>
                                             </div>

@@ -16,7 +16,7 @@
                         <div class="d-flex flex-column justify-content-between p-3">
 
                             <div class="mx-auto mb-4 text-center">
-                                <a href="index"><img src="assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
+                                <a href="index"><img src="/assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
                             </div>
 
                             <div class="card mb-0">

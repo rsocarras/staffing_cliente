@@ -82,7 +82,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-success me-1">+424.5%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-01.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-01.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -102,7 +102,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-danger me-1">-15.2%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-02.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-02.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -122,7 +122,7 @@
                                     <p class="d-inline-flex align-items-center flex-wrap m-0 position-relative z-1"><span class="text-success me-1">+10.7%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-03.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-03.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -142,7 +142,7 @@
                                     <p class="d-inline-flex m-0 align-items-center flex-wrap position-relative z-1"><span class="text-success me-1">+35.8%</span> from last project</p>
                                 </div> <!-- end card body -->
                                 <span class="pro-bg position-absolute bottom-0 end-0">
-                                    <img src="assets/img/icons/project-bg-04.svg" alt="img">
+                                    <img src="/assets/img/icons/project-bg-04.svg" alt="img">
                                 </span>
                             </div> <!-- end card -->
                         </div> <!-- end col -->
@@ -222,7 +222,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Shaun Farley</a></h6>
@@ -261,7 +261,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Jenny Ellis</a></h6>
@@ -300,7 +300,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Leon Baxter</a></h6>
@@ -339,7 +339,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-04.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-04.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Karen Flores</a></h6>
@@ -378,7 +378,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Leon Baxter</a></h6>
@@ -417,7 +417,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Charles Cline</a></h6>
@@ -456,7 +456,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-03.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-03.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Charles Cline</a></h6>
@@ -495,7 +495,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="#">Karen Galvan</a></h6>

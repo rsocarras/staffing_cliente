@@ -19,11 +19,11 @@
                         </div>
 
                         <div class="position-absolute bottom-0 start-50 translate-middle-x z-1 login-laptop">
-                            <img src="assets/img/bg/alarm-clock.svg" class="img-fluid" alt="Img">
+                            <img src="/assets/img/bg/alarm-clock.svg" class="img-fluid" alt="Img">
                         </div>
 
                         <div class="bg-overlay-img position-absolute z-n1">
-                            <img src="assets/img/bg/circle.png" class="img-fluid" alt="Img">
+                            <img src="/assets/img/bg/circle.png" class="img-fluid" alt="Img">
                         </div>
 
                     </div>

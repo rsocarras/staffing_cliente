@@ -66,7 +66,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Shaun Farley</a></h6>
@@ -94,7 +94,7 @@
                                         <div class="d-inline-flex flex-column">
                                             <div class="d-flex align-items-center">
                                                 <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                    <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <div class="ms-2">
                                                     <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Shaun Farleyy</a></h6>
@@ -119,7 +119,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-01.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-01.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Shaun Farleyy</a></h6>

@@ -78,7 +78,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-11.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-11.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">James Evans</a></h6>
@@ -131,7 +131,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-12.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-12.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Jenny Ellis</a></h6>
@@ -184,7 +184,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-13.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-13.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Leon Baxter</a></h6>
@@ -237,7 +237,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-14.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-14.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Karen Flores</a></h6>
@@ -290,7 +290,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-15.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-15.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Charles Cline</a></h6>

@@ -75,7 +75,7 @@
                                                     <div class="card-body">
                                                         <div class="d-flex align-items-center justify-content-between border-0 mb-3">
                                                             <div class="d-flex align-items-center">
-                                                                <span class="avatar avatar-lg p-2 rounded bg-light flex-shrink-0 me-2"><img src="assets/img/icons/calendar-icon.svg" alt="Img"></span>
+                                                                <span class="avatar avatar-lg p-2 rounded bg-light flex-shrink-0 me-2"><img src="/assets/img/icons/calendar-icon.svg" alt="Img"></span>
                                                                 <h6 class="mb-0">Google Calendar</h6>
                                                             </div>
                                                             <div class="form-check form-switch ps-0">
@@ -93,7 +93,7 @@
                                                     <div class="card-body">
                                                         <div class="d-flex align-items-center justify-content-between border-0 mb-3">
                                                             <div class="d-flex align-items-center">
-                                                                <span class="avatar avatar-lg p-2 bg-light rounded flex-shrink-0 me-2"><img src="assets/img/icons/mail-icon2.svg" alt="Img"></span>
+                                                                <span class="avatar avatar-lg p-2 bg-light rounded flex-shrink-0 me-2"><img src="/assets/img/icons/mail-icon2.svg" alt="Img"></span>
                                                                 <h6 class="mb-0">Gmail</h6>
                                                             </div>
                                                             <div class="form-check form-switch ps-0">

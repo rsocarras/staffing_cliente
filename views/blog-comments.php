@@ -121,7 +121,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Johnny Chavez</a></h6>
@@ -160,7 +160,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Lola Mehta</a></h6>
@@ -199,7 +199,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-18.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-18.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Jean Walters</a></h6>
@@ -238,7 +238,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-16.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-16.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Patricia Sebring</a></h6>
@@ -277,7 +277,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Alvin Grath</a></h6>
@@ -316,7 +316,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Natalie Rivera</a></h6>
@@ -355,7 +355,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-12.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-12.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Richard Owens</a></h6>
@@ -394,7 +394,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-14.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-14.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Loretta Downs</a></h6>
@@ -433,7 +433,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar avatar-sm avatar-rounded">
-                                                <img src="assets/img/users/user-19.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-19.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="#">Mathew Capetillo</a></h6>

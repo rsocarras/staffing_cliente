@@ -88,7 +88,7 @@
                                                                     <div class="card-body p-2">
                                                                         <a href="#">
                                                                             <div class="border rounded border-gray mb-2">
-                                                                                <img src="assets/img/theme/light.jpg" class="img-fluid rounded" alt="theme">
+                                                                                <img src="/assets/img/theme/light.jpg" class="img-fluid rounded" alt="theme">
                                                                             </div>
                                                                             <p class="text-center fw-medium mb-0">Light</p>
                                                                         </a>
@@ -101,7 +101,7 @@
                                                                     <div class="card-body p-2">
                                                                         <a href="#">
                                                                             <div class="border rounded border-gray mb-2">
-                                                                                <img src="assets/img/theme/dark.jpg" class="img-fluid rounded" alt="theme">
+                                                                                <img src="/assets/img/theme/dark.jpg" class="img-fluid rounded" alt="theme">
                                                                             </div>
                                                                             <p class="text-center fw-medium mb-0">Dark</p>
                                                                         </a>
@@ -114,7 +114,7 @@
                                                                     <div class="card-body p-2">
                                                                         <a href="#">
                                                                             <div class="border rounded border-gray mb-2">
-                                                                                <img src="assets/img/theme/automatic.jpg" class="img-fluid rounded" alt="theme">
+                                                                                <img src="/assets/img/theme/automatic.jpg" class="img-fluid rounded" alt="theme">
                                                                             </div>
                                                                             <p class="text-center fw-medium mb-0">Automatic</p>
                                                                         </a>

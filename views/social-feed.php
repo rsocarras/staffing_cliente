@@ -33,7 +33,7 @@
                                     <div class="border rounded p-3 mb-3 position-relative">
                                         <div class="text-center">
                                             <a href="javascript:void(0);" class="avatar avatar-xl online avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-02.jpg" alt="Img">
+                                                <img src="/assets/img/profiles/avatar-02.jpg" alt="Img">
                                             </a>
                                             <h6 class="fs-16 mb-1"><a href="javascript:void(0);">James Hong </a></h6>
                                             <p class="fs-13 mb-0">@James Hong324</p>
@@ -76,19 +76,19 @@
                                         <div>
                                             <a href="javascript:void(0);" class="fw-medium d-flex align-items-center justify-content-between text-dark py-1 mb-2">
                                                 <span class="d-inline-flex align-items-center">
-                                                    <img src="assets/img/icons/liked-page-01.svg" class="me-2" alt="dribble">Dribble
+                                                    <img src="/assets/img/icons/liked-page-01.svg" class="me-2" alt="dribble">Dribble
                                                 </span>
                                                 <span class="btn btn-sm btn-light btn-icon"><i class="ti ti-thumb-down"></i></span>
                                             </a>
                                             <a href="javascript:void(0);" class="fw-medium d-flex align-items-center justify-content-between text-dark py-1 mb-2">
                                                 <span class="d-inline-flex align-items-center">
-                                                    <img src="assets/img/icons/liked-page-02.svg" class="me-2" alt="UI/UX">UI/UX Designs
+                                                    <img src="/assets/img/icons/liked-page-02.svg" class="me-2" alt="UI/UX">UI/UX Designs
                                                 </span>
                                                 <span class="btn btn-sm btn-light btn-icon"><i class="ti ti-thumb-down"></i></span>
                                             </a>
                                             <a href="javascript:void(0);" class="fw-medium d-flex align-items-center justify-content-between text-dark py-1">
                                                 <span class="d-inline-flex align-items-center">
-                                                    <img src="assets/img/icons/liked-page-03.svg" class="me-2" alt="figma">Figma Update
+                                                    <img src="/assets/img/icons/liked-page-03.svg" class="me-2" alt="figma">Figma Update
                                                 </span>
                                                 <span class="btn btn-sm btn-light btn-icon"><i class="ti ti-thumb-down"></i></span>
                                             </a>
@@ -136,28 +136,28 @@
                                         </div>
                                         <div class="d-flex align-items-center justify-content-between flex-wrap row-gap-3">
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-01.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-01.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-02.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-02.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-03.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-03.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-04.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-04.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-05.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-05.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-06.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-06.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-07.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-07.svg" alt="channel">
                                             </a>
                                             <a href="javascript:void(0);">
-                                                <img src="assets/img/icons/channel-08.svg" alt="channel">
+                                                <img src="/assets/img/icons/channel-08.svg" alt="channel">
                                             </a>
                                         </div>
                                     </div><!-- end card body -->
@@ -167,7 +167,7 @@
                                     <div class="card-header border-0 pb-0">
                                         <div class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
                                             <div class="d-flex align-items-center">
-                                                <a href="javascript:void(0);" class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-03.jpg" alt="user"></a>
+                                                <a href="javascript:void(0);" class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-03.jpg" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-16 mb-1"><a href="javascript:void(0);">Richard Smith <i class="ti ti-circle-check-filled text-success"></i></a></h6>
                                                     <p class="d-flex align-items-center flex-wrap mb-0">
@@ -208,13 +208,13 @@
                                             </p>
                                         </div>
                                         <div class="mb-2">
-                                            <img src="assets/img/social/social-feed-01.jpg" class="rounded img-fluid" alt="social">
+                                            <img src="/assets/img/social/social-feed-01.jpg" class="rounded img-fluid" alt="social">
                                         </div>
                                         <div class="row g-2 mb-2">
                                             <div class="col-md-3 col-3">
                                                 <div class="img-full-view">
                                                     <a href="assets/img/social/gallery-big-01.jpg" class="image-popup-desc">
-                                                        <img src="assets/img/social/gallery-01.jpg" class="rounded img-fluid w-100" alt="social">
+                                                        <img src="/assets/img/social/gallery-01.jpg" class="rounded img-fluid w-100" alt="social">
                                                         <span class="avatar avatar-md avatar-rounded"><i class="ti ti-eye fs-20"></i></span>
                                                     </a>
                                                 </div>
@@ -222,7 +222,7 @@
                                             <div class="col-md-3 col-3">
                                                 <div class="img-full-view">
                                                     <a href="assets/img/social/gallery-big-03.jpg" class="image-popup-desc">
-                                                        <img src="assets/img/social/gallery-03.jpg" class="rounded img-fluid w-100" alt="social">
+                                                        <img src="/assets/img/social/gallery-03.jpg" class="rounded img-fluid w-100" alt="social">
                                                         <span class="avatar avatar-md avatar-rounded"><i class="ti ti-eye fs-20"></i></span>
                                                     </a>
                                                 </div>
@@ -230,7 +230,7 @@
                                             <div class="col-md-3 col-3">
                                                 <div class="img-full-view">
                                                     <a href="assets/img/social/gallery-big-02.jpg" class="image-popup-desc">
-                                                        <img src="assets/img/social/gallery-02.jpg" class="rounded img-fluid w-100" alt="social">
+                                                        <img src="/assets/img/social/gallery-02.jpg" class="rounded img-fluid w-100" alt="social">
                                                         <span class="avatar avatar-md avatar-rounded"><i class="ti ti-eye fs-20"></i></span>
                                                     </a>
                                                 </div>
@@ -238,7 +238,7 @@
                                             <div class="col-md-3 col-3">
                                                 <div class="img-full-view">
                                                     <a href="assets/img/social/gallery-big-04.jpg" class="image-popup-desc">
-                                                        <img src="assets/img/social/gallery-04.jpg" class="rounded img-fluid w-100" alt="social">
+                                                        <img src="/assets/img/social/gallery-04.jpg" class="rounded img-fluid w-100" alt="social">
                                                         <span class="avatar avatar-md avatar-rounded"><i class="ti ti-eye fs-20"></i></span>
                                                     </a>
                                                 </div>
@@ -264,7 +264,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-start">
-                                            <a href="javascript:void(0);" class="avatar avatar-rounded me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-04.jpg" alt="user"></a>
+                                            <a href="javascript:void(0);" class="avatar avatar-rounded me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-04.jpg" alt="user"></a>
                                             <input type="text" class="form-control" placeholder="Enter Comments">
                                         </div>
                                     </div><!-- end card body -->
@@ -274,7 +274,7 @@
                                     <div class="card-header border-0 pb-0">
                                         <div class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
                                             <div class="d-flex align-items-center">
-                                                <a href="javascript:void(0);" class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-05.jpg" alt="user"></a>
+                                                <a href="javascript:void(0);" class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-05.jpg" alt="user"></a>
                                                 <div>
                                                     <h6 class="fs-16 mb-1"><a href="javascript:void(0);">Jason Heier <i class="ti ti-circle-check-filled text-success"></i></a></h6>
                                                     <p class="d-flex align-items-center flex-wrap mb-0">
@@ -318,7 +318,7 @@
                                         </div>
                                         <div class="card shadow-none mb-3">
                                             <div class="card-img card-img-hover rounded-0">
-                                                <a href="javascript:void(0);" class="rounded-top"><img src="assets/img/social/social-feed-02.jpg" class="rounded-top img-fluid" alt="social"></a>
+                                                <a href="javascript:void(0);" class="rounded-top"><img src="/assets/img/social/social-feed-02.jpg" class="rounded-top img-fluid" alt="social"></a>
                                             </div>
                                             <div class="card-body p-2">
                                                 <h6 class="mb-1 text-truncate"><a href="javascript:void(0);">Drinking water boosts skin health and beauty. Stay hydrated!💧</a></h6>
@@ -351,7 +351,7 @@
                                     <div class="card-header border-0 pb-0">
                                         <div class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3">
                                             <div class="d-flex align-items-center">
-                                                <span class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="assets/img/profiles/avatar-04.jpg" alt="user"></span>
+                                                <span class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2"><img src="/assets/img/profiles/avatar-04.jpg" alt="user"></span>
                                                 <div>
                                                     <h6 class="fs-16 mb-1"><a href="javascript:void(0);">Sophie Headrick <i class="ti ti-circle-check-filled text-success"></i></a></h6>
                                                     <p class="d-flex align-items-center flex-wrap mb-0">
@@ -394,7 +394,7 @@
                                         </div>
                                         <div class="card shadow-none mb-3">
                                             <div class="card-img card-img-hover rounded-0">
-                                                <a href="javascript:void(0);" class="rounded-top"><img src="assets/img/social/social-feed-03.jpg" class="rounded-top img-fluid" alt="social"></a>
+                                                <a href="javascript:void(0);" class="rounded-top"><img src="/assets/img/social/social-feed-03.jpg" class="rounded-top img-fluid" alt="social"></a>
                                             </div>
                                             <div class="card-body p-2">
                                                 <h6 class="mb-1 text-truncate"><a href="javascript:void(0);">Drinking water boosts skin health and beauty. Stay hydrated!💧</a></h6>
@@ -422,7 +422,7 @@
                                         </div>
                                         <div class="d-flex align-items-start mb-3">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                <img src="assets/img/profiles/avatar-02.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-02.jpg" alt="user">
                                             </a>
                                             <div class="bg-light rounded flex-fill p-2">
                                                 <div class="d-flex align-items-center mb-1">
@@ -436,7 +436,7 @@
                                         </div>
                                         <div class="d-flex align-items-start mb-3 ms-4 ps-2">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                <img src="assets/img/profiles/avatar-01.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-01.jpg" alt="user">
                                             </a>
                                             <div class="bg-light rounded flex-fill p-2">
                                                 <div class="d-flex align-items-center mb-1">
@@ -451,7 +451,7 @@
                                         </div>
                                         <div class="d-flex align-items-start mb-3">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                <img src="assets/img/profiles/avatar-04.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-04.jpg" alt="user">
                                             </a>
                                             <div class="bg-light rounded flex-fill p-2">
                                                 <div class="d-flex align-items-center mb-1">
@@ -465,7 +465,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex align-items-start">
-                                            <span class="avatar avatar-rounded me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-05.jpg" alt="user"></span>
+                                            <span class="avatar avatar-rounded me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-05.jpg" alt="user"></span>
                                             <input type="text" class="form-control" placeholder="Enter Comments">
                                         </div>
                                     </div><!-- end card body -->
@@ -484,7 +484,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-01.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-01.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fs-14 fw-medium mb-1">
@@ -499,7 +499,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fs-14 fw-medium mb-1">
@@ -513,7 +513,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-03.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-03.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fw-medium fs-14 mb-1">
@@ -527,7 +527,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fs-14 fw-medium mb-1">
@@ -541,7 +541,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-09.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-09.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fs-14 fw-medium mb-1">
@@ -556,7 +556,7 @@
                                             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
                                                 <div class="d-flex align-items-center flex-wrap">
                                                     <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0 me-2">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="people">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="people">
                                                     </a>
                                                     <div>
                                                         <h6 class="d-inline-flex align-items-center fs-14 fw-medium mb-1">
@@ -581,7 +581,7 @@
                                         <div class="bg-light rounded p-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-between mb-1">
                                                 <a href="javascript:void(0);" class="d-flex align-items-center">
-                                                    <span><img src="assets/img/icons/feeds-01.svg" class="me-2" alt="feeds"></span>
+                                                    <span><img src="/assets/img/icons/feeds-01.svg" class="me-2" alt="feeds"></span>
                                                     <p class="fs-13 fw-medium mb-0">World Health</p>
                                                 </a>
                                                 <a href="javascript:void(0);"><i class="ti ti-bookmark-filled text-warning"></i></a>
@@ -592,7 +592,7 @@
                                         <div class="bg-light rounded p-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-between mb-1">
                                                 <a href="javascript:void(0);" class="d-flex align-items-center">
-                                                    <span><img src="assets/img/icons/feeds-02.svg" class="me-2" alt="feeds"></span>
+                                                    <span><img src="/assets/img/icons/feeds-02.svg" class="me-2" alt="feeds"></span>
                                                     <p class="fs-13 fw-medium mb-0">T3 Tech</p>
                                                 </a>
                                                 <a href="javascript:void(0);"><i class="ti ti-bookmark-filled text-warning"></i></a>
@@ -603,7 +603,7 @@
                                         <div class="bg-light rounded p-3 mb-2">
                                             <div class="d-flex align-items-center justify-content-between mb-1">
                                                 <a href="javascript:void(0);" class="d-flex align-items-center">
-                                                    <span><img src="assets/img/icons/feeds-03.svg" class="me-2" alt="feeds"></span>
+                                                    <span><img src="/assets/img/icons/feeds-03.svg" class="me-2" alt="feeds"></span>
                                                     <p class="fs-13 fw-medium mb-0">Fstoppers</p>
                                                 </a>
                                                 <a href="javascript:void(0);"><i class="ti ti-bookmark-filled text-warning"></i></a>
@@ -614,7 +614,7 @@
                                         <div class="bg-light rounded p-3">
                                             <div class="d-flex align-items-center justify-content-between mb-1">
                                                 <a href="javascript:void(0);" class="d-flex align-items-center">
-                                                    <span><img src="assets/img/icons/feeds-04.svg" class="me-2" alt="feeds"></span>
+                                                    <span><img src="/assets/img/icons/feeds-04.svg" class="me-2" alt="feeds"></span>
                                                     <p class="fs-13 fw-medium mb-0">Evernote</p>
                                                 </a>
                                                 <a href="javascript:void(0);"><i class="ti ti-bookmark-filled text-warning"></i></a>
@@ -644,7 +644,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="card-img card-img-hover mb-3">
-                                            <a href="javascript:void(0);" class="rounded"><img src="assets/img/social/social-feed-04.jpg" class="rounded img-fluid w-100" alt="social"></a>
+                                            <a href="javascript:void(0);" class="rounded"><img src="/assets/img/social/social-feed-04.jpg" class="rounded img-fluid w-100" alt="social"></a>
                                         </div>
                                         <h6 class="text-center fs-14"><a href="javascript:void(0);">Enjoy Unlimited Access on a small price monthly.</a></h6>
                                         <div class="mt-3">

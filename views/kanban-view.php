@@ -61,16 +61,16 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-10.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-10.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-08.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-08.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-07.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-07.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-02.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-02.jpg" alt="user">
                                             </span>
                                             <a href="#" class="avatar avatar-rounded bg-dark fs-12 text-white">5+</a>
                                         </div>
@@ -111,13 +111,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-03.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-03.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-02.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-02.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-01.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-01.jpg" alt="user">
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
@@ -174,13 +174,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-10.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-10.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-08.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-08.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-07.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-07.jpg" alt="user">
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
@@ -220,13 +220,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-06.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-06.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-05.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-05.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-08.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-08.jpg" alt="user">
                                             </span>
                                             <a href="#" class="avatar avatar-rounded bg-dark fs-12 text-white">4+</a>
                                         </div>
@@ -267,13 +267,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-09.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-09.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-04.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-04.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-05.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-05.jpg" alt="user">
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">
@@ -330,13 +330,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-10.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-10.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-08.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-08.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-07.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-07.jpg" alt="user">
                                             </span>
                                             <a href="#" class="avatar avatar-rounded bg-dark fs-12 text-white">5+</a>
                                         </div>
@@ -377,13 +377,13 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="avatar-list-stacked avatar-group-sm me-3">
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-06.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-06.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-05.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-05.jpg" alt="user">
                                             </span>
                                             <span class="avatar avatar-rounded">
-                                                <img src="assets/img/profiles/avatar-09.jpg" alt="user">
+                                                <img src="/assets/img/profiles/avatar-09.jpg" alt="user">
                                             </span>
                                         </div>
                                         <div class="d-flex align-items-center gap-2">

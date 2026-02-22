@@ -80,7 +80,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-21.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-21.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Brian Thompson</a></h6>
@@ -96,7 +96,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-13.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-13.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Jerry Palmer</a></h6>
@@ -113,7 +113,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="javascript:void(0);" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-22.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-22.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fw-medium mb-0 fs-14"><a href="javascript:void(0);">Florence Haith</a></h6>

@@ -19,11 +19,11 @@
                         </div>
 
                         <div class="position-absolute bottom-0 start-50 translate-middle-x z-1 login-laptop">
-                            <img src="assets/img/bg/alarm-clock.svg" class="img-fluid" alt="Img">
+                            <img src="/assets/img/bg/alarm-clock.svg" class="img-fluid" alt="Img">
                         </div>
 
                         <div class="bg-overlay-img position-absolute z-n1">
-                            <img src="assets/img/bg/circle.png" class="img-fluid" alt="Img">
+                            <img src="/assets/img/bg/circle.png" class="img-fluid" alt="Img">
                         </div>
 
                     </div>
@@ -39,7 +39,7 @@
 
                                 <div class="d-flex flex-column justify-content-between p-3">
                                     <div class="mx-auto mb-4 text-center">
-                                        <a href="index"><img src="assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
+                                        <a href="index"><img src="/assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
                                     </div>
 
                                     <div class="login-item">

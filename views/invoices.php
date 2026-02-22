@@ -133,7 +133,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-01.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-01.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Anthony Lewis</a></h6>
@@ -176,7 +176,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-09.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-09.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Brian Villalobos</a></h6>
@@ -219,7 +219,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-01.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-01.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Harvey Smith</a></h6>
@@ -262,7 +262,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Stephan Peralt</a></h6>
@@ -305,7 +305,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-03.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-03.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Doglas Martini</a></h6>
@@ -348,7 +348,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-02.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Linda Ray</a></h6>
@@ -391,7 +391,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-06.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-06.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Elliot Murray</a></h6>
@@ -434,7 +434,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-07.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-07.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Rebecca Smtih</a></h6>
@@ -477,7 +477,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-08.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-08.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Anthony Lewis</a></h6>
@@ -520,7 +520,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-09.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-09.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Connie Waters</a></h6>
@@ -563,7 +563,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="invoice-details" class="avatar me-2">
-                                        <img src="assets/img/users/user-10.jpg" class="rounded-circle" alt="user">
+                                        <img src="/assets/img/users/user-10.jpg" class="rounded-circle" alt="user">
                                     </a>
                                     <div>
                                         <h6 class="fw-medium mb-0 fs-14"><a href="invoice-details">Lori Broaddus</a></h6>

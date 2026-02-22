@@ -38,28 +38,28 @@
 
                                     <div class="row">
                                         <div class="col-sm-3">
-                                            <img src="assets/img/media/img-4.jpg" alt="image" class="img-fluid rounded" width="200">
+                                            <img src="/assets/img/media/img-4.jpg" alt="image" class="img-fluid rounded" width="200">
                                             <p class="mb-0">
                                                 <code>.rounded</code>
                                             </p>
                                         </div>
 
                                         <div class="col-sm-3">
-                                            <img src="assets/img/profiles/avatar-03.jpg" alt="image" class="img-fluid rounded-circle" width="133">
+                                            <img src="/assets/img/profiles/avatar-03.jpg" alt="image" class="img-fluid rounded-circle" width="133">
                                             <p class="mb-0">
                                                 <code>.rounded-circle</code>
                                             </p>
                                         </div>
 
                                         <div class="col-sm-3">
-                                            <img src="assets/img/media/img-1.jpg" alt="image" class="img-fluid img-thumbnail" width="200">
+                                            <img src="/assets/img/media/img-1.jpg" alt="image" class="img-fluid img-thumbnail" width="200">
                                             <p class="mb-0">
                                                 <code>.img-thumbnail</code>
                                             </p>
                                         </div>
 
                                         <div class="col-sm-3">
-                                            <img src="assets/img/profiles/avatar-02.jpg" alt="image" class="img-thumbnail rounded-pill" width="133">
+                                            <img src="/assets/img/profiles/avatar-02.jpg" alt="image" class="img-thumbnail rounded-pill" width="133">
                                             <p class="mb-0">
                                                 <code>.rounded-pill</code>
                                             </p>

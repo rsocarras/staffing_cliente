@@ -168,7 +168,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="assets/img/icons/mail-icon.svg" alt="img">
+                                                    <img src="/assets/img/icons/mail-icon.svg" alt="img">
                                                     <span class="ms-1">Email</span>
                                                 </div>
                                                 <div class="form-check form-check-md">
@@ -177,7 +177,7 @@
                                             </div>
                                             <div class="card-img rounded-2 border mb-2 position-relative">
                                                 <a href="assets/img/screenshots/screenshot-large-01.jpg" data-fancybox="gallery" class="gallery-item">
-                                                    <img src="assets/img/screenshots/screenshot-1.jpg" alt="img" class="rounded-2 img-fluid">
+                                                    <img src="/assets/img/screenshots/screenshot-1.jpg" alt="img" class="rounded-2 img-fluid">
                                                 </a>
                                                 <div class="download-delete-icon d-block align-items-center justify-content-end w-100 text-end  position-absolute top-0 right-0 gap-1 mt-1 pe-1">
                                                     <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle bg-white text-success p-1"><i class="ti ti-download fs-13"></i></a>
@@ -218,7 +218,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="assets/img/icons/freepik-icon.svg" alt="img">
+                                                    <img src="/assets/img/icons/freepik-icon.svg" alt="img">
                                                     <span class="ms-1">Freepik</span>
                                                 </div>
                                                 <div class="form-check form-check-md">
@@ -227,7 +227,7 @@
                                             </div>
                                             <div class="card-img rounded-2 border mb-2 position-relative">
                                                 <a href="assets/img/screenshots/screenshot-large-02.jpg" data-fancybox="gallery" class="gallery-item">
-                                                    <img src="assets/img/screenshots/screenshot-2.jpg" alt="img" class="rounded-2 img-fluid">
+                                                    <img src="/assets/img/screenshots/screenshot-2.jpg" alt="img" class="rounded-2 img-fluid">
                                                 </a>
                                                 <div class="download-delete-icon d-block align-items-center justify-content-end w-100 text-end  position-absolute top-0 right-0 gap-1 mt-1 pe-1">
                                                     <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle bg-white text-success p-1"><i class="ti ti-download fs-13"></i></a>
@@ -268,7 +268,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="assets/img/icons/vc-icon.svg" alt="img">
+                                                    <img src="/assets/img/icons/vc-icon.svg" alt="img">
                                                     <span class="ms-1">Visual Composer</span>
                                                 </div>
                                                 <div class="form-check form-check-md">
@@ -277,7 +277,7 @@
                                             </div>
                                             <div class="card-img rounded-2 border mb-2 position-relative">
                                                 <a href="assets/img/screenshots/screenshot-large-03.jpg" data-fancybox="gallery" class="gallery-item">
-                                                    <img src="assets/img/screenshots/screenshot-3.jpg" alt="img" class="rounded-2 img-fluid">
+                                                    <img src="/assets/img/screenshots/screenshot-3.jpg" alt="img" class="rounded-2 img-fluid">
                                                 </a>
                                                 <div class="download-delete-icon d-block align-items-center justify-content-end w-100 text-end  position-absolute top-0 right-0 gap-1 mt-1 pe-1">
                                                     <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle bg-white text-success p-1"><i class="ti ti-download fs-13"></i></a>
@@ -318,7 +318,7 @@
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="d-flex align-items-center">
-                                                    <img src="assets/img/icons/dribble-icon.svg" alt="img">
+                                                    <img src="/assets/img/icons/dribble-icon.svg" alt="img">
                                                     <span class="ms-1">Dribble</span>
                                                 </div>
                                                 <div class="form-check form-check-md">
@@ -327,7 +327,7 @@
                                             </div>
                                             <div class="card-img rounded-2 border mb-2 position-relative">
                                                 <a href="assets/img/screenshots/screenshot-large-04.jpg" data-fancybox="gallery" class="gallery-item">
-                                                    <img src="assets/img/screenshots/screenshot-4.jpg" alt="img" class="rounded-2 img-fluid">
+                                                    <img src="/assets/img/screenshots/screenshot-4.jpg" alt="img" class="rounded-2 img-fluid">
                                                 </a>
                                                 <div class="download-delete-icon d-block align-items-center justify-content-end w-100 text-end  position-absolute top-0 right-0 gap-1 mt-1 pe-1">
                                                     <a href="javascript:void(0);" class="download-icon d-inline-flex justify-content-center align-items-center rounded-circle bg-white text-success p-1"><i class="ti ti-download fs-13"></i></a>
@@ -387,7 +387,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/figma.svg" alt="">
+                                                        <img src="/assets/img/icons/figma.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Figma</h6>
@@ -419,7 +419,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/google.svg" alt="">
+                                                        <img src="/assets/img/icons/google.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Google</h6>
@@ -450,7 +450,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/slack.svg" alt="">
+                                                        <img src="/assets/img/icons/slack.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Slack</h6>
@@ -481,7 +481,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/freepik.svg" alt="">
+                                                        <img src="/assets/img/icons/freepik.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Freepik</h6>
@@ -513,7 +513,7 @@
                                             <div class="col-md-6">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/google-doc.svg" alt="">
+                                                        <img src="/assets/img/icons/google-doc.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Google Docs</h6>

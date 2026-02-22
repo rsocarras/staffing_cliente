@@ -5242,7 +5242,7 @@ $page = empty($path) ? 'index' : basename($path);
                         <label class="form-check-label member-check-list activate d-flex align-items-center justify-content-between p-2 rounded mb-1">
                             <span class="d-flex align-items-center text-dark">
                                 <span>
-                                    <img src="assets/img/profiles/avatar-01.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
+                                    <img src="/assets/img/profiles/avatar-01.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
                                 </span> Sophie
                             </span>
                             <input type="checkbox" class="form-check-input" checked>
@@ -5250,7 +5250,7 @@ $page = empty($path) ? 'index' : basename($path);
                         <label class="form-check-label member-check-list d-flex align-items-center justify-content-between p-2 rounded mb-1">
                             <span class="d-flex align-items-center text-dark">
                                 <span>
-                                    <img src="assets/img/profiles/avatar-02.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
+                                    <img src="/assets/img/profiles/avatar-02.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
                                 </span> Cameron
                             </span>
                             <input type="checkbox" class="form-check-input">
@@ -5258,7 +5258,7 @@ $page = empty($path) ? 'index' : basename($path);
                         <label class="form-check-label member-check-list d-flex align-items-center justify-content-between p-2 rounded mb-1">
                             <span class="d-flex align-items-center text-dark">
                                 <span>
-                                    <img src="assets/img/profiles/avatar-03.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
+                                    <img src="/assets/img/profiles/avatar-03.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
                                 </span> Doris
                             </span>
                             <input type="checkbox" class="form-check-input">
@@ -5266,7 +5266,7 @@ $page = empty($path) ? 'index' : basename($path);
                         <label class="form-check-label member-check-list d-flex align-items-center justify-content-between p-2 rounded mb-1">
                             <span class="d-flex align-items-center text-dark">
                                 <span>
-                                    <img src="assets/img/profiles/avatar-04.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
+                                    <img src="/assets/img/profiles/avatar-04.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
                                 </span> Rufana
                             </span>
                             <input type="checkbox" class="form-check-input">
@@ -5274,7 +5274,7 @@ $page = empty($path) ? 'index' : basename($path);
                         <label class="form-check-label member-check-list d-flex align-items-center justify-content-between p-2 rounded mb-1">
                             <span class="d-flex align-items-center text-dark">
                                 <span>
-                                    <img src="assets/img/profiles/avatar-04.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
+                                    <img src="/assets/img/profiles/avatar-04.jpg" class="avatar avatar-md avatar-rounded me-2" alt="Img">
                                 </span> Michael
                             </span>
                             <input type="checkbox" class="form-check-input">
@@ -5567,8 +5567,8 @@ $page = empty($path) ? 'index' : basename($path);
                     <div class="row d-flex justify-content-between align-items-center border-bottom mb-3 pb-2">
                         <div class="col-md-6">
                             <div class="invoice-logo mb-2">
-                                <img src="assets/img/logo.svg" class="logo-white" alt="logo">
-                                <img src="assets/img/logo-white.svg" class="logo-dark" alt="logo">
+                                <img src="/assets/img/logo.svg" class="logo-white" alt="logo">
+                                <img src="/assets/img/logo-white.svg" class="logo-dark" alt="logo">
                             </div>
                             <p class="mb-0">3099 Kennedy Court Framingham, MA 01702</p>
                         </div>
@@ -5681,7 +5681,7 @@ $page = empty($path) ? 'index' : basename($path);
                         </div>
                         <div class="col-md-5">
                             <div class="text-end">
-                                <img src="assets/img/icons/sign.svg" class="img-fluid" alt="sign">
+                                <img src="/assets/img/icons/sign.svg" class="img-fluid" alt="sign">
                             </div>
                             <div class="text-end mb-0">
                                 <h6 class="fs-14 fw-medium pe-3">Ted M. Davis</h6>
@@ -7134,14 +7134,14 @@ $page = empty($path) ? 'index' : basename($path);
                             <div class="row justify-content-between align-items-center border-bottom mb-4 pb-4">
                                 <div class="col-md-6">
                                     <div class="invoice-logo mb-2">
-                                        <img src="assets/img/logo.svg" class="logo-white" alt="logo">
-                                        <img src="assets/img/logo-white.svg" class="logo-dark" alt="logo">
+                                        <img src="/assets/img/logo.svg" class="logo-white" alt="logo">
+                                        <img src="/assets/img/logo-white.svg" class="logo-dark" alt="logo">
                                     </div>
                                     <p class="mb-0 text-body">3099 Kennedy Court Framingham, MA 01702</p>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
-                                        <img src="assets/img/icons/paid-icon-1.svg" alt="">
+                                        <img src="/assets/img/icons/paid-icon-1.svg" alt="">
                                         <div class="text-end">
                                             <p class="mb-1 fs-18 fw-bold"><a href="javascript:void(0);" class="text-primary">#INV0001</a></p>
                                             <p class="mb-1 text-body">Created Date : <span class="text-dark">Sep 24, 2023</span></p>
@@ -7228,7 +7228,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 </div>
                                 <div class="col-md-3">
                                     <div class="text-end">
-                                        <img src="assets/img/icons/sign.svg" class="img-fluid" alt="sign">
+                                        <img src="/assets/img/icons/sign.svg" class="img-fluid" alt="sign">
                                     </div>
                                     <div class="text-end">
                                         <h6 class="fs-14 fw-medium">Ted M. Davis</h6>
@@ -7654,7 +7654,7 @@ $page = empty($path) ? 'index' : basename($path);
                                             </div>
                                             <div class="py-2 px-3 rounded border border-success">
                                                 <div class="d-flex align-items-center flex-wrap gap-2">
-                                                    <img src="assets/img/icons/shield-icon.svg" alt="shield-icon">
+                                                    <img src="/assets/img/icons/shield-icon.svg" alt="shield-icon">
                                                     <div>
                                                         <h6 class="fs-14 mb-1">100% Seucred Payment Guarantee</h6>
                                                         <p class="mb-0">You can confidently complete your purchase that info is safe.</p>
@@ -9235,7 +9235,7 @@ $page = empty($path) ? 'index' : basename($path);
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                    <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <div class="ms-2">
                                                     <h6 class="fw-medium fs-10"><a href="#">Catherine</a></h6>
@@ -9736,7 +9736,7 @@ $page = empty($path) ? 'index' : basename($path);
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                    <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <div class="ms-2">
                                                     <h6 class="fw-medium fs-10"><a href="#">Catherine</a></h6>
@@ -10237,7 +10237,7 @@ $page = empty($path) ? 'index' : basename($path);
                                         <div class="col-6">
                                             <div class="d-flex align-items-center">
                                                 <a href="javascript:void(0);" class="avatar avatar-sm avatar-rounded">
-                                                    <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                    <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                                 </a>
                                                 <div class="ms-2">
                                                     <h6 class="fw-medium fs-10"><a href="#">Catherine</a></h6>
@@ -15413,21 +15413,21 @@ $page = empty($path) ? 'index' : basename($path);
                             <input type="text" class="form-control" placeholder="Search">
                         </div>
                         <div class="d-flex align-items-center mb-3">
-                            <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-01.jpg" alt="user" class="img-fluid rounded-circle"></span>
+                            <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-01.jpg" alt="user" class="img-fluid rounded-circle"></span>
                             <div>
                                 <h6 class="fs-14 mb-1">James Hong </h6>
                                 <p class="mb-0">+1 54789 31795</p>
                             </div>
                         </div>
                         <div class="d-flex align-items-center mb-3">
-                            <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-02.jpg" alt="user" class="img-fluid rounded-circle"></span>
+                            <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-02.jpg" alt="user" class="img-fluid rounded-circle"></span>
                             <div>
                                 <h6 class="fs-14 mb-1">Daniel Williams </h6>
                                 <p class="mb-0">+1 19325 24785</p>
                             </div>
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="avatar me-2 flex-shrink-0"><img src="assets/img/profiles/avatar-04.jpg" alt="user" class="img-fluid rounded-circle"></span>
+                            <span class="avatar me-2 flex-shrink-0"><img src="/assets/img/profiles/avatar-04.jpg" alt="user" class="img-fluid rounded-circle"></span>
                             <div>
                                 <h6 class="fs-14 mb-1">Olivia Miller </h6>
                                 <p class="mb-0">+1 34852 34985</p>

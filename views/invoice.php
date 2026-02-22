@@ -30,7 +30,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-01.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1 text-truncate">Total Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2520<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>22.5%</span></h4>
@@ -43,7 +43,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-02.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1 text-truncate">Active Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">2000<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>15.2%</span></h4>
@@ -56,7 +56,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-03.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1 text-truncate">Inactive Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">350<span class="fs-12 text-success d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-up"></i>16.3%</span></h4>
@@ -69,7 +69,7 @@
                             <div class="card mb-0 flex-fill flex-fill">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center flex-xl-nowrap flex-wrap gap-2">
-                                        <img src="assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
+                                        <img src="/assets/img/icons/member-04.svg" alt="member-01" class="img-fluid">
                                         <div class="w-100">
                                             <p class="mb-1 text-truncate">Archieved Employees</p>
                                             <h4 class="mb-0 d-flex align-items-center justify-content-between gap-2 flex-wrap fs-20 fw-bold">170<span class="fs-12 text-danger d-flex align-items-center gap-1 fw-normal"><i class="ti ti-trending-down"></i>10.5%</span></h4>
@@ -102,37 +102,37 @@
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-01.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Shaun Farley
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-01.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Shaun Farley
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-02.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Jenny Ellis
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-02.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Jenny Ellis
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-03.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Leon Baxter
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-03.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Leon Baxter
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-04.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Karen Flores
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-04.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Karen Flores
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-05.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Charles Cline
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-05.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Charles Cline
                                         </label>
                                     </li>
                                     <li>
                                         <label class="dropdown-item px-2 d-flex align-items-center rounded-1">
                                             <input class="form-check-input m-0 me-2" type="checkbox">
-                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="./assets/img/users/user-06.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Aliza Duncan
+                                            <span class="avatar avatar-sm rounded-circle me-2"><img src="/./assets/img/users/user-06.jpg" class="flex-shrink-0 rounded-circle" alt="img"></span> Aliza Duncan
                                         </label>
                                     </li>
                                 </ul>
@@ -191,7 +191,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-21.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-21.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Brian Thompson</a></h6>
@@ -234,7 +234,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-22.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-22.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Florence Haith</a></h6>
@@ -277,7 +277,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-23.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-23.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Jerry Palmer</a></h6>
@@ -320,7 +320,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-14.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-14.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Mark Brainerd</a></h6>
@@ -363,7 +363,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-15.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-15.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Roy Thomas</a></h6>
@@ -406,7 +406,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-16.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-16.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Alisia Chen</a></h6>
@@ -492,7 +492,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-17.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-17.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">James Walton</a></h6>
@@ -535,7 +535,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-18.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-18.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">Dennis Smith</a></h6>
@@ -578,7 +578,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <a href="#" class="avatar online avatar-rounded">
-                                                <img src="assets/img/users/user-19.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-19.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2">
                                                 <h6 class="fs-14 fw-medium m-0"><a href="javascript:void(0);">David Spiegel</a></h6>

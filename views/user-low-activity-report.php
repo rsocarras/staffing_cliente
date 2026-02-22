@@ -32,7 +32,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14"><a href="javascript:void(0);">Kevin Borger</a></h6>
@@ -54,7 +54,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-02.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-02.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Jada Robinson</a></h6>
@@ -76,7 +76,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Frances Chapman</a></h6>
@@ -120,7 +120,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Shaun Farley</a></h6>
@@ -142,7 +142,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-06.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-06.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Jenny Ellis</a></h6>
@@ -164,7 +164,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-10.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-10.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Leon Baxter</a></h6>
@@ -186,7 +186,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Karen Flores</a></h6>
@@ -208,7 +208,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Charles Cline</a></h6>
@@ -230,7 +230,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-07.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-07.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Karen Galvan</a></h6>
@@ -252,7 +252,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-08.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-08.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Thomas Ward</a></h6>
@@ -274,7 +274,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Aliza Duncan</a></h6>
@@ -296,7 +296,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Steven Pitts</a></h6>
@@ -318,7 +318,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Anthony Galindo</a></h6>
@@ -340,7 +340,7 @@
                                     <div class="d-flex align-items-center justify-content-between mb-3">
                                         <div class="d-flex align-items-center overflow-hidden">
                                             <a href="javascript:void(0);" class="avatar avatar-rounded flex-shrink-0">
-                                                <img src="assets/img/users/user-05.jpg" class="img-fluid" alt="img">
+                                                <img src="/assets/img/users/user-05.jpg" class="img-fluid" alt="img">
                                             </a>
                                             <div class="ms-2 overflow-hidden">
                                                 <h6 class="fw-medium text-truncate m-0 fs-14">Ruby Mynatt</a></h6>

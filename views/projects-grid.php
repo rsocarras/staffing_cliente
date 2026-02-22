@@ -240,9 +240,9 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-04.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-04.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                             </div>
                                         </div>
@@ -298,8 +298,8 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                             </div>
                                         </div>
@@ -355,9 +355,9 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-07.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+1</a>
                                             </div>
                                         </div>
@@ -413,8 +413,8 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-13.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-14.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-13.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-14.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+1</a>
                                             </div>
                                         </div>
@@ -470,10 +470,10 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-10.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-10.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-15.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-01.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+1</a>
                                             </div>
                                         </div>
@@ -529,9 +529,9 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-03.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-16.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-03.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-09.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-16.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                             </div>
                                         </div>
@@ -587,8 +587,8 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-05.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-12.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+3</a>
                                             </div>
                                         </div>
@@ -644,9 +644,9 @@
                                         </div>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-list-stacked avatar-group-sm">
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-06.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
-                                                <span class="avatar avatar-rounded"><img src="assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-06.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-08.jpg" class="border border-white" alt="img"></span>
+                                                <span class="avatar avatar-rounded"><img src="/assets/img/profiles/avatar-11.jpg" class="border border-white" alt="img"></span>
                                                 <a class="avatar bg-primary avatar-rounded text-white fs-10 fw-medium" href="javascript:void(0);">+2</a>
                                             </div>
                                         </div>

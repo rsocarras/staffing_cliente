@@ -48,7 +48,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-01.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-01.jpg" alt="img">
                                                     </span>Mark
                                                 </div>
                                             </th>
@@ -70,7 +70,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="img">
                                                     </span>Jacob
                                                 </div>
                                             </th>
@@ -92,7 +92,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-04.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-04.jpg" alt="img">
                                                     </span>Larry
                                                 </div>
                                             </th>
@@ -144,7 +144,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-01.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-01.jpg" alt="img">
                                                     </span>Mark
                                                 </div>
                                             </th>
@@ -159,7 +159,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-02.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-02.jpg" alt="img">
                                                     </span>Jacob
                                                 </div>
                                             </th>
@@ -174,7 +174,7 @@
                                             <th scope="row">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-sm me-2 online avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-04.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-04.jpg" alt="img">
                                                     </span>Larry
                                                 </div>
                                             </th>
@@ -960,7 +960,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-md me-2 avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-03.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-03.jpg" alt="img">
                                                     </div>
                                                     <h6 class="mb-0 fs-14 fw-semibold">Laura Biding</h6>
                                                 </div>
@@ -980,7 +980,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-md me-2 avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-04.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-04.jpg" alt="img">
                                                     </div>
                                                     <h6 class="mb-0 fs-14 fw-semibold">Justin Gaethje</h6>
                                                 </div>
@@ -1000,7 +1000,7 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-md me-2 avatar-rounded">
-                                                        <img src="assets/img/profiles/avatar-06.jpg" alt="img">
+                                                        <img src="/assets/img/profiles/avatar-06.jpg" alt="img">
                                                     </div>
                                                     <h6 class="mb-0 fs-14 fw-semibold">Simon Cohen</h6>
                                                 </div>

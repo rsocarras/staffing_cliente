@@ -143,7 +143,7 @@
                                             <div class="col-lg-5">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/figma.svg" alt="">
+                                                        <img src="/assets/img/icons/figma.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Figma</h6>
@@ -181,7 +181,7 @@
                                             <div class="col-lg-5">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/google.svg" alt="">
+                                                        <img src="/assets/img/icons/google.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Google</h6>
@@ -218,7 +218,7 @@
                                             <div class="col-lg-5">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/slack.svg" alt="">
+                                                        <img src="/assets/img/icons/slack.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Slack</h6>
@@ -255,7 +255,7 @@
                                             <div class="col-lg-5">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/freepik.svg" alt="">
+                                                        <img src="/assets/img/icons/freepik.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Freepik</h6>
@@ -293,7 +293,7 @@
                                             <div class="col-lg-5">
                                                 <div class="d-flex align-items-center">
                                                     <span class="avatar avatar-lg flex-shrink-0 me-2">
-                                                        <img src="assets/img/icons/google-doc.svg" alt="">
+                                                        <img src="/assets/img/icons/google-doc.svg" alt="">
                                                     </span>
                                                     <div>
                                                         <h6 class="fw-medium mb-1">Google Docs</h6>

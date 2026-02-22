@@ -10,10 +10,10 @@
             <div class="col-md-4 d-flex align-items-center justify-content-center mx-auto">
                 <div class="comming-soon-pg d-flex flex-column align-items-center justify-content-center">
                     <div class="mb-4 pt-4">
-                        <a href="index"><img src="assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
+                        <a href="index"><img src="/assets/img/logo.svg" class="img-fluid" alt="Logo"></a>
                     </div>
                     <div>
-                        <img src="assets/img/auth/coming-soon.svg" alt="image" class="img-fluid" width="300">
+                        <img src="/assets/img/auth/coming-soon.svg" alt="image" class="img-fluid" width="300">
                     </div>
                     <ul class="d-inline-flex align-items-center justify-content-center counting-number-box mb-3">
                         <li class="me-sm-3 me-2">

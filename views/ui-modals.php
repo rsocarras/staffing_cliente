@@ -265,10 +265,10 @@
                                         <div class="modal-body">
                                             <div class="auth-brand text-center mt-2 mb-3 position-relative top-0">
                                                 <a href="index" class="logo-dark">
-                                                    <span><img src="assets/img/logo.svg" alt="dark logo"></span>
+                                                    <span><img src="/assets/img/logo.svg" alt="dark logo"></span>
                                                 </a>
                                                 <a href="index" class="logo-light">
-                                                    <span><img src="assets/img/logo-white.svg" alt="logo"></span>
+                                                    <span><img src="/assets/img/logo-white.svg" alt="logo"></span>
                                                 </a>
                                             </div>
                                             <form class="ps-3 pe-3" action="#">
@@ -307,10 +307,10 @@
                                         <div class="modal-body">
                                             <div class="auth-brand text-center mt-2 mb-3 position-relative top-0">
                                                 <a href="index" class="logo-dark">
-                                                    <span><img src="assets/img/logo.svg" alt="dark logo" height="22"></span>
+                                                    <span><img src="/assets/img/logo.svg" alt="dark logo" height="22"></span>
                                                 </a>
                                                 <a href="index" class="logo-light">
-                                                    <span><img src="assets/img/logo-white.svg" alt="logo" height="22"></span>
+                                                    <span><img src="/assets/img/logo-white.svg" alt="logo" height="22"></span>
                                                 </a>
                                             </div>
                                             <form action="#" class="ps-3 pe-3">
