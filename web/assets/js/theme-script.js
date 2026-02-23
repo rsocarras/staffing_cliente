@@ -16,6 +16,105 @@
 	}
 })();
 
+// === CSP debug (localhost only) ===
+// Logs SecurityPolicyViolationEvent details to help pinpoint the exact script/line
+// that triggers `unsafe-eval` (eval / Function constructor).
+(function () {
+  try {
+    if (!window || !document) return;
+    if (location.hostname !== "localhost") return;
+    if (document.__cspDebugListenerInstalled) return;
+    document.__cspDebugListenerInstalled = true;
+
+    document.addEventListener("securitypolicyviolation", function (e) {
+      // `sample` may be empty depending on browser/version.
+      console.error("[CSP] securitypolicyviolation", {
+        violatedDirective: e.violatedDirective,
+        effectiveDirective: e.effectiveDirective,
+        disposition: e.disposition,
+        blockedURI: e.blockedURI,
+        sourceFile: e.sourceFile,
+        lineNumber: e.lineNumber,
+        columnNumber: e.columnNumber,
+        sample: e.sample,
+      });
+    });
+
+    // Optional deep tracing: enable by adding `?cspdebug=1` (or `&cspdebug=1`) to URL.
+    // This logs callers that attempt to use Function constructor or string-based timers.
+    var params = new URLSearchParams(location.search || "");
+    var enabled = params.has("cspdebug") && params.get("cspdebug") !== "0";
+    if (!enabled) return;
+
+    try {
+      console.info("[CSP][trace] cspdebug enabled");
+    } catch (_) {}
+
+    // Patch eval (covers most indirect eval usage; direct eval may bypass)
+    try {
+      var OriginalEval = window.eval;
+      if (typeof OriginalEval === "function") {
+        window.eval = new Proxy(OriginalEval, {
+          apply: function (target, thisArg, args) {
+            try {
+              console.error("[CSP][trace] eval(...) called", { args: args, stack: new Error().stack });
+            } catch (_) {}
+            return Reflect.apply(target, thisArg, args);
+          },
+        });
+      }
+    } catch (_) {}
+
+    // Patch Function (covers `Function('...')` and `new Function('...')`)
+    try {
+      var OriginalFunction = window.Function;
+      if (typeof OriginalFunction === "function") {
+        window.Function = new Proxy(OriginalFunction, {
+          apply: function (target, thisArg, args) {
+            try {
+              console.error("[CSP][trace] Function(...) called", { args: args, stack: new Error().stack });
+            } catch (_) {}
+            return Reflect.apply(target, thisArg, args);
+          },
+          construct: function (target, args, newTarget) {
+            try {
+              console.error("[CSP][trace] new Function(...) called", { args: args, stack: new Error().stack });
+            } catch (_) {}
+            return Reflect.construct(target, args, newTarget);
+          },
+        });
+      }
+    } catch (_) {}
+
+    // Patch string-based timers (covers `setTimeout('...')` / `setInterval('...')`)
+    try {
+      var _setTimeout = window.setTimeout;
+      window.setTimeout = function (handler) {
+        try {
+          if (typeof handler === "string") {
+            console.error("[CSP][trace] setTimeout(string) called", { handler: handler, stack: new Error().stack });
+          }
+        } catch (_) {}
+        return _setTimeout.apply(this, arguments);
+      };
+    } catch (_) {}
+
+    try {
+      var _setInterval = window.setInterval;
+      window.setInterval = function (handler) {
+        try {
+          if (typeof handler === "string") {
+            console.error("[CSP][trace] setInterval(string) called", { handler: handler, stack: new Error().stack });
+          }
+        } catch (_) {}
+        return _setInterval.apply(this, arguments);
+      };
+    } catch (_) {}
+  } catch (_) {
+    // never block page rendering
+  }
+})();
+
 
 ! function() {
 	var t = sessionStorage.getItem("__THEME_CONFIG__"),
@@ -297,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                                             <label for="defaultLayout">
                                                 <span class="d-block mb-2 layout-img">
                                                     <span class="theme-check rounded-circle"><i class="ti ti-check"></i></span>
-                                                    <img src="assets/img/theme/default.svg" alt="img">
+                                                    <img src="/assets/img/theme/default.svg" alt="img">
                                                 </span>
                                                 <span class="layout-type">Default</span>
                                             </label>
@@ -309,7 +408,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                                             <label for="miniLayout">
                                                 <span class="d-block mb-2 layout-img">
                                                 <span class="theme-check rounded-circle"><i class="ti ti-check"></i></span>
-                                                    <img src="assets/img/theme/mini.svg" alt="img">
+                                                    <img src="/assets/img/theme/mini.svg" alt="img">
                                                 </span>
                                                 <span class="layout-type">Mini</span>
                                             </label>
@@ -321,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                                             <label for="hoverviewLayout">
                                                 <span class="d-block mb-2 layout-img">
                                                 <span class="theme-check rounded-circle"><i class="ti ti-check"></i></span>
-                                                    <img src="assets/img/theme/mini.svg" alt="img">
+                                                    <img src="/assets/img/theme/mini.svg" alt="img">
                                                 </span>
                                                 <span class="layout-type">Hover View</span>
                                             </label>
@@ -333,7 +432,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                                             <label for="hiddenLayout">
                                                 <span class="d-block mb-2 layout-img">
                                                 <span class="theme-check rounded-circle"><i class="ti ti-check"></i></span>
-                                                    <img src="assets/img/theme/full-width.svg" alt="img">
+                                                    <img src="/assets/img/theme/full-width.svg" alt="img">
                                                 </span>
                                                 <span class="layout-type">Hidden</span>
                                             </label>
@@ -345,7 +444,7 @@ document.addEventListener("DOMContentLoaded", function(e) {
                                             <label for="full-widthLayout">
                                                 <span class="d-block mb-2 layout-img">
                                                 <span class="theme-check rounded-circle"><i class="ti ti-check"></i></span>
-                                                    <img src="assets/img/theme/full-width.svg" alt="img">
+                                                    <img src="/assets/img/theme/full-width.svg" alt="img">
                                                 </span>
                                                 <span class="layout-type">Full Width</span>
                                             </label>

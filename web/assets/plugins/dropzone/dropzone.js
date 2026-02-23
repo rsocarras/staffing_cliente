@@ -1719,9 +1719,9 @@ module.exports =
   check(typeof globalThis == 'object' && globalThis) ||
   check(typeof window == 'object' && window) ||
   check(typeof self == 'object' && self) ||
+  check(typeof global == 'object' && global) ||
   check(typeof __webpack_require__.g == 'object' && __webpack_require__.g) ||
-  // eslint-disable-next-line no-new-func -- fallback
-  (function () { return this; })() || Function('return this')();
+  {};
 
 
 /***/ }),
@@ -6726,11 +6726,10 @@ $({ global: true, forced: !USE_NATIVE_URL, sham: !DESCRIPTORS }, {
 /******/ 	!function() {
 /******/ 		__webpack_require__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
-/******/ 			try {
-/******/ 				return this || new Function('return this')();
-/******/ 			} catch (e) {
-/******/ 				if (typeof window === 'object') return window;
-/******/ 			}
+/******/ 			if (typeof self === 'object') return self;
+/******/ 			if (typeof window === 'object') return window;
+/******/ 			if (typeof global === 'object') return global;
+/******/ 			return {};
 /******/ 		})();
 /******/ 	}();
 /******/

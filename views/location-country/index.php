@@ -13,54 +13,60 @@ use yii\widgets\Pjax;
 $this->title = 'Location Countries';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="location-country-index">
+    <div class="page-wrapper">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+        <!-- Start Content -->
+        <div class="content">
+            <div class="location-country-index">
 
-    <p>
-        <?= Html::a('Create Location Country', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+                <h1><?= Html::encode($this->title) ?></h1>
 
-    <?php Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+                <p>
+                    <?= Html::a('Create Location Country', ['create'], ['class' => 'btn btn-success']) ?>
+                </p>
 
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+                <?php Pjax::begin(); ?>
+                <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-            'id',
-            'name',
-            'official_name',
-            'common_name',
-            'iso_alpha2',
-            //'iso_alpha3',
-            //'iso_numeric',
-            //'calling_code_primary',
-            //'calling_codes',
-            //'flag_emoji',
-            //'flag_svg_url:url',
-            //'flag_png_url:url',
-            //'capital',
-            //'region',
-            //'subregion',
-            //'currencies',
-            //'languages',
-            //'tld',
-            //'timezones',
-            //'is_active',
-            //'created_at',
-            //'updated_at',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, LocationCountry $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
+                <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'columns' => [
+                        ['class' => 'yii\grid\SerialColumn'],
 
-    <?php Pjax::end(); ?>
+                        'id',
+                        'name',
+                        'official_name',
+                        'common_name',
+                        'iso_alpha2',
+                        //'iso_alpha3',
+                        //'iso_numeric',
+                        //'calling_code_primary',
+                        //'calling_codes',
+                        //'flag_emoji',
+                        //'flag_svg_url:url',
+                        //'flag_png_url:url',
+                        //'capital',
+                        //'region',
+                        //'subregion',
+                        //'currencies',
+                        //'languages',
+                        //'tld',
+                        //'timezones',
+                        //'is_active',
+                        //'created_at',
+                        //'updated_at',
+                        [
+                            'class' => ActionColumn::className(),
+                            'urlCreator' => function ($action, LocationCountry $model, $key, $index, $column) {
+                                return Url::toRoute([$action, 'id' => $model->id]);
+                             }
+                        ],
+                    ],
+                ]); ?>
 
-</div>
+                <?php Pjax::end(); ?>
+
+            </div>
+        </div>
+    </div>

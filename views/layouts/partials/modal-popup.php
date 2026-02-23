@@ -849,7 +849,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 <label class="form-label">Profile Image<span class="text-danger ms-1">*</span></label>
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
                                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -1243,7 +1243,7 @@ $page = empty($path) ? 'index' : basename($path);
                                 <label class="form-label">Profile Image<span class="text-danger ms-1">*</span></label>
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
                                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -2754,7 +2754,7 @@ $page = empty($path) ? 'index' : basename($path);
                             <div class="col-md-12">
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="avatar avatar-xxl rounded-circle border me-3 flex-shrink-0">
-                                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                                     </div>
                                     <div class="d-flex flex-column justify-content-center">
                                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -2830,7 +2830,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <h6 class="mb-3 fs-16 fw-bold">Basic Information</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle border me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -3185,7 +3185,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <h6 class="mb-3 fs-16 fw-bold">Basic Information</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle border me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -3541,7 +3541,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <label class="form-label">Profile Image<span class="text-danger ms-1">*</span></label>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -3896,7 +3896,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <h6 class="mb-3 fs-16 fw-bold">Basic Information</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle border me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -5315,7 +5315,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <h6 class="mb-3 fs-16 fw-bold">Basic Information</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -10695,7 +10695,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <label class="form-label">Profile Image<span class="text-danger ms-1">*</span></label>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -11059,7 +11059,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <label class="form-label">Profile Image<span class="text-danger ms-1">*</span></label>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle me-3 border flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
@@ -15458,7 +15458,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <h6 class="mb-3 fs-16 fw-bold">Basic Information</h6>
                 <div class="d-flex align-items-center mb-3">
                     <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                        <img class="rounded-circle" src="./assets/img/icons/profile-icon.svg" alt="img">
+                        <img class="rounded-circle" src="/assets/img/icons/profile-icon.svg" alt="img">
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                         <div class="d-flex align-items-start mb-2 gap-2 flex-wrap">
