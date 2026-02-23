@@ -40,7 +40,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <!-- Search -->
                 <div class="header-search d-lg-flex d-none">
                     <div class="input-group input-group-sm input-group-flat">
-                        <input type="text" class="form-control" placeholder="Search Keyword" autocomplete="off">
+                        <input id="topbar-search" name="q" type="text" class="form-control" placeholder="Search Keyword" autocomplete="off" aria-label="Search">
                         <span class="input-group-text">
                             <kbd>ctrl + K</kbd>
                         </span>
@@ -344,7 +344,7 @@ $page = empty($path) ? 'index' : basename($path);
                 <div class="card shadow-none mb-0">
                     <div class="px-3 py-2 d-flex flex-row align-items-center" id="search-top">
                         <i class="ti ti-search fs-22"></i>
-                        <input type="search" class="form-control border-0" placeholder="Search">
+                        <input id="search-modal-input" name="q_modal" type="search" class="form-control border-0" placeholder="Search" aria-label="Search">
                         <button type="button" class="btn p-0" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-x fs-22"></i></button>
                     </div>
                 </div>

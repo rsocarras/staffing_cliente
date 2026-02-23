@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     $('#config-text').keyup(function() {
-      eval($(this).val());
+      // Dynamic code evaluation disabled to remain CSP-safe (no unsafe-eval).
     });
 
     $('.configurator input, .configurator select').change(function() {

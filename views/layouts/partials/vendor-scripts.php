@@ -51,7 +51,7 @@ $page = empty($path) ? 'index' : basename($path);
 
 <?php  if ($page == 'email-compose' || $page == 'email-details' || $page == 'file-manager' || $page == 'form-editors' || $page == 'kanban-view' || $page == 'notes' || $page == 'pages' || $page == 'plugin' || $page == 'reports' || $page == 'todo-list' || $page == 'todo') {   ?>
     <!-- Quill Editor JS -->
-    <script src="<?= Url::to('@web/assets/plugins/quill/quill.min.js') ?>"></script>
+    <script src="<?= Url::to('@web/assets/plugins/quill/quill.core.js') ?>"></script>
 
     <!-- Quill JS -->
     <script src="<?= Url::to('@web/assets/js/form-quill.js') ?>"></script>
@@ -138,7 +138,7 @@ $page = empty($path) ? 'index' : basename($path);
 
 <?php  if ($page == 'form-fileupload' || $page == 'plugin') {   ?>
     <!-- Dropzone File Js -->
-    <script src="<?= Url::to('@web/assets/plugins/dropzone/dropzone-min.js') ?>"></script>
+    <script src="<?= Url::to('@web/assets/plugins/dropzone/dropzone.js') ?>"></script>
 
     <!-- File Upload js -->
     <script src="<?= Url::to('@web/assets/js/form-fileupload.js') ?>"></script>
