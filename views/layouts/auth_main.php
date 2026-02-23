@@ -19,7 +19,26 @@ use yii\web\View;
     <!-- Begin Wrapper -->
     <div class="main-wrapper">
 
-        <?= $content ?> <!-- Main content of the page -->
+        <?php
+            $trimmedContent = ltrim($content);
+            $controllerId = Yii::$app->controller ? Yii::$app->controller->id : null;
+            $skipAutoWrapper = ($controllerId === 'pages');
+            $alreadyWrapped = $skipAutoWrapper || str_starts_with($trimmedContent, '<div class="page-wrapper">');
+        ?>
+
+        <?php if ($alreadyWrapped): ?>
+            <?= $content ?> <!-- Main content of the page -->
+        <?php else: ?>
+            <div class="page-wrapper">
+
+                <!-- Start Content -->
+                <div class="content">
+
+                    <?= $content ?> <!-- Main content of the page -->
+
+                </div>
+            </div>
+        <?php endif; ?>
 
     </div>
     <!-- End Wrapper -->
