@@ -39,7 +39,10 @@ $formatScalarOrList = static function (mixed $value): string {
     return (string)$value;
 };
 ?>
+    <div class="page-wrapper">
 
+        <!-- Start Content -->
+        <div class="content">
 <div class="location-country-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
@@ -104,3 +107,4 @@ $formatScalarOrList = static function (mixed $value): string {
     ]) ?>
 
 </div>
+</div></div>
