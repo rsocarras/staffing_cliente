@@ -3,7 +3,7 @@
 namespace app\controllers;
 
 use app\models\LocationCountry;
-use app\models\search\LocationCountrySearch;
+use app\models\SearchLocationCountry;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,7 +38,7 @@ class LocationCountryController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new LocationCountrySearch();
+        $searchModel = new SearchLocationCountry();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
         return $this->render('index', [
@@ -129,6 +129,6 @@ class LocationCountryController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 }

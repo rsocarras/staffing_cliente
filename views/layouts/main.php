@@ -6,16 +6,18 @@ use yii\web\View;
 /* @var $this View */
 /* @var $content string */
 ?>
-
+<?php $this->beginPage() ?>
 <!DOCTYPE html>
 <?= $this->render('partials/theme-settings') ?>
 
 <head>
     <?= $this->render('partials/title-meta') ?>
     <?= $this->render('partials/head-css') ?>
+    <?php $this->head() ?>
 </head>
 
 <?= $this->render('partials/body') ?>
+<?php $this->beginBody() ?>
 
 <!-- Begin Wrapper -->
 <div class="main-wrapper">
@@ -49,6 +51,8 @@ use yii\web\View;
 
 <?= $this->render('partials/modal-popup') ?>
 <?= $this->render('partials/vendor-scripts') ?>
+<?php $this->endBody() ?>
 </body>
 
 </html>
+<?php $this->endPage() ?>
