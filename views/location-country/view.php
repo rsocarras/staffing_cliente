@@ -39,6 +39,7 @@ $formatScalarOrList = static function (mixed $value): string {
     return (string)$value;
 };
 ?>
+
 <div class="location-country-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
