@@ -26,15 +26,34 @@ $config = [
             ],
         ],
         'db' => $db,
-    ],
-    'params' => $params,
-    /*
-    'controllerMap' => [
-        'fixture' => [ // Fixture generation command line.
-            'class' => 'yii\faker\FixtureController',
+        'authManager' => [
+            'class' => yii\rbac\DbManager::class,
+        ],
+        'mailer' => [
+            'class' => \yii\symfonymailer\Mailer::class,
+            'viewPath' => '@app/mail',
+            'useFileTransport' => true,
         ],
     ],
-    */
+    'controllerMap' => [
+        'migrate' => [
+            'class' => yii\console\controllers\MigrateController::class,
+            'migrationNamespaces' => [
+                'Da\User\Migration',
+            ],
+            'migrationPath' => [
+                '@app/migrations',
+                '@yii/rbac/migrations',
+            ],
+        ],
+    ],
+    'modules' => [
+        'user' => [
+            'class' => Da\User\Module::class,
+            'administrators' => ['admin'],
+        ],
+    ],
+    'params' => $params,
 ];
 
 if (YII_ENV_DEV) {
