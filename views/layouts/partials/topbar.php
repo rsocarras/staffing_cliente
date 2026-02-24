@@ -325,10 +325,7 @@ $page = empty($path) ? 'index' : basename($path);
                             </a>
                         </div>
                         <!-- Item-->
-                        <a href="login" class="dropdown-item">
-                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
-                            <span class="align-middle text-danger">Sign Out</span>
-                        </a>
+                        <?= \yii\helpers\Html::beginForm(['/user/security/logout'], 'post', ['class' => 'd-inline']) . \yii\helpers\Html::submitButton('<i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i><span class="align-middle text-danger">Sign Out</span>', ['class' => 'dropdown-item border-0 bg-transparent w-100 text-start']) . \yii\helpers\Html::endForm() ?>
                     </div>
                 </div>
                     

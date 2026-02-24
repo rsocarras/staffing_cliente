@@ -12,16 +12,20 @@ $config = [
         '@npm'   => '@vendor/npm-asset',
     ],
     'components' => [
-        'request' => [
+        'request' => array_merge([
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-            'cookieValidationKey' => '3nnFLL-fN8KAekwmQbVnN6SoSrZ75QNe',
-        ],
+            'cookieValidationKey' => '3nnFLL-fN8rdekwmQbVnN6SoSrZ75QNe',
+        ], !empty($params['baseUrl']) ? ['hostInfo' => $params['baseUrl']] : []),
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => 'app\models\User',
+            'identityClass' => Da\User\Model\User::class,
             'enableAutoLogin' => true,
+            'loginUrl' => ['/user/security/login'],
+        ],
+        'authManager' => [
+            'class' => yii\rbac\DbManager::class,
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -48,9 +52,17 @@ $config = [
             'showScriptName' => false,
             'rules' => [
               'sitemap.xml' => 'seo/sitemap',
+              'login' => 'user/security/login',
+              'logout' => 'user/security/logout',
             ],
           ],
-        
+
+    ],
+    'modules' => [
+        'user' => [
+            'class' => Da\User\Module::class,
+            'administrators' => ['admin'],
+        ],
     ],
     'params' => $params,
 ];
