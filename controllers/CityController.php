@@ -40,6 +40,7 @@ class CityController extends Controller
     {
         $searchModel = new CitySearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
 
         return $this->render('index', [
             'searchModel' => $searchModel,

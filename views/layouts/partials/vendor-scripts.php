@@ -33,7 +33,7 @@ $page = empty($path) ? 'index' : basename($path);
     <script src="<?= Url::to('@web/assets/plugins/fullcalendar/calendar-data.js') ?>"></script>
 <?php }?>
 
-<?php  if ($page == 'data-tables' || $page == 'plugin') {   ?>
+<?php  if ($page == 'data-tables' || $page == 'plugin' || in_array($path, ['location-country', 'location-country/index'])) {   ?>
     <!-- Datatable JS -->
     <script src="<?= Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js') ?>"></script>
     <script src="<?= Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js') ?>"></script>

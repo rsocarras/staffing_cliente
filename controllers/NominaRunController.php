@@ -40,6 +40,7 @@ class NominaRunController extends Controller
     {
         $searchModel = new NominaRunSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
 
         return $this->render('index', [
             'searchModel' => $searchModel,

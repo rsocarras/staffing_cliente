@@ -40,6 +40,7 @@ class ProfileEventosLogController extends Controller
     {
         $searchModel = new ProfileEventosLogSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
 
         return $this->render('index', [
             'searchModel' => $searchModel,

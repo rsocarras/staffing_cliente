@@ -40,6 +40,7 @@ class ContabilidadCentroCostoController extends Controller
     {
         $searchModel = new ContabilidadCentroCostoSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
 
         return $this->render('index', [
             'searchModel' => $searchModel,

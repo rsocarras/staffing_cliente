@@ -102,7 +102,7 @@ $page = empty($path) ? 'index' : basename($path);
     <link rel="stylesheet" href="<?= Url::to('@web/assets/plugins/daterangepicker/daterangepicker.css') ?>">
 <?php }?>
 
-<?php  if ($page == 'data-tables' || $page == 'plugin') {   ?>
+<?php  if ($page == 'data-tables' || $page == 'plugin' || in_array($path, ['location-country', 'location-country/index'])) {   ?>
     <!-- Datatable CSS -->
     <link rel="stylesheet" href="<?= Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css') ?>">
  <?php }?>
