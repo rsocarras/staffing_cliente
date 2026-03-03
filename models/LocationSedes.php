@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $empresa_id
+ * @property int|null $city_id
  * @property string|null $codigo
  * @property string $nombre
  * @property string|null $direccion
@@ -37,13 +38,19 @@ class LocationSedes extends \yii\db\ActiveRecord
             [['codigo', 'direccion'], 'default', 'value' => null],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
-            [['empresa_id', 'activo'], 'integer'],
+            [['empresa_id', 'activo', 'city_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['codigo'], 'string', 'max' => 50],
             [['nombre'], 'string', 'max' => 190],
             [['direccion'], 'string', 'max' => 255],
             [['empresa_id', 'codigo'], 'unique', 'targetAttribute' => ['empresa_id', 'codigo']],
+            [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
         ];
+    }
+
+    public function getCity()
+    {
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
     /**

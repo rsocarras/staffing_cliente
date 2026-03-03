@@ -162,6 +162,11 @@ $page = empty($path) ? 'index' : basename($path);
                             <i class="ti ti-list-details"></i><span>Tipo de Novedad</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?= Url::to(['/requisicion/index']) ?>" class="<?php echo (strpos($path, 'requisicion') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-file-certificate"></i><span>Requisiciones</span>
+                        </a>
+                    </li>
                     <li class="menu-title"><span>Track</span></li>
                     <li>
                         <a href="live-tracking" class="<?php echo ($page == 'live-tracking' || $page == 'live-tracking-minute') ? 'active' : ''; ?>">
