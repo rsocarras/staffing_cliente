@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\City;
+use app\models\Empresas;
 use app\models\LocationSedes;
 use app\models\Profile;
 use app\models\search\LocationSedesSearch;
@@ -110,10 +111,12 @@ class LocationSedesController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            } else {
+            if (!$profile) {
                 return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
+            }
+            $model->empresa_id = $profile->empresas_id;
+            if (!Empresas::findOne($model->empresa_id)) {
+                return ['success' => false, 'errors' => ['empresa_id' => ['La empresa seleccionada no existe en el sistema. Contacte al administrador.']]];
             }
             if ($model->save()) {
                 $cityName = $model->city ? $model->city->name : null;

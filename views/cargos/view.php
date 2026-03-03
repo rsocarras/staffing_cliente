@@ -31,6 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'empresa_id',
+            ['attribute' => 'area_id', 'label' => 'Área', 'value' => $model->area ? $model->area->nombre : null],
+            ['attribute' => 'sub_area_id', 'label' => 'Sub-área', 'value' => $model->subArea ? $model->subArea->nombre : null],
             'codigo',
             'nombre',
             'descripcion',

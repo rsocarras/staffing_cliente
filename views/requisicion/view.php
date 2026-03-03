@@ -13,10 +13,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <div>
             <?php if ($model->estado === \app\models\Requisicion::ESTADO_DRAFT): ?>
                 <?= Html::a('Editar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a('Enviar a aprobación', ['submit', 'id' => $model->id], ['class' => 'btn btn-success', 'data' => ['method' => 'post', 'confirm' => '¿Enviar a aprobación?']]) ?>
+                <?php $form = \yii\widgets\ActiveForm::begin(['action' => ['submit', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                <?= Html::submitButton('Enviar a aprobación', ['class' => 'btn btn-success', 'onclick' => "return confirm('¿Enviar a aprobación?');"]) ?>
+                <?php \yii\widgets\ActiveForm::end(); ?>
             <?php endif; ?>
             <?php if (($model->estado === \app\models\Requisicion::ESTADO_APPROVAL_PENDING) && (Yii::$app->user->can('rrhh_cliente') || Yii::$app->user->can('admin'))): ?>
-                <?= Html::a('Aprobar', ['approve', 'id' => $model->id], ['class' => 'btn btn-success', 'data' => ['method' => 'post']]) ?>
+                <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['approve', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                <?= Html::submitButton('Aprobar', ['class' => 'btn btn-success']) ?>
+                <?php \yii\widgets\ActiveForm::end(); ?>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">Rechazar</button>
             <?php endif; ?>
             <?php if (($model->estado === \app\models\Requisicion::ESTADO_ORDER_PENDING || $model->estado === \app\models\Requisicion::ESTADO_PERSON_ASSIGNED) && (Yii::$app->user->can('analista_atraccion') || Yii::$app->user->can('admin'))): ?>
@@ -28,7 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php if (($model->estado === \app\models\Requisicion::ESTADO_HIRING_IN_PROGRESS) && (Yii::$app->user->can('analista_vinculacion') || Yii::$app->user->can('admin'))): ?>
                 <?= Html::a('Checklist', ['checklist', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
                 <?php if ($model->checklistCompleto()): ?>
-                    <?= Html::a('Activar', ['activar', 'id' => $model->id], ['class' => 'btn btn-success', 'data' => ['method' => 'post', 'confirm' => '¿Activar contratación? Persona pasará a ACTIVO y se ejecutará webhook.']]) ?>
+                    <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['activar', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                    <?= Html::submitButton('Activar', ['class' => 'btn btn-success', 'onclick' => "return confirm('¿Activar contratación? Persona pasará a ACTIVO y se ejecutará webhook.');"]) ?>
+                    <?php \yii\widgets\ActiveForm::end(); ?>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

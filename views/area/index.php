@@ -106,62 +106,31 @@ $baseDeleteUrl = Url::to(['area/delete']);
                 <h5 class="modal-title">Agregar Área</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-circle-x"></i></button>
             </div>
-            <form id="form-add-area">
-                <input type="hidden" name="<?= Yii::$app->request->csrfParam ?>" value="<?= Yii::$app->request->csrfToken ?>">
-                <div class="modal-body">
-                    <div id="area-form-errors" class="alert alert-danger d-none"></div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-nombre">Nombre<span class="text-danger ms-1">*</span></label>
-                                <input type="text" class="form-control" id="area-nombre" name="Area[nombre]" required maxlength="45" placeholder="Nombre del área">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-descripcion">Descripción</label>
-                                <input type="text" class="form-control" id="area-descripcion" name="Area[descripcion]" maxlength="45" placeholder="Descripción">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-area_padre">Área Padre</label>
-                                <select class="form-select" id="area-area_padre" name="Area[area_padre]">
-                                    <option value="">Ninguna</option>
-                                    <?php foreach (Area::find()->orderBy('nombre')->all() as $a): ?>
-                                    <option value="<?= $a->id ?>"><?= Html::encode($a->nombre) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-centro_utilidad">Centro de Utilidad</label>
-                                <input type="number" class="form-control" id="area-centro_utilidad" name="Area[centro_utilidad]" placeholder="0" step="1">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-referencia_externa">Referencia Externa</label>
-                                <input type="number" class="form-control" id="area-referencia_externa" name="Area[referencia_externa]" placeholder="0" step="1">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label class="form-label" for="area-centro_utilidad_staffing">Centro Utilidad Staffing</label>
-                                <input type="number" class="form-control" id="area-centro_utilidad_staffing" name="Area[centro_utilidad_staffing]" placeholder="0" step="1">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-area">
-                        <span class="btn-text">Guardar</span>
-                        <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
-                    </button>
-                </div>
-            </form>
+            <?php
+            $modelAreaModal = new \app\models\Area();
+            $modelAreaModal->loadDefaultValues();
+            $formArea = \yii\widgets\ActiveForm::begin([
+                'id' => 'form-add-area',
+                'action' => '',
+                'method' => 'post',
+                'enableClientValidation' => false,
+            ]);
+            ?>
+            <div class="modal-body">
+                <div id="area-form-errors" class="alert alert-danger d-none"></div>
+                <?= $this->render('_form_fields', [
+                    'model' => $modelAreaModal,
+                    'form' => $formArea,
+                ]) ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-area">
+                    <span class="btn-text">Guardar</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
+            </div>
+            <?php \yii\widgets\ActiveForm::end(); ?>
         </div>
     </div>
 </div>

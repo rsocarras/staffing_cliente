@@ -115,66 +115,34 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                 <h5 class="modal-title">Agregar Sede</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-circle-x"></i></button>
             </div>
-            <form id="form-add-sede">
-                <input type="hidden" name="<?= Yii::$app->request->csrfParam ?>" value="<?= Yii::$app->request->csrfToken ?>">
-                <div class="modal-body">
-                    <div id="sede-form-errors" class="alert alert-danger d-none"></div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sede-nombre">Nombre<span class="text-danger ms-1">*</span></label>
-                                <input type="text" class="form-control" id="sede-nombre" name="LocationSedes[nombre]" required maxlength="190" placeholder="Nombre de la sede">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sede-codigo">Código</label>
-                                <input type="text" class="form-control" id="sede-codigo" name="LocationSedes[codigo]" maxlength="50" placeholder="Código (opcional)">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sede-direccion">Dirección</label>
-                                <input type="text" class="form-control" id="sede-direccion" name="LocationSedes[direccion]" maxlength="255" placeholder="Dirección">
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sede-country_id">País</label>
-                                <select class="form-select" id="sede-country_id">
-                                    <option value="">Seleccione país...</option>
-                                    <?php foreach ($countries as $id => $name): ?>
-                                    <option value="<?= $id ?>"><?= Html::encode($name) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label class="form-label" for="sede-city_id">Ciudad</label>
-                                <select class="form-select" id="sede-city_id" name="LocationSedes[city_id]">
-                                    <option value="">Seleccione país primero...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="sede-activo" name="LocationSedes[activo]" value="1" checked>
-                                    <label class="form-check-label" for="sede-activo">Activo</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-sede">
-                        <span class="btn-text">Guardar</span>
-                        <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
-                    </button>
-                </div>
-            </form>
+            <?php
+            $modelSedeModal = new LocationSedes();
+            $modelSedeModal->loadDefaultValues();
+            $formSede = \yii\widgets\ActiveForm::begin([
+                'id' => 'form-add-sede',
+                'action' => '',
+                'method' => 'post',
+                'enableClientValidation' => false,
+            ]);
+            ?>
+            <div class="modal-body">
+                <div id="sede-form-errors" class="alert alert-danger d-none"></div>
+                <?= $this->render('_form_fields', [
+                    'model' => $modelSedeModal,
+                    'form' => $formSede,
+                    'countries' => $countries,
+                    'initialCountryId' => null,
+                    'initialCities' => [],
+                ]) ?>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-sede">
+                    <span class="btn-text">Guardar</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
+            </div>
+            <?php \yii\widgets\ActiveForm::end(); ?>
         </div>
     </div>
 </div>

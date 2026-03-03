@@ -38,7 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <td><?= Yii::$app->formatter->asDatetime($model->fecha_creacion) ?></td>
                                 <td class="text-end">
                                     <?= Html::a('Ver', ['view', 'id' => $model->id], ['class' => 'btn btn-sm btn-outline-info']) ?>
-                                    <?= Html::a('Aprobar', ['approve', 'id' => $model->id], ['class' => 'btn btn-sm btn-success', 'data' => ['method' => 'post', 'confirm' => '¿Aprobar esta requisición?']]) ?>
+                                    <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['approve', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                                    <?= Html::submitButton('Aprobar', ['class' => 'btn btn-sm btn-success', 'onclick' => "return confirm('¿Aprobar esta requisición?');"]) ?>
+                                    <?php \yii\widgets\ActiveForm::end(); ?>
                                     <button type="button" class="btn btn-sm btn-danger btn-reject" data-id="<?= $model->id ?>">Rechazar</button>
                                 </td>
                             </tr>

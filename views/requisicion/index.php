@@ -80,7 +80,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => 'Editar']) ?>
                                     <?php endif; ?>
                                     <?php if ($model->estado === \app\models\Requisicion::ESTADO_DRAFT): ?>
-                                        <?= Html::a('<i class="ti ti-send"></i>', ['submit', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-success rounded-pill', 'title' => 'Enviar a aprobación', 'data' => ['method' => 'post', 'confirm' => '¿Enviar a aprobación?']]) ?>
+                                        <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['submit', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                                        <?= Html::submitButton('<i class="ti ti-send"></i>', ['class' => 'btn btn-icon btn-sm btn-success rounded-pill', 'title' => 'Enviar a aprobación', 'onclick' => "return confirm('¿Enviar a aprobación?');"]) ?>
+                                        <?php \yii\widgets\ActiveForm::end(); ?>
                                     <?php endif; ?>
                                 </td>
                             </tr>

@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /** @var yii\web\View $this */
@@ -12,24 +13,47 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'empresa_id')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'codigo')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'descripcion')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'activo')->textInput() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $this->render('_form_fields', [
+        'model' => $model,
+        'form' => $form,
+    ]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Guardar', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+$subAreasUrl = Url::to(['cargos/get-sub-areas']);
+$areaId = $model->area_id ?: '';
+$subAreaId = $model->sub_area_id ?: '';
+$this->registerJs(<<<JS
+(function() {
+    var subAreasUrl = '{$subAreasUrl}';
+    var areaId = '{$areaId}';
+    var subAreaId = '{$subAreaId}';
+
+    function loadSubAreas(aid, preserveVal) {
+        var \$sel = $('#cargos-sub_area_id');
+        \$sel.html('<option value="">Seleccione sub-área</option>');
+        if (!aid) return;
+        $.get(subAreasUrl, { area_id: aid }, function(data) {
+            data.forEach(function(a) {
+                \$sel.append('<option value="'+a.id+'">'+a.nombre+'</option>');
+            });
+            if (preserveVal) \$sel.val(preserveVal);
+        });
+    }
+
+    $('#cargos-area_id').on('change', function() {
+        loadSubAreas($(this).val());
+    });
+
+    if (areaId) loadSubAreas(areaId, subAreaId);
+})();
+JS
+, \yii\web\View::POS_READY);
+?>

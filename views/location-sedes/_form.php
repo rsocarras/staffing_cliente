@@ -26,34 +26,13 @@ if ($model->city_id && $model->city) {
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?php if (!$model->isNewRecord): ?>
-    <?= $form->field($model, 'empresa_id')->textInput(['maxlength' => true, 'readonly' => true]) ?>
-    <?php endif; ?>
-
-    <?= $form->field($model, 'codigo')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'direccion')->textInput(['maxlength' => true]) ?>
-
-    <div class="form-group field-locationsedes-country_id">
-        <label class="form-label">País</label>
-        <?= Html::dropDownList('country_id', $initialCountryId, $countries, [
-            'id' => 'sede-country_id',
-            'class' => 'form-control',
-            'prompt' => 'Seleccione país...',
-        ]) ?>
-    </div>
-
-    <?= $form->field($model, 'city_id')->dropDownList($initialCities, ['prompt' => 'Seleccione ciudad...', 'id' => 'sede-city_id']) ?>
-
-    <?= $form->field($model, 'centro_costo')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'centro_costo_staffing')->textInput(['type' => 'number']) ?>
-
-    <?= $form->field($model, 'codigo_externo')->textInput(['maxlength' => 50]) ?>
-
-    <?= $form->field($model, 'activo')->checkbox() ?>
+    <?= $this->render('_form_fields', [
+        'model' => $model,
+        'form' => $form,
+        'countries' => $countries,
+        'initialCountryId' => $initialCountryId,
+        'initialCities' => $initialCities,
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
