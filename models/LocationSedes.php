@@ -14,6 +14,9 @@ use Yii;
  * @property string $nombre
  * @property string|null $direccion
  * @property int $activo
+ * @property int|null $centro_costo
+ * @property int|null $centro_costo_staffing
+ * @property string|null $codigo_externo
  * @property string $created_at
  * @property string $updated_at
  */
@@ -35,12 +38,13 @@ class LocationSedes extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['codigo', 'direccion'], 'default', 'value' => null],
+            [['codigo', 'direccion', 'codigo_externo'], 'default', 'value' => null],
+            [['codigo', 'codigo_externo'], 'filter', 'filter' => function ($v) { return $v === '' ? null : $v; }],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
-            [['empresa_id', 'activo', 'city_id'], 'integer'],
+            [['empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['codigo'], 'string', 'max' => 50],
+            [['codigo', 'codigo_externo'], 'string', 'max' => 50],
             [['nombre'], 'string', 'max' => 190],
             [['direccion'], 'string', 'max' => 255],
             [['empresa_id', 'codigo'], 'unique', 'targetAttribute' => ['empresa_id', 'codigo']],
@@ -61,10 +65,14 @@ class LocationSedes extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'empresa_id' => 'Empresa ID',
-            'codigo' => 'Codigo',
+            'city_id' => 'Ciudad',
+            'codigo' => 'Código',
             'nombre' => 'Nombre',
-            'direccion' => 'Direccion',
+            'direccion' => 'Dirección',
             'activo' => 'Activo',
+            'centro_costo' => 'Centro de Costo',
+            'centro_costo_staffing' => 'Centro de Costo Staffing',
+            'codigo_externo' => 'Código Externo',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

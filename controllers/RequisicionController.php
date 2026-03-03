@@ -37,7 +37,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['@'],
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'submit'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
                     ],
                     [
                         'allow' => true,

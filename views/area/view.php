@@ -36,6 +36,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'descripcion',
             'area_padre',
             'empresas_id',
+            'centro_utilidad',
+            'referencia_externa',
+            'centro_utilidad_staffing',
         ],
     ]) ?>
 

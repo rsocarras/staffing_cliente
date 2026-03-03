@@ -2,10 +2,14 @@
 
 namespace app\controllers;
 
+use app\models\City;
 use app\models\LocationSedes;
+use app\models\Profile;
 use app\models\search\LocationSedesSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
@@ -25,6 +29,8 @@ class LocationSedesController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                        'create-ajax' => ['POST'],
+                        'get-cities' => ['GET'],
                     ],
                 ],
             ]
@@ -71,16 +77,84 @@ class LocationSedesController extends Controller
         $model = new LocationSedes();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+                if ($profile) {
+                    $model->empresa_id = $profile->empresas_id;
+                }
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         } else {
             $model->loadDefaultValues();
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if ($profile) {
+                $model->empresa_id = $profile->empresas_id;
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new LocationSedes via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new LocationSedes();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if ($profile) {
+                $model->empresa_id = $profile->empresas_id;
+            } else {
+                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
+            }
+            if ($model->save()) {
+                $cityName = $model->city ? $model->city->name : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Sede creada correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'codigo' => $model->codigo,
+                        'nombre' => $model->nombre,
+                        'direccion' => $model->direccion,
+                        'activo' => $model->activo,
+                        'city_id' => $model->city_id,
+                        'city_name' => $cityName,
+                        'centro_costo' => $model->centro_costo,
+                        'centro_costo_staffing' => $model->centro_costo_staffing,
+                        'codigo_externo' => $model->codigo_externo,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
+    }
+
+    /**
+     * Retorna ciudades por país (JSON). Para dropdown dependiente.
+     * @param int $country_id
+     * @return array
+     */
+    public function actionGetCities($country_id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $cities = City::find()
+            ->where(['country_id' => (int) $country_id])
+            ->orderBy('name')
+            ->all();
+        return array_map(function ($c) {
+            return ['id' => $c->id, 'name' => $c->name];
+        }, $cities);
     }
 
     /**

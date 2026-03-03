@@ -14,12 +14,15 @@ use Yii;
  * @property string|null $descripcion
  * @property int|null $area_padre
  * @property int $empresas_id
+ * @property int|null $centro_utilidad
+ * @property int|null $referencia_externa
+ * @property int|null $centro_utilidad_staffing
  *
  * @property Area $areaPadre
  * @property Area[] $areas
  * @property Empresas $empresas
  * @property Profile[] $profiles
- * @property User $userCreate
+ * @property \Da\User\Model\User $userCreate
  */
 class Area extends \yii\db\ActiveRecord
 {
@@ -39,14 +42,14 @@ class Area extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uuid', 'nombre', 'descripcion', 'area_padre'], 'default', 'value' => null],
-            [['user_create', 'empresas_id'], 'required'],
-            [['user_create', 'area_padre', 'empresas_id'], 'integer'],
+            [['uuid', 'nombre', 'descripcion', 'area_padre', 'centro_utilidad', 'referencia_externa', 'centro_utilidad_staffing'], 'default', 'value' => null],
+            [['nombre'], 'required'],
+            [['user_create', 'area_padre', 'empresas_id', 'centro_utilidad', 'referencia_externa', 'centro_utilidad_staffing'], 'integer'],
             [['uuid'], 'string', 'max' => 36],
             [['nombre', 'descripcion'], 'string', 'max' => 45],
             [['area_padre'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['area_padre' => 'id']],
             [['empresas_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresas_id' => 'id']],
-            [['user_create'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_create' => 'id']],
+            [['user_create'], 'exist', 'skipOnError' => true, 'targetClass' => \Da\User\Model\User::class, 'targetAttribute' => ['user_create' => 'id']],
         ];
     }
 
@@ -63,6 +66,9 @@ class Area extends \yii\db\ActiveRecord
             'descripcion' => 'Descripcion',
             'area_padre' => 'Area Padre',
             'empresas_id' => 'Empresas ID',
+            'centro_utilidad' => 'Centro de Utilidad',
+            'referencia_externa' => 'Referencia Externa',
+            'centro_utilidad_staffing' => 'Centro de Utilidad Staffing',
         ];
     }
 
@@ -113,7 +119,7 @@ class Area extends \yii\db\ActiveRecord
      */
     public function getUserCreate()
     {
-        return $this->hasOne(User::class, ['id' => 'user_create']);
+        return $this->hasOne(\Da\User\Model\User::class, ['id' => 'user_create']);
     }
 
 }

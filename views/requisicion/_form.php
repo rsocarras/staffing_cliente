@@ -20,7 +20,7 @@ $esCreacion = isset($esCreacion) ? $esCreacion : $model->isNewRecord;
             <?= $form->field($model, 'fecha_ingreso')->input('datetime-local') ?>
             <?= $form->field($model, 'ciudad_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id']) ?>
             <?= $form->field($model, 'sede_id')->dropDownList([], ['prompt' => 'Seleccione sede', 'id' => 'requisicion-sede_id']) ?>
-            <?= $form->field($model, 'area_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\Area::find()->where(['area_padre' => null])->orWhere(['area_padre' => ''])->orderBy('nombre')->all(), 'id', 'nombre'), ['prompt' => 'Seleccione área', 'id' => 'requisicion-area_id']) ?>
+            <?= $form->field($model, 'area_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\Area::find()->where(['or', ['area_padre' => null], ['area_padre' => 0]])->orderBy('nombre')->all(), 'id', 'nombre'), ['prompt' => 'Seleccione área', 'id' => 'requisicion-area_id']) ?>
             <?= $form->field($model, 'sub_area_id')->dropDownList([], ['prompt' => 'Seleccione sub-área', 'id' => 'requisicion-sub_area_id']) ?>
             <?= $form->field($model, 'cargo_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\Cargos::find()->where(['activo' => 1])->orderBy('nombre')->all(), 'id', 'nombre'), ['prompt' => 'Seleccione cargo']) ?>
             <?= $form->field($model, 'jornada')->textInput(['type' => 'number', 'step' => '0.01']) ?>

@@ -17,7 +17,7 @@ class AreaSearch extends Area
     public function rules()
     {
         return [
-            [['id', 'user_create', 'area_padre', 'empresas_id'], 'integer'],
+            [['id', 'user_create', 'area_padre', 'empresas_id', 'centro_utilidad', 'referencia_externa', 'centro_utilidad_staffing'], 'integer'],
             [['uuid', 'nombre', 'descripcion'], 'safe'],
         ];
     }
@@ -63,6 +63,9 @@ class AreaSearch extends Area
             'user_create' => $this->user_create,
             'area_padre' => $this->area_padre,
             'empresas_id' => $this->empresas_id,
+            'centro_utilidad' => $this->centro_utilidad,
+            'referencia_externa' => $this->referencia_externa,
+            'centro_utilidad_staffing' => $this->centro_utilidad_staffing,
         ]);
 
         $query->andFilterWhere(['like', 'uuid', $this->uuid])

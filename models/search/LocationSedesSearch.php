@@ -17,8 +17,8 @@ class LocationSedesSearch extends LocationSedes
     public function rules()
     {
         return [
-            [['id', 'empresa_id', 'activo'], 'integer'],
-            [['codigo', 'nombre', 'direccion', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],
+            [['codigo', 'nombre', 'direccion', 'codigo_externo', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -62,13 +62,17 @@ class LocationSedesSearch extends LocationSedes
             'id' => $this->id,
             'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
+            'city_id' => $this->city_id,
+            'centro_costo' => $this->centro_costo,
+            'centro_costo_staffing' => $this->centro_costo_staffing,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
 
         $query->andFilterWhere(['like', 'codigo', $this->codigo])
             ->andFilterWhere(['like', 'nombre', $this->nombre])
-            ->andFilterWhere(['like', 'direccion', $this->direccion]);
+            ->andFilterWhere(['like', 'direccion', $this->direccion])
+            ->andFilterWhere(['like', 'codigo_externo', $this->codigo_externo]);
 
         return $dataProvider;
     }
