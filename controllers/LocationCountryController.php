@@ -28,6 +28,7 @@ class LocationCountryController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'data' => ['POST'],
+                        'create-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -149,6 +150,37 @@ class LocationCountryController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new LocationCountry via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new LocationCountry();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'País creado correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'name' => $model->name,
+                        'official_name' => $model->official_name,
+                        'iso_alpha2' => $model->iso_alpha2,
+                        'iso_alpha3' => $model->iso_alpha3,
+                        'region' => $model->region,
+                        'is_active' => $model->is_active,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
     }
 
     /**

@@ -3,9 +3,12 @@
 namespace app\controllers;
 
 use app\models\ContratoTipos;
+use app\models\Profile;
 use app\models\search\ContratoTiposSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
@@ -25,6 +28,7 @@ class ContratoTiposController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                        'create-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -71,16 +75,63 @@ class ContratoTiposController extends Controller
         $model = new ContratoTipos();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+                if ($profile) {
+                    $model->empresa_id = $profile->empresas_id;
+                }
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         } else {
             $model->loadDefaultValues();
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if ($profile) {
+                $model->empresa_id = $profile->empresas_id;
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new ContratoTipos via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new ContratoTipos();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if ($profile) {
+                $model->empresa_id = $profile->empresas_id;
+            }
+            if ($model->save()) {
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Tipo de contrato creado correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'empresa_id' => $model->empresa_id,
+                        'code' => $model->code,
+                        'nombre' => $model->nombre,
+                        'descripcion' => $model->descripcion,
+                        'requiere_fecha_fin' => $model->requiere_fecha_fin,
+                        'es_indefinido' => $model->es_indefinido,
+                        'duracion_dias_default' => $model->duracion_dias_default,
+                        'activo' => $model->activo,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
     }
 
     /**

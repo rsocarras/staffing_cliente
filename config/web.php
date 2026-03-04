@@ -20,7 +20,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => Da\User\Model\User::class,
+            'identityClass' => app\models\User::class,
             'enableAutoLogin' => true,
             'loginUrl' => ['/user/security/login'],
         ],
@@ -62,6 +62,18 @@ $config = [
         'user' => [
             'class' => Da\User\Module::class,
             'administrators' => ['admin'],
+            'viewPath' => '@app/views/user',
+            'mailParams' => [
+                'fromEmail' => 'noreply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost'),
+                'welcomeMailSubject' => 'Bienvenido',
+            ],
+            'classMap' => [
+                'User' => app\models\User::class,
+                'Profile' => app\models\Profile::class,
+            ],
+            'controllerMap' => [
+                'admin' => app\controllers\user\AdminController::class,
+            ],
         ],
     ],
     'params' => $params,

@@ -17,22 +17,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::submitButton('Enviar a aprobación', ['class' => 'btn btn-success', 'onclick' => "return confirm('¿Enviar a aprobación?');"]) ?>
                 <?php \yii\widgets\ActiveForm::end(); ?>
             <?php endif; ?>
-            <?php if (($model->estado === \app\models\Requisicion::ESTADO_APPROVAL_PENDING) && (Yii::$app->user->can('rrhh_cliente') || Yii::$app->user->can('admin'))): ?>
+            <?php if (($model->estado === \app\models\Requisicion::ESTADO_APPROVAL_PENDING) && Yii::$app->user->can('requisicion_approve')): ?>
                 <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['approve', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
                 <?= Html::submitButton('Aprobar', ['class' => 'btn btn-success']) ?>
                 <?php \yii\widgets\ActiveForm::end(); ?>
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">Rechazar</button>
             <?php endif; ?>
-            <?php if (($model->estado === \app\models\Requisicion::ESTADO_ORDER_PENDING || $model->estado === \app\models\Requisicion::ESTADO_PERSON_ASSIGNED) && (Yii::$app->user->can('analista_atraccion') || Yii::$app->user->can('admin'))): ?>
+            <?php if (($model->estado === \app\models\Requisicion::ESTADO_ORDER_PENDING || $model->estado === \app\models\Requisicion::ESTADO_PERSON_ASSIGNED) && Yii::$app->user->can('requisicion_assign')): ?>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignModal">Asignar persona</button>
             <?php endif; ?>
-            <?php if (($model->estado === \app\models\Requisicion::ESTADO_PERSON_ASSIGNED) && (Yii::$app->user->can('analista_vinculacion') || Yii::$app->user->can('admin'))): ?>
+            <?php if (($model->estado === \app\models\Requisicion::ESTADO_PERSON_ASSIGNED) && Yii::$app->user->can('requisicion_vinculacion')): ?>
                 <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#vinculacionModal">Paso vinculación</button>
             <?php endif; ?>
-            <?php if (($model->estado === \app\models\Requisicion::ESTADO_HIRING_IN_PROGRESS) && (Yii::$app->user->can('analista_vinculacion') || Yii::$app->user->can('admin'))): ?>
+            <?php if (($model->estado === \app\models\Requisicion::ESTADO_HIRING_IN_PROGRESS) && Yii::$app->user->can('requisicion_vinculacion')): ?>
                 <?= Html::a('Checklist', ['checklist', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
                 <?php if ($model->checklistCompleto()): ?>
                     <?php $f = \yii\widgets\ActiveForm::begin(['action' => ['activar', 'id' => $model->id], 'method' => 'post', 'options' => ['class' => 'd-inline']]); ?>
+                    <div class="d-inline-block me-2">
+                        <input type="text" name="comentario" class="form-control form-control-sm d-inline-block" style="width:200px" placeholder="Comentario (opcional)">
+                    </div>
                     <?= Html::submitButton('Activar', ['class' => 'btn btn-success', 'onclick' => "return confirm('¿Activar contratación? Persona pasará a ACTIVO y se ejecutará webhook.');"]) ?>
                     <?php \yii\widgets\ActiveForm::end(); ?>
                 <?php endif; ?>
@@ -108,6 +111,41 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
     <?php endif; ?>
+
+    <?php $logs = $model->getHistoryLogs()->all(); ?>
+    <?php if (!empty($logs)): ?>
+    <div class="card mt-3">
+        <div class="card-header"><h5>Historial de cambios</h5></div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Estado anterior</th>
+                            <th>Estado nuevo</th>
+                            <th>Tiempo en estado anterior</th>
+                            <th>Comentario</th>
+                            <th>Usuario</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($logs as $i => $log): ?>
+                        <tr>
+                            <td><?= Yii::$app->formatter->asDatetime($log->created_at) ?></td>
+                            <td><span class="badge bg-secondary"><?= Html::encode($log->estadoAnteriorLabel) ?></span></td>
+                            <td><span class="badge bg-<?= \app\models\Requisicion::estadoBadgeClass($log->estado_nuevo) ?>"><?= Html::encode($log->estadoNuevoLabel) ?></span></td>
+                            <td><?= Html::encode($log->duracionFormateada) ?></td>
+                            <td><?= Html::encode($log->comentario ?? '-') ?></td>
+                            <td><?= Html::encode($log->usuario && $log->usuario->profile ? $log->usuario->profile->name : ($log->usuario ? $log->usuario->username : '-')) ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Modal Rechazar -->
@@ -150,6 +188,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <div id="persona-results" class="list-group mt-2" style="max-height:200px;overflow-y:auto"></div>
                 </div>
                 <input type="hidden" name="profile_id" id="profile_id" value="">
+                <div class="mb-3">
+                    <label class="form-label">Comentario (opcional)</label>
+                    <textarea name="comentario" class="form-control" rows="2" placeholder="Comentario para el historial"></textarea>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

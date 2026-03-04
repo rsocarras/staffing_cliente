@@ -12,21 +12,14 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'empresa_id')->textInput() ?>
+    <?php if (!$model->isNewRecord): ?>
+    <?= $form->field($model, 'empresa_id')->textInput(['readonly' => true]) ?>
+    <?php endif; ?>
 
-    <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'descripcion')->textarea(['rows' => 6]) ?>
-
-    <?= $form->field($model, 'icono')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'orden')->textInput() ?>
-
-    <?= $form->field($model, 'activo')->textInput() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $this->render('_form_fields', [
+        'model' => $model,
+        'form' => $form,
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

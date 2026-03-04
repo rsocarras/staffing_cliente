@@ -3,9 +3,12 @@
 namespace app\controllers;
 
 use app\models\MaestrosConceptos;
+use app\models\Profile;
 use app\models\search\MaestrosConceptosSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
@@ -25,6 +28,7 @@ class MaestrosConceptosController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                        'create-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -71,16 +75,60 @@ class MaestrosConceptosController extends Controller
         $model = new MaestrosConceptos();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+                if ($profile) {
+                    $model->empresa_id = $profile->empresas_id;
+                }
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         } else {
             $model->loadDefaultValues();
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if ($profile) {
+                $model->empresa_id = $profile->empresas_id;
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new MaestrosConceptos via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new MaestrosConceptos();
+
+        if ($model->load(Yii::$app->request->post())) {
+            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+            if (!$profile) {
+                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
+            }
+            $model->empresa_id = $profile->empresas_id;
+            if ($model->save()) {
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Concepto creado correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'code' => $model->code,
+                        'name' => $model->name,
+                        'category' => $model->category,
+                        'active' => $model->active,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
     }
 
     /**

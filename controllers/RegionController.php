@@ -4,8 +4,10 @@ namespace app\controllers;
 
 use app\models\Region;
 use app\models\search\RegionSearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
@@ -25,6 +27,7 @@ class RegionController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                        'create-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -81,6 +84,37 @@ class RegionController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new Region via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new Region();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                $countryName = $model->country ? $model->country->name : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Región creada correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'country_id' => $model->country_id,
+                        'code' => $model->code,
+                        'name' => $model->name,
+                        'type' => $model->type,
+                        'country_name' => $countryName,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
     }
 
     /**

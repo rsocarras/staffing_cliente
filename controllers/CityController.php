@@ -4,8 +4,10 @@ namespace app\controllers;
 
 use app\models\City;
 use app\models\search\CitySearch;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
@@ -25,6 +27,7 @@ class CityController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                        'create-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -81,6 +84,40 @@ class CityController extends Controller
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Creates a new City via AJAX. Returns JSON.
+     * @return array
+     */
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = new City();
+
+        if ($model->load(Yii::$app->request->post())) {
+            if ($model->save()) {
+                $countryName = $model->country ? $model->country->name : null;
+                $regionName = $model->region ? $model->region->name : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Ciudad creada correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'country_id' => $model->country_id,
+                        'region_id' => $model->region_id,
+                        'name' => $model->name,
+                        'is_capital' => $model->is_capital,
+                        'is_active' => $model->is_active,
+                        'country_name' => $countryName,
+                        'region_name' => $regionName,
+                    ],
+                ];
+            }
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return ['success' => false, 'errors' => ['general' => [Yii::t('app', 'Datos inválidos.')]]];
     }
 
     /**

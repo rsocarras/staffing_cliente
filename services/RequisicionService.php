@@ -3,6 +3,7 @@
 namespace app\services;
 
 use app\models\Requisicion;
+use app\models\RequisicionHistoryLog;
 use app\models\Profile;
 use app\models\ChecklistStatus;
 use app\models\ChecklistItem;
@@ -20,8 +21,9 @@ class RequisicionService
         if ($req->estado !== Requisicion::ESTADO_DRAFT) {
             throw new \DomainException('Solo se pueden enviar requisiciones en borrador.');
         }
+        $estadoAnterior = $req->estado;
         $req->estado = Requisicion::ESTADO_APPROVAL_PENDING;
-        return $req->save(false);
+        return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, null, $estadoAnterior);
     }
 
     /**
@@ -32,9 +34,10 @@ class RequisicionService
         if ($req->estado !== Requisicion::ESTADO_APPROVAL_PENDING) {
             throw new \DomainException('Solo se pueden aprobar requisiciones pendientes.');
         }
+        $estadoAnterior = $req->estado;
         $req->motivo_rechazo = null;
         $req->estado = Requisicion::ESTADO_ORDER_PENDING;
-        return $req->save(false);
+        return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, null, $estadoAnterior);
     }
 
     /**
@@ -48,15 +51,16 @@ class RequisicionService
         if (empty(trim($motivo))) {
             throw new \DomainException('El motivo de rechazo es obligatorio.');
         }
+        $estadoAnterior = $req->estado;
         $req->estado = Requisicion::ESTADO_REJECTED;
         $req->motivo_rechazo = $motivo;
-        return $req->save(false);
+        return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, $motivo, $estadoAnterior);
     }
 
     /**
      * Asigna persona a la vacante (autopobla datos)
      */
-    public static function assignPerson(Requisicion $req, $profileId)
+    public static function assignPerson(Requisicion $req, $profileId, $comentario = null)
     {
         if (!in_array($req->estado, [Requisicion::ESTADO_ORDER_PENDING, Requisicion::ESTADO_PERSON_ASSIGNED])) {
             throw new \DomainException('Estado no permite asignar persona.');
@@ -65,6 +69,7 @@ class RequisicionService
         if (!$profile) {
             throw new \DomainException('Perfil no encontrado.');
         }
+        $estadoAnterior = $req->estado;
         $req->profile_id = $profileId;
         $req->nombres = $profile->name ? explode(' ', $profile->name)[0] ?? $profile->name : null;
         $req->apellidos = $profile->name ? implode(' ', array_slice(explode(' ', $profile->name), 1)) : null;
@@ -75,7 +80,7 @@ class RequisicionService
         $req->birthday = $profile->birthday;
         $req->sexo = $profile->sexo;
         $req->estado = Requisicion::ESTADO_PERSON_ASSIGNED;
-        return $req->save(false);
+        return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, $comentario, $estadoAnterior);
     }
 
     /**
@@ -86,6 +91,7 @@ class RequisicionService
         if ($req->estado !== Requisicion::ESTADO_PERSON_ASSIGNED) {
             throw new \DomainException('Estado no permite paso vinculación.');
         }
+        $estadoAnterior = $req->estado;
         $req->vinculacion_aprobada = $aprobada ? 1 : 0;
         $req->vinculacion_motivo_rechazo = $motivoRechazo;
         if ($aprobada) {
@@ -94,13 +100,13 @@ class RequisicionService
         } else {
             $req->estado = Requisicion::ESTADO_VINCULATION_REJECTED;
         }
-        return $req->save(false);
+        return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, $motivoRechazo, $estadoAnterior);
     }
 
     /**
      * Activa la contratación: persona ACTIVO, webhook, reportes
      */
-    public static function activar(Requisicion $req)
+    public static function activar(Requisicion $req, $comentario = null)
     {
         if ($req->estado !== Requisicion::ESTADO_HIRING_IN_PROGRESS) {
             throw new \DomainException('Solo se puede activar en estado HIRING_IN_PROGRESS.');
@@ -112,10 +118,13 @@ class RequisicionService
             throw new \DomainException('Debe asignar una persona.');
         }
 
+        $estadoAnterior = $req->estado;
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $req->estado = Requisicion::ESTADO_ACTIVE;
             $req->save(false);
+
+            RequisicionHistoryLog::registrar($req, $req->estado, $comentario, $estadoAnterior);
 
             $profile = Profile::findOne($req->profile_id);
             if ($profile) {

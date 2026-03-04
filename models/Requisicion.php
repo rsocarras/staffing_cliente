@@ -58,6 +58,7 @@ use yii\behaviors\BlameableBehavior;
  * @property Requisicion $parent
  * @property Requisicion[] $hijas
  * @property ChecklistStatus[] $checklistStatuses
+ * @property RequisicionHistoryLog[] $historyLogs
  */
 class Requisicion extends ActiveRecord
 {
@@ -243,6 +244,35 @@ class Requisicion extends ActiveRecord
         return $this->hasMany(ChecklistStatus::class, ['requisicion_id' => 'id']);
     }
 
+    public function getHistoryLogs()
+    {
+        return $this->hasMany(RequisicionHistoryLog::class, ['requisicion_id' => 'id'])->orderBy(['created_at' => SORT_DESC]);
+    }
+
+    /**
+     * Clase Bootstrap para badge según estado.
+     * @param string $estado
+     * @return string ej. 'success', 'danger', 'warning', etc.
+     */
+    public static function estadoBadgeClass($estado)
+    {
+        $map = [
+            self::ESTADO_DRAFT => 'secondary',
+            self::ESTADO_SUBMITTED => 'info',
+            self::ESTADO_APPROVAL_PENDING => 'warning',
+            self::ESTADO_APPROVED => 'primary',
+            self::ESTADO_REJECTED => 'danger',
+            self::ESTADO_ORDER_PENDING => 'warning',
+            self::ESTADO_PERSON_ASSIGNED => 'info',
+            self::ESTADO_VINCULATION_REVIEW => 'warning',
+            self::ESTADO_VINCULATION_REJECTED => 'danger',
+            self::ESTADO_HIRING_IN_PROGRESS => 'primary',
+            self::ESTADO_ACTIVE => 'success',
+            self::ESTADO_CANCELLED => 'dark',
+        ];
+        return $map[$estado] ?? 'secondary';
+    }
+
     public static function optsEstado()
     {
         return [
@@ -299,9 +329,22 @@ class Requisicion extends ActiveRecord
             $hija->profile_id = null;
             $hija->nombres = $hija->apellidos = $hija->tipo_documento = $hija->num_documento = $hija->correo = $hija->telefono = $hija->birthday = $hija->sexo = null;
             $hija->save(false);
+            RequisicionHistoryLog::registrar($hija, self::ESTADO_DRAFT, 'Vacante #' . $i . ' creada', null);
             $creadas[] = $hija;
         }
         return $creadas;
+    }
+
+    /**
+     * Tiempo total desde fecha_creacion en formato "X h Y min".
+     */
+    public function getTiempoTotalDesdeCreacion(): string
+    {
+        if (empty($this->fecha_creacion)) {
+            return '-';
+        }
+        $minutos = (int) floor((time() - strtotime($this->fecha_creacion)) / 60);
+        return RequisicionHistoryLog::formatDuracion(max(0, $minutos));
     }
 
     public function checklistCompleto()

@@ -167,6 +167,16 @@ $page = empty($path) ? 'index' : basename($path);
                             <i class="ti ti-file-certificate"></i><span>Requisiciones</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?= Url::to(['/location-sedes/index']) ?>" class="<?php echo (strpos($path, 'location-sedes') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-building"></i><span>Sedes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= Url::to(['/area/index']) ?>" class="<?php echo (strpos($path, 'area') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-folders"></i><span>Áreas</span>
+                        </a>
+                    </li>
                     <li class="menu-title"><span>Track</span></li>
                     <li>
                         <a href="live-tracking" class="<?php echo ($page == 'live-tracking' || $page == 'live-tracking-minute') ? 'active' : ''; ?>">

@@ -2,103 +2,92 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Da\User\Model\User as BaseUser;
+
+/**
+ * Extiende Da\User\Model\User para integrar con Profile (empresas_id, num_doc).
+ * Al crear usuario, se crea el perfil con los datos requeridos por la app.
+ */
+class User extends BaseUser
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
+    /**
+     * Datos del perfil a crear (empresas_id, num_doc, name, etc.).
+     * Se establece desde el controlador antes de guardar.
+     * @var array|null
+     */
+    public $pendingProfileData = [];
 
     /**
      * {@inheritdoc}
+     * Sobrescribe para crear Profile con empresas_id y num_doc requeridos por la app.
      */
-    public static function findIdentity($id)
+    public function afterSave($insert, $changedAttributes)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
-    }
+        \yii\db\ActiveRecord::afterSave($insert, $changedAttributes);
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
+        if ($insert && $this->profile === null) {
+            $profile = $this->createProfileWithAppData();
+            if ($profile) {
+                $profile->save(false);
             }
         }
-
-        return null;
     }
 
     /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
+     * Crea instancia de Profile con empresas_id, num_doc y demás campos requeridos.
+     * @return \app\models\Profile|null
      */
-    public static function findByUsername($username)
+    protected function createProfileWithAppData()
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
+        $profile = new Profile();
+        $profile->user_id = $this->id;
+
+        $raw = $this->pendingProfileData['empresas_id'] ?? null;
+        $empresasId = ($raw !== null && $raw !== '' && (int) $raw > 0)
+            ? (int) $raw
+            : $this->resolveDefaultEmpresasId();
+        $numDoc = $this->pendingProfileData['num_doc'] ?? '0000000';
+        $name = $this->pendingProfileData['name'] ?? $this->username;
+
+        $profile->empresas_id = (int) $empresasId;
+        $profile->num_doc = (string) $numDoc;
+        $profile->name = $name;
+        $profile->tipo_doc = $this->pendingProfileData['tipo_doc'] ?? Profile::TIPO_DOC_CC;
+        $profile->estado = $this->pendingProfileData['estado'] ?? Profile::ESTADO_ACTIVO;
+
+        if (isset($this->pendingProfileData['telefono'])) {
+            $profile->telefono = $this->pendingProfileData['telefono'];
+        }
+        if (isset($this->pendingProfileData['position'])) {
+            $profile->position = $this->pendingProfileData['position'];
         }
 
-        return null;
+        return $profile;
     }
 
     /**
-     * {@inheritdoc}
+     * Obtiene empresas_id por defecto (primera empresa o la del admin actual).
+     * @return int
      */
-    public function getId()
+    protected function resolveDefaultEmpresasId()
     {
-        return $this->id;
+        $profile = \Yii::$app->user->identity && \Yii::$app->user->identity->profile
+            ? \Yii::$app->user->identity->profile
+            : null;
+
+        if ($profile && $profile->empresas_id) {
+            return (int) $profile->empresas_id;
+        }
+
+        $first = Empresas::find()->select('id')->limit(1)->scalar();
+        return $first ? (int) $first : 1;
     }
 
     /**
-     * {@inheritdoc}
+     * @return \yii\db\ActiveQuery
      */
-    public function getAuthKey()
+    public function getProfile()
     {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        return $this->password === $password;
+        return $this->hasOne(Profile::class, ['user_id' => 'id']);
     }
 }

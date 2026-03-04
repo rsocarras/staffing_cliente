@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Requisicion;
+use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
 use app\models\Profile;
 use app\models\ChecklistStatus;
@@ -36,27 +37,27 @@ class RequisicionController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['requisicion_index'],
                         'actions' => ['index', 'view', 'create', 'update', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['rrhh_cliente', 'admin'],
+                        'roles' => ['requisicion_approve'],
                         'actions' => ['approval', 'approve', 'reject'],
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['analista_atraccion', 'admin'],
+                        'roles' => ['requisicion_assign'],
                         'actions' => ['assign-person', 'buscar-persona'],
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['analista_vinculacion', 'admin'],
+                        'roles' => ['requisicion_vinculacion'],
                         'actions' => ['vinculacion', 'checklist', 'completar-checklist', 'activar'],
                     ],
                     [
                         'allow' => true,
-                        'roles' => ['rrhh_interno', 'admin'],
+                        'roles' => ['requisicion_reportes'],
                         'actions' => ['reportes', 'nuevas-contrataciones', 'activos-por-mes'],
                     ],
                 ],
@@ -69,6 +70,10 @@ class RequisicionController extends Controller
         $searchModel = new RequisicionSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->pagination = false;
+
+        if (Yii::$app->user->can('requisicion_approve') ) {
+            $dataProvider->query->andWhere(['!=', 'requisicion.estado', Requisicion::ESTADO_DRAFT]);
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -100,6 +105,7 @@ class RequisicionController extends Controller
                     $model->group_uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
                     $model->vacante_index = 1;
                     $model->save(false);
+                    RequisicionHistoryLog::registrar($model, Requisicion::ESTADO_DRAFT, 'Requisición creada', null);
                     $creadas = Requisicion::crearGrupoVacantes($model);
                     $transaction->commit();
                     Yii::$app->session->setFlash('success', 'Requisición creada. Se generaron ' . count($creadas) . ' vacante(s).');
@@ -223,9 +229,10 @@ class RequisicionController extends Controller
     {
         $model = $this->findModel($id);
         $profileId = $this->request->post('profile_id');
+        $comentario = $this->request->post('comentario', '');
         if ($profileId) {
             try {
-                RequisicionService::assignPerson($model, $profileId);
+                RequisicionService::assignPerson($model, $profileId, $comentario ?: null);
                 Yii::$app->session->setFlash('success', 'Persona asignada correctamente.');
             } catch (\DomainException $e) {
                 Yii::$app->session->setFlash('error', $e->getMessage());
@@ -280,8 +287,9 @@ class RequisicionController extends Controller
     public function actionActivar($id)
     {
         $model = $this->findModel($id);
+        $comentario = $this->request->post('comentario', '');
         try {
-            RequisicionService::activar($model);
+            RequisicionService::activar($model, $comentario ?: null);
             Yii::$app->session->setFlash('success', 'Contratación activada. Persona en estado ACTIVO. Webhook ejecutado.');
         } catch (\DomainException $e) {
             Yii::$app->session->setFlash('error', $e->getMessage());

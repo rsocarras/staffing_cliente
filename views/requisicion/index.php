@@ -14,10 +14,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="text-end">
                 <?= Html::a('<i class="ti ti-plus me-1"></i> Nueva Requisición', ['create'], ['class' => 'btn btn-primary']) ?>
-                <?php if (Yii::$app->user->can('rrhh_cliente') || Yii::$app->user->can('admin')): ?>
+                <?php if (Yii::$app->user->can('requisicion_approve')): ?>
                     <?= Html::a('<i class="ti ti-check me-1"></i> Bandeja Aprobación', ['approval'], ['class' => 'btn btn-outline-primary']) ?>
                 <?php endif; ?>
-                <?php if (Yii::$app->user->can('rrhh_interno') || Yii::$app->user->can('admin')): ?>
+                <?php if (Yii::$app->user->can('requisicion_reportes')): ?>
                     <?= Html::a('<i class="ti ti-report me-1"></i> Reportes RRHH', ['reportes'], ['class' => 'btn btn-outline-secondary']) ?>
                 <?php endif; ?>
             </div>
@@ -53,6 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <th>ID</th>
                                 <th>Grupo / Vacante</th>
                                 <th>Estado</th>
+                                <th>Tiempo total</th>
                                 <th>Empresa</th>
                                 <th>Ciudad</th>
                                 <th>Sede</th>
@@ -66,8 +67,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php foreach ($dataProvider->getModels() as $model): ?>
                             <tr>
                                 <td><?= $model->id ?></td>
-                                <td><?= Html::encode($model->group_uuid) ?> #<?= $model->vacante_index ?></td>
-                                <td><span class="badge bg-<?= $model->estado === \app\models\Requisicion::ESTADO_ACTIVE ? 'success' : ($model->estado === \app\models\Requisicion::ESTADO_REJECTED ? 'danger' : 'secondary') ?>"><?= \app\models\Requisicion::optsEstado()[$model->estado] ?? $model->estado ?></span></td>
+                                <td><?php
+                                    $parts = explode('-', $model->group_uuid ?? '');
+                                    $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
+                                    echo Html::a(Html::encode($shortUuid) . ' #' . $model->vacante_index, ['view', 'id' => $model->id], ['title' => $model->group_uuid]);
+                                ?></td>
+                                <td><span class="badge bg-<?= \app\models\Requisicion::estadoBadgeClass($model->estado) ?>"><?= \app\models\Requisicion::optsEstado()[$model->estado] ?? $model->estado ?></span></td>
+                                <td><?= Html::encode($model->tiempoTotalDesdeCreacion) ?></td>
                                 <td><?= Html::encode($model->empresa->nombre ?? '-') ?></td>
                                 <td><?= Html::encode($model->ciudad->name ?? '-') ?></td>
                                 <td><?= Html::encode($model->sede->nombre ?? '-') ?></td>
