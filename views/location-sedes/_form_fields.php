@@ -23,6 +23,8 @@ use yii\helpers\Html;
 
 <?= $form->field($model, 'direccion')->textInput(['maxlength' => true]) ?>
 
+<?= $form->field($model, 'tipo_sede')->dropDownList(\app\models\LocationSedes::optsTipoSede(), ['prompt' => 'Seleccione tipo de sede']) ?>
+
 <div class="form-group field-locationsedes-country_id">
     <label class="form-label">País</label>
     <?= Html::dropDownList('country_id', $initialCountryId ?? null, $countries ?? [], [

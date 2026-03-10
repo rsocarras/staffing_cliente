@@ -72,13 +72,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
                 <div class="col-md-6">
                     <h6>Persona asignada</h6>
-                    <?php if ($model->profile_id): ?>
+                    <?php if ($model->profile_id && $model->profile): ?>
                         <table class="table table-sm">
-                            <tr><th>Nombres</th><td><?= Html::encode($model->nombres) ?></td></tr>
-                            <tr><th>Apellidos</th><td><?= Html::encode($model->apellidos) ?></td></tr>
-                            <tr><th>Documento</th><td><?= Html::encode($model->tipo_documento) ?> <?= Html::encode($model->num_documento) ?></td></tr>
-                            <tr><th>Correo</th><td><?= Html::encode($model->correo) ?></td></tr>
-                            <tr><th>Teléfono</th><td><?= Html::encode($model->telefono) ?></td></tr>
+                            <tr><th>Nombre</th><td><?= Html::encode($model->profile->name) ?></td></tr>
+                            <tr><th>Documento</th><td><?= Html::encode($model->profile->tipo_doc) ?> <?= Html::encode($model->profile->num_doc) ?></td></tr>
+                            <tr><th>Correo</th><td><?= Html::encode($model->profile->public_email) ?></td></tr>
+                            <tr><th>Teléfono</th><td><?= Html::encode($model->profile->telefono) ?></td></tr>
                         </table>
                     <?php else: ?>
                         <p class="text-muted">Sin persona asignada</p>

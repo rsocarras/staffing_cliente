@@ -33,14 +33,6 @@ use yii\behaviors\BlameableBehavior;
  * @property string|null $motivo_rechazo
  * @property int|null $vinculacion_aprobada
  * @property string|null $vinculacion_motivo_rechazo
- * @property string|null $nombres
- * @property string|null $apellidos
- * @property string|null $tipo_documento
- * @property string|null $num_documento
- * @property string|null $correo
- * @property string|null $telefono
- * @property string|null $birthday
- * @property string|null $sexo
  * @property int|null $creado_por
  * @property int|null $actualizado_por
  * @property string $fecha_creacion
@@ -62,18 +54,23 @@ use yii\behaviors\BlameableBehavior;
  */
 class Requisicion extends ActiveRecord
 {
-    const ESTADO_DRAFT = 'DRAFT';
-    const ESTADO_SUBMITTED = 'SUBMITTED';
-    const ESTADO_APPROVAL_PENDING = 'APPROVAL_PENDING';
-    const ESTADO_APPROVED = 'APPROVED';
-    const ESTADO_REJECTED = 'REJECTED';
-    const ESTADO_ORDER_PENDING = 'ORDER_PENDING';
-    const ESTADO_PERSON_ASSIGNED = 'PERSON_ASSIGNED';
-    const ESTADO_VINCULATION_REVIEW = 'VINCULATION_REVIEW';
-    const ESTADO_VINCULATION_REJECTED = 'VINCULATION_REJECTED';
-    const ESTADO_HIRING_IN_PROGRESS = 'HIRING_IN_PROGRESS';
-    const ESTADO_ACTIVE = 'ACTIVE';
-    const ESTADO_CANCELLED = 'CANCELLED';
+    const ESTADO_DRAFT = 'DRAFT';   // Borrador 
+
+    const ESTADO_SUBMITTED = 'SUBMITTED';  
+
+    const ESTADO_APPROVAL_PENDING = 'APPROVAL_PENDING'; // Registrada 
+    
+    const ESTADO_APPROVED = 'APPROVED'; // Aprobado -->  Cuando se aprueba lo envia a staffing
+    const ESTADO_REJECTED = 'REJECTED'; // Rechazado 
+
+    const ESTADO_ORDER_PENDING = 'ORDER_PENDING'; // En gestión 
+
+    const ESTADO_PERSON_ASSIGNED = 'PERSON_ASSIGNED'; //Aqui ya hay una persona asignado 
+    const ESTADO_VINCULATION_REVIEW = 'VINCULATION_REVIEW';  // REVISION DE LA VINCULACION 
+    const ESTADO_VINCULATION_REJECTED = 'VINCULATION_REJECTED'; //VINCULACION RECHAZADA 
+    const ESTADO_HIRING_IN_PROGRESS = 'HIRING_IN_PROGRESS'; // CONTRATACION  
+    const ESTADO_ACTIVE = 'ACTIVE'; // CONTRATACION finalizada  
+    const ESTADO_CANCELLED = 'CANCELLED'; // 
 
     public static function tableName()
     {
@@ -102,19 +99,12 @@ class Requisicion extends ActiveRecord
         return [
             [['empresa_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'jornada', 'salario', 'auxilio', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
             [['motivo_vinculacion_id', 'empresa_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
-            [['fecha_ingreso', 'fecha_creacion', 'fecha_update', 'birthday'], 'safe'],
+            [['fecha_ingreso', 'fecha_creacion', 'fecha_update'], 'safe'],
             [['jornada', 'salario', 'auxilio'], 'number'],
             [['salario', 'auxilio'], 'number', 'min' => 0],
             [['numero_vacantes'], 'integer', 'min' => 1],
             [['motivo_rechazo', 'vinculacion_motivo_rechazo'], 'string'],
             [['estado'], 'string', 'max' => 50],
-            [['nombres', 'apellidos'], 'string', 'max' => 250],
-            [['tipo_documento'], 'string', 'max' => 10],
-            [['num_documento'], 'string', 'max' => 30],
-            [['correo'], 'string', 'max' => 255],
-            [['correo'], 'email', 'when' => function ($m) { return !empty($m->correo); }],
-            [['telefono'], 'string', 'max' => 45],
-            [['sexo'], 'string', 'max' => 2],
             [['group_uuid'], 'string', 'max' => 36],
             [['motivo_vinculacion_id'], 'exist', 'skipOnError' => true, 'targetClass' => MotivoVinculacion::class, 'targetAttribute' => ['motivo_vinculacion_id' => 'id']],
             [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => EmpresaCliente::class, 'targetAttribute' => ['empresa_id' => 'id']],
@@ -173,14 +163,6 @@ class Requisicion extends ActiveRecord
             'motivo_rechazo' => 'Motivo rechazo',
             'vinculacion_aprobada' => 'Vinculación',
             'vinculacion_motivo_rechazo' => 'Motivo rechazo vinculación',
-            'nombres' => 'Nombres',
-            'apellidos' => 'Apellidos',
-            'tipo_documento' => 'Tipo documento',
-            'num_documento' => 'Nº documento',
-            'correo' => 'Correo',
-            'telefono' => 'Teléfono',
-            'birthday' => 'Fecha nacimiento',
-            'sexo' => 'Sexo',
         ];
     }
 
@@ -262,7 +244,7 @@ class Requisicion extends ActiveRecord
             self::ESTADO_APPROVAL_PENDING => 'warning',
             self::ESTADO_APPROVED => 'primary',
             self::ESTADO_REJECTED => 'danger',
-            self::ESTADO_ORDER_PENDING => 'warning',
+            self::ESTADO_ORDER_PENDING => 'info',
             self::ESTADO_PERSON_ASSIGNED => 'info',
             self::ESTADO_VINCULATION_REVIEW => 'warning',
             self::ESTADO_VINCULATION_REJECTED => 'danger',
@@ -281,7 +263,7 @@ class Requisicion extends ActiveRecord
             self::ESTADO_APPROVAL_PENDING => 'Pendiente aprobación',
             self::ESTADO_APPROVED => 'Aprobada',
             self::ESTADO_REJECTED => 'Rechazada',
-            self::ESTADO_ORDER_PENDING => 'Pendiente orden',
+            self::ESTADO_ORDER_PENDING => 'En gestión',
             self::ESTADO_PERSON_ASSIGNED => 'Persona asignada',
             self::ESTADO_VINCULATION_REVIEW => 'Revisión vinculación',
             self::ESTADO_VINCULATION_REJECTED => 'Vinculación rechazada',
@@ -327,7 +309,6 @@ class Requisicion extends ActiveRecord
             $hija->vacante_index = $i;
             $hija->numero_vacantes = 1;
             $hija->profile_id = null;
-            $hija->nombres = $hija->apellidos = $hija->tipo_documento = $hija->num_documento = $hija->correo = $hija->telefono = $hija->birthday = $hija->sexo = null;
             $hija->save(false);
             RequisicionHistoryLog::registrar($hija, self::ESTADO_DRAFT, 'Vacante #' . $i . ' creada', null);
             $creadas[] = $hija;

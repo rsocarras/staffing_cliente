@@ -18,7 +18,7 @@ class LocationSedesSearch extends LocationSedes
     {
         return [
             [['id', 'empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],
-            [['codigo', 'nombre', 'direccion', 'codigo_externo', 'created_at', 'updated_at'], 'safe'],
+            [['codigo', 'nombre', 'direccion', 'codigo_externo', 'tipo_sede', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -68,6 +68,8 @@ class LocationSedesSearch extends LocationSedes
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
+        $query->andFilterWhere(['tipo_sede' => $this->tipo_sede]);
 
         $query->andFilterWhere(['like', 'codigo', $this->codigo])
             ->andFilterWhere(['like', 'nombre', $this->nombre])

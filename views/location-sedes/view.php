@@ -34,6 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'codigo',
             'nombre',
             'direccion',
+            [
+                'attribute' => 'tipo_sede',
+                'value' => $model->getTipoSedeLabel(),
+            ],
             'centro_costo',
             'centro_costo_staffing',
             'codigo_externo',
