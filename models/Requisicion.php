@@ -33,14 +33,6 @@ use yii\behaviors\BlameableBehavior;
  * @property string|null $motivo_rechazo
  * @property int|null $vinculacion_aprobada
  * @property string|null $vinculacion_motivo_rechazo
- * @property string|null $nombres
- * @property string|null $apellidos
- * @property string|null $tipo_documento
- * @property string|null $num_documento
- * @property string|null $correo
- * @property string|null $telefono
- * @property string|null $birthday
- * @property string|null $sexo
  * @property int|null $creado_por
  * @property int|null $actualizado_por
  * @property string $fecha_creacion
@@ -107,19 +99,12 @@ class Requisicion extends ActiveRecord
         return [
             [['empresa_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'jornada', 'salario', 'auxilio', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
             [['motivo_vinculacion_id', 'empresa_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
-            [['fecha_ingreso', 'fecha_creacion', 'fecha_update', 'birthday'], 'safe'],
+            [['fecha_ingreso', 'fecha_creacion', 'fecha_update'], 'safe'],
             [['jornada', 'salario', 'auxilio'], 'number'],
             [['salario', 'auxilio'], 'number', 'min' => 0],
             [['numero_vacantes'], 'integer', 'min' => 1],
             [['motivo_rechazo', 'vinculacion_motivo_rechazo'], 'string'],
             [['estado'], 'string', 'max' => 50],
-            [['nombres', 'apellidos'], 'string', 'max' => 250],
-            [['tipo_documento'], 'string', 'max' => 10],
-            [['num_documento'], 'string', 'max' => 30],
-            [['correo'], 'string', 'max' => 255],
-            [['correo'], 'email', 'when' => function ($m) { return !empty($m->correo); }],
-            [['telefono'], 'string', 'max' => 45],
-            [['sexo'], 'string', 'max' => 2],
             [['group_uuid'], 'string', 'max' => 36],
             [['motivo_vinculacion_id'], 'exist', 'skipOnError' => true, 'targetClass' => MotivoVinculacion::class, 'targetAttribute' => ['motivo_vinculacion_id' => 'id']],
             [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => EmpresaCliente::class, 'targetAttribute' => ['empresa_id' => 'id']],
@@ -178,14 +163,6 @@ class Requisicion extends ActiveRecord
             'motivo_rechazo' => 'Motivo rechazo',
             'vinculacion_aprobada' => 'Vinculación',
             'vinculacion_motivo_rechazo' => 'Motivo rechazo vinculación',
-            'nombres' => 'Nombres',
-            'apellidos' => 'Apellidos',
-            'tipo_documento' => 'Tipo documento',
-            'num_documento' => 'Nº documento',
-            'correo' => 'Correo',
-            'telefono' => 'Teléfono',
-            'birthday' => 'Fecha nacimiento',
-            'sexo' => 'Sexo',
         ];
     }
 
@@ -332,7 +309,6 @@ class Requisicion extends ActiveRecord
             $hija->vacante_index = $i;
             $hija->numero_vacantes = 1;
             $hija->profile_id = null;
-            $hija->nombres = $hija->apellidos = $hija->tipo_documento = $hija->num_documento = $hija->correo = $hija->telefono = $hija->birthday = $hija->sexo = null;
             $hija->save(false);
             RequisicionHistoryLog::registrar($hija, self::ESTADO_DRAFT, 'Vacante #' . $i . ' creada', null);
             $creadas[] = $hija;

@@ -177,6 +177,16 @@ $page = empty($path) ? 'index' : basename($path);
                             <i class="ti ti-folders"></i><span>Áreas</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="<?= Url::to(['/administracion-planta/dashboard']) ?>" class="<?php echo (strpos($path, 'administracion-planta') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-building-factory-2"></i><span>Administración de Planta</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= Url::to(['/contrato/index']) ?>" class="<?php echo ((strpos($path, 'contrato') !== false) && (strpos($path, 'contrato-tipos') === false)) ? 'active' : ''; ?>">
+                            <i class="ti ti-id-badge-2"></i><span>Contratos</span>
+                        </a>
+                    </li>
                     <li class="menu-title"><span>Track</span></li>
                     <li>
                         <a href="live-tracking" class="<?php echo ($page == 'live-tracking' || $page == 'live-tracking-minute') ? 'active' : ''; ?>">

@@ -43,8 +43,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php foreach ($models as $m): ?>
                         <tr>
                             <td><?= $m->id ?></td>
-                            <td><?= Html::encode($m->nombres . ' ' . $m->apellidos) ?></td>
-                            <td><?= Html::encode($m->num_documento) ?></td>
+                            <td><?= Html::encode($m->profile ? $m->profile->name : '-') ?></td>
+                            <td><?= Html::encode($m->profile ? $m->profile->num_doc : '-') ?></td>
                             <td><?= Html::encode($m->empresa->nombre ?? '-') ?></td>
                             <td><?= Html::encode($m->sede->nombre ?? '-') ?></td>
                             <td><?= Html::encode($m->cargo->nombre ?? '-') ?></td>

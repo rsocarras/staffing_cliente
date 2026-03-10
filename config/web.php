@@ -16,6 +16,11 @@ $config = [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => '3nnFLL-fN8rdekwmQbVnN6SoSrZ75QNe',
         ], !empty($params['baseUrl']) ? ['hostInfo' => $params['baseUrl']] : []),
+
+                'session' => [
+            'name' => 'STAFFING_CLIENTE_SID',  // Nombre único para no compartir sesión con otros proyectos Yii que usen la misma BD
+        ],
+
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

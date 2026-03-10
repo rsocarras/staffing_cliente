@@ -13,7 +13,7 @@ $esCreacion = isset($esCreacion) ? $esCreacion : $model->isNewRecord;
     <?php $form = ActiveForm::begin(['id' => 'requisicion-form']); ?>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <h5 class="mb-3">Datos de la vacante</h5>
             <?= $form->field($model, 'empresa_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos(), 'id', 'nombre'), ['prompt' => 'Seleccione empresa']) ?>
             <?= $form->field($model, 'motivo_vinculacion_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\MotivoVinculacion::getActivos(), 'id', 'nombre'), ['prompt' => 'Opcional']) ?>
@@ -30,17 +30,6 @@ $esCreacion = isset($esCreacion) ? $esCreacion : $model->isNewRecord;
             <?php if ($esCreacion): ?>
                 <?= $form->field($model, 'numero_vacantes')->textInput(['type' => 'number', 'min' => 1])->hint('Se crearán N requisiciones (1 por vacante)') ?>
             <?php endif; ?>
-        </div>
-        <div class="col-md-6">
-            <h5 class="mb-3">Datos de la persona (se autocompletan al asignar)</h5>
-            <?= $form->field($model, 'nombres')->textInput(['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'apellidos')->textInput(['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'tipo_documento')->dropDownList(\app\models\Profile::optsTipoDoc(), ['prompt' => '', 'readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'num_documento')->textInput(['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'correo')->textInput(['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'telefono')->textInput(['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'birthday')->input('date', ['readonly' => !$model->isNewRecord && $model->profile_id]) ?>
-            <?= $form->field($model, 'sexo')->dropDownList(\app\models\Profile::optsSexo(), ['prompt' => '', 'readonly' => !$model->isNewRecord && $model->profile_id]) ?>
         </div>
     </div>
 
