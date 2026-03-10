@@ -71,14 +71,6 @@ class RequisicionService
         }
         $estadoAnterior = $req->estado;
         $req->profile_id = $profileId;
-        $req->nombres = $profile->name ? explode(' ', $profile->name)[0] ?? $profile->name : null;
-        $req->apellidos = $profile->name ? implode(' ', array_slice(explode(' ', $profile->name), 1)) : null;
-        $req->tipo_documento = $profile->tipo_doc;
-        $req->num_documento = $profile->num_doc;
-        $req->correo = $profile->public_email;
-        $req->telefono = $profile->telefono;
-        $req->birthday = $profile->birthday;
-        $req->sexo = $profile->sexo;
         $req->estado = Requisicion::ESTADO_PERSON_ASSIGNED;
         return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, $comentario, $estadoAnterior);
     }
@@ -148,16 +140,16 @@ class RequisicionService
         if (!$url) {
             return;
         }
+        $profile = $req->profile;
         $payload = [
             'persona_id' => $req->profile_id,
-            'num_documento' => $req->num_documento,
+            'num_documento' => $profile ? $profile->num_doc : null,
             'sede' => $req->sede ? $req->sede->nombre : null,
             'cargo' => $req->cargo ? $req->cargo->nombre : null,
             'fecha_ingreso' => $req->fecha_ingreso,
             'empresa' => $req->empresa ? $req->empresa->nombre : null,
-            'nombres' => $req->nombres,
-            'apellidos' => $req->apellidos,
-            'correo' => $req->correo,
+            'nombres' => $profile ? $profile->name : null,
+            'correo' => $profile ? $profile->public_email : null,
         ];
         try {
             $ch = curl_init($url);
