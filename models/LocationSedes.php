@@ -22,6 +22,9 @@ use Yii;
  */
 class LocationSedes extends \yii\db\ActiveRecord
 {
+    const TIPO_SEDE_OPERATIVA = 'operativa';
+    const TIPO_SEDE_ADMINISTRATIVA = 'administrativa';
+
 
 
     /**
@@ -39,6 +42,7 @@ class LocationSedes extends \yii\db\ActiveRecord
     {
         return [
             [['codigo', 'direccion', 'codigo_externo'], 'default', 'value' => null],
+            [['tipo_sede'], 'default', 'value' => self::TIPO_SEDE_OPERATIVA],
             [['codigo', 'codigo_externo'], 'filter', 'filter' => function ($v) { return $v === '' ? null : $v; }],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
@@ -47,6 +51,8 @@ class LocationSedes extends \yii\db\ActiveRecord
             [['codigo', 'codigo_externo'], 'string', 'max' => 50],
             [['nombre'], 'string', 'max' => 190],
             [['direccion'], 'string', 'max' => 255],
+            [['tipo_sede'], 'string', 'max' => 20],
+            [['tipo_sede'], 'in', 'range' => array_keys(self::optsTipoSede())],
             [['empresa_id', 'codigo'], 'unique', 'targetAttribute' => ['empresa_id', 'codigo']],
             [['city_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['city_id' => 'id']],
         ];
@@ -70,12 +76,28 @@ class LocationSedes extends \yii\db\ActiveRecord
             'nombre' => 'Nombre',
             'direccion' => 'Dirección',
             'activo' => 'Activo',
+            'tipo_sede' => 'Tipo de Sede',
             'centro_costo' => 'Centro de Costo',
             'centro_costo_staffing' => 'Centro de Costo Staffing',
             'codigo_externo' => 'Código Externo',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+    }
+
+    public static function optsTipoSede()
+    {
+        return [
+            self::TIPO_SEDE_OPERATIVA => 'Operativa',
+            self::TIPO_SEDE_ADMINISTRATIVA => 'Administrativa',
+        ];
+    }
+
+    public function getTipoSedeLabel()
+    {
+        $items = self::optsTipoSede();
+
+        return isset($items[$this->tipo_sede]) ? $items[$this->tipo_sede] : $this->tipo_sede;
     }
 
 }

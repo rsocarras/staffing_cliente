@@ -64,6 +64,7 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                                 <th>Código</th>
                                 <th>Nombre</th>
                                 <th>Dirección</th>
+                                <th>Tipo Sede</th>
                                 <th>Ciudad</th>
                                 <th>Centro Costo</th>
                                 <th>Centro Costo Staffing</th>
@@ -79,6 +80,7 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                                 <td><?= Html::encode($model->codigo ?? '-') ?></td>
                                 <td class="fw-medium text-dark"><?= Html::encode($model->nombre) ?></td>
                                 <td><?= Html::encode($model->direccion ?? '-') ?></td>
+                                <td><?= Html::encode($model->getTipoSedeLabel()) ?></td>
                                 <td><?= $model->city ? Html::encode($model->city->name) : '-' ?></td>
                                 <td><?= $model->centro_costo !== null ? Html::encode($model->centro_costo) : '-' ?></td>
                                 <td><?= $model->centro_costo_staffing !== null ? Html::encode($model->centro_costo_staffing) : '-' ?></td>
@@ -216,6 +218,7 @@ $(document).ready(function() {
                         res.model.codigo || '-',
                         res.model.nombre,
                         res.model.direccion || '-',
+                        res.model.tipo_sede_label || '-',
                         res.model.city_name || '-',
                         res.model.centro_costo != null ? res.model.centro_costo : '-',
                         res.model.centro_costo_staffing != null ? res.model.centro_costo_staffing : '-',

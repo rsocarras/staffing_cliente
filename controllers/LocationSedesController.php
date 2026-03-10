@@ -128,6 +128,8 @@ class LocationSedesController extends Controller
                         'codigo' => $model->codigo,
                         'nombre' => $model->nombre,
                         'direccion' => $model->direccion,
+                        'tipo_sede' => $model->tipo_sede,
+                        'tipo_sede_label' => $model->getTipoSedeLabel(),
                         'activo' => $model->activo,
                         'city_id' => $model->city_id,
                         'city_name' => $cityName,

@@ -33,6 +33,133 @@ DIRECTORY STRUCTURE
       web/                contains the entry script and Web resources
 
 
+PROJECT CUSTOMIZATION
+---------------------
+
+### Modulo: Administracion de planta
+
+Se implemento un modulo completo para visualizar y administrar la planta autorizada por:
+
+- empresa
+- sede
+- area
+- subarea
+- cargo
+
+El modulo trabaja en esquema multitenant por `empresa_id` y toma el tenant actual desde el
+usuario autenticado. La fuente operativa para calcular ocupacion ya no es `profile`, sino la
+nueva tabla `contrato`.
+
+### Alcance funcional implementado
+
+- Dashboard global con KPIs de planta total, ocupados, vacantes, cobertura, sobredotacion,
+  sedes con vacantes y sedes sobredotadas.
+- Resumen por sede con agrupacion `Sede -> Area -> Subarea -> Cargo`.
+- Resumen por area con agrupacion `Area -> Subarea -> Cargo -> Sede`.
+- Vista administrativa de planta autorizada con `index`, `create`, `update` y `view`.
+- Historial de cambios sobre la planta autorizada.
+- Exportacion en Excel y vista imprimible tipo PDF.
+- Filtros por region, ciudad, sede, tipo de sede, area, subarea, cargo, cobertura y texto libre.
+- RBAC base para `admin_total`, `rrhh`, `operaciones_regionales`, `director_area` y `gerente_sede`.
+
+### Modelo analitico implementado
+
+- `staffing_planta` define la planta autorizada por la combinacion obligatoria:
+  `empresa_id + location_sede_id + area_id + sub_area_id + cargo_id`.
+- `contrato` define la asignacion laboral vigente del empleado.
+- `contrato_distribucion_sede` permite distribuir un contrato entre varias sedes y soporta
+  conteo ponderado por porcentaje.
+- `staffing_planta_historial` registra cambios de alta, actualizacion, activacion y desactivacion.
+- `location_sedes.tipo_sede` clasifica la sede como `operativa` o `administrativa`.
+
+Estados de contrato que ocupan planta:
+
+- `activo`
+- `suspendido`
+- `licencia`
+- `incapacidad`
+
+Estados que no ocupan planta:
+
+- `inactivo`
+- `liquidado`
+- `cancelado`
+
+Calculos principales:
+
+- `ocupados`:
+  - modo `ponderado`: usa `contrato_distribucion_sede` si la suma de porcentajes es 100
+  - modo `entero`: usa la `sede_id` principal del contrato
+- `vacantes = cantidad_autorizada - ocupados`
+- `cobertura = ocupados / planta * 100`
+- si `vacantes < 0`, el registro se muestra como sobredotado
+
+### Archivos principales
+
+- `controllers/AdministracionPlantaController.php`
+- `services/AdministracionPlantaService.php`
+- `models/Contrato.php`
+- `models/ContratoDistribucionSede.php`
+- `models/StaffingPlanta.php`
+- `models/StaffingPlantaHistorial.php`
+- `models/search/AdministracionPlantaDashboardSearch.php`
+- `models/search/StaffingPlantaSearch.php`
+- `views/administracion-planta/*`
+
+### Migraciones agregadas
+
+Aplicar en este orden:
+
+1. `m260310090000_add_tipo_sede_to_location_sedes`
+2. `m260310090100_create_contrato_table`
+3. `m260310090200_create_contrato_distribucion_sede_table`
+4. `m260310090300_create_staffing_planta_tables`
+5. `m260310090400_seed_administracion_planta_rbac`
+6. `m260310150000_seed_administracion_planta_demo_data`
+
+### Rutas principales
+
+- `/administracion-planta/dashboard`
+- `/administracion-planta/resumen-sede`
+- `/administracion-planta/resumen-area`
+- `/administracion-planta/index`
+- `/administracion-planta/historial`
+
+### Como probar el modulo
+
+1. Ejecutar migraciones:
+
+   ```
+   php yii migrate/up --migrationPath=@app/migrations
+   ```
+
+2. Asignar un rol RBAC con acceso al modulo.
+3. Crear o validar sedes, areas, subareas y cargos de la empresa.
+4. Registrar planta autorizada en `staffing_planta`.
+5. Registrar contratos vigentes en `contrato`.
+6. Si aplica distribucion entre sedes, registrar porcentajes en `contrato_distribucion_sede`
+   con suma exacta de `100`.
+7. Ingresar a las rutas del modulo y validar dashboard, resumenes, CRUD, historial y exportacion.
+
+Datos demo incluidos por el seed:
+
+- 3 sedes seed: 2 operativas y 1 administrativa
+- 4 empleados seed con contratos en estado `activo`, `licencia`, `suspendido` e `incapacidad`
+- distribucion 50/50 entre sedes para el caso de licencia
+- 4 registros de `staffing_planta`
+- historial seed para revisar la pestaña de auditoria
+
+### Notas tecnicas
+
+- El proyecto real usa Yii2 con estructura tipo basic y un template administrativo ya integrado.
+- El tenant actual se resuelve desde `Profile.empresas_id`.
+- El alcance por sede o area se resuelve hoy desde RBAC y apoyo temporal en `Profile`
+  (`data_json`, `sede_id`, `area_id`) para permitir evolucion futura a tablas de asignacion.
+- La exportacion PDF quedo como vista imprimible HTML porque el proyecto no incluye una
+  libreria PDF dedicada.
+- La analitica usa la planta capturada manualmente como fuente prioritaria para la dimension
+  `area/subarea/cargo` cuando exista inconsistencia con el cargo.
+
 
 REQUIREMENTS
 ------------

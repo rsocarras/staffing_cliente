@@ -49,6 +49,7 @@ use Yii;
  * @property NominaItem[] $nominaItems
  * @property ProfileEventosLog[] $profileEventosLogs
  * @property ProfileSalarios[] $profileSalarios
+ * @property Contrato[] $contratos
  * @property User $user
  */
 class Profile extends \yii\db\ActiveRecord
@@ -247,6 +248,16 @@ class Profile extends \yii\db\ActiveRecord
     public function getProfileSalarios()
     {
         return $this->hasMany(ProfileSalarios::class, ['profile_id' => 'user_id']);
+    }
+
+    /**
+     * Gets query for [[Contratos]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getContratos()
+    {
+        return $this->hasMany(Contrato::class, ['profile_id' => 'user_id']);
     }
 
     /**
