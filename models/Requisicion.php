@@ -62,18 +62,23 @@ use yii\behaviors\BlameableBehavior;
  */
 class Requisicion extends ActiveRecord
 {
-    const ESTADO_DRAFT = 'DRAFT';
-    const ESTADO_SUBMITTED = 'SUBMITTED';
-    const ESTADO_APPROVAL_PENDING = 'APPROVAL_PENDING';
-    const ESTADO_APPROVED = 'APPROVED';
-    const ESTADO_REJECTED = 'REJECTED';
-    const ESTADO_ORDER_PENDING = 'ORDER_PENDING';
-    const ESTADO_PERSON_ASSIGNED = 'PERSON_ASSIGNED';
-    const ESTADO_VINCULATION_REVIEW = 'VINCULATION_REVIEW';
-    const ESTADO_VINCULATION_REJECTED = 'VINCULATION_REJECTED';
-    const ESTADO_HIRING_IN_PROGRESS = 'HIRING_IN_PROGRESS';
-    const ESTADO_ACTIVE = 'ACTIVE';
-    const ESTADO_CANCELLED = 'CANCELLED';
+    const ESTADO_DRAFT = 'DRAFT';   // Borrador 
+
+    const ESTADO_SUBMITTED = 'SUBMITTED';  
+
+    const ESTADO_APPROVAL_PENDING = 'APPROVAL_PENDING'; // Registrada 
+    
+    const ESTADO_APPROVED = 'APPROVED'; // Aprobado -->  Cuando se aprueba lo envia a staffing
+    const ESTADO_REJECTED = 'REJECTED'; // Rechazado 
+
+    const ESTADO_ORDER_PENDING = 'ORDER_PENDING'; // En gestión 
+
+    const ESTADO_PERSON_ASSIGNED = 'PERSON_ASSIGNED'; //Aqui ya hay una persona asignado 
+    const ESTADO_VINCULATION_REVIEW = 'VINCULATION_REVIEW';  // REVISION DE LA VINCULACION 
+    const ESTADO_VINCULATION_REJECTED = 'VINCULATION_REJECTED'; //VINCULACION RECHAZADA 
+    const ESTADO_HIRING_IN_PROGRESS = 'HIRING_IN_PROGRESS'; // CONTRATACION  
+    const ESTADO_ACTIVE = 'ACTIVE'; // CONTRATACION finalizada  
+    const ESTADO_CANCELLED = 'CANCELLED'; // 
 
     public static function tableName()
     {
@@ -262,7 +267,7 @@ class Requisicion extends ActiveRecord
             self::ESTADO_APPROVAL_PENDING => 'warning',
             self::ESTADO_APPROVED => 'primary',
             self::ESTADO_REJECTED => 'danger',
-            self::ESTADO_ORDER_PENDING => 'warning',
+            self::ESTADO_ORDER_PENDING => 'info',
             self::ESTADO_PERSON_ASSIGNED => 'info',
             self::ESTADO_VINCULATION_REVIEW => 'warning',
             self::ESTADO_VINCULATION_REJECTED => 'danger',
@@ -281,7 +286,7 @@ class Requisicion extends ActiveRecord
             self::ESTADO_APPROVAL_PENDING => 'Pendiente aprobación',
             self::ESTADO_APPROVED => 'Aprobada',
             self::ESTADO_REJECTED => 'Rechazada',
-            self::ESTADO_ORDER_PENDING => 'Pendiente orden',
+            self::ESTADO_ORDER_PENDING => 'En gestión',
             self::ESTADO_PERSON_ASSIGNED => 'Persona asignada',
             self::ESTADO_VINCULATION_REVIEW => 'Revisión vinculación',
             self::ESTADO_VINCULATION_REJECTED => 'Vinculación rechazada',
