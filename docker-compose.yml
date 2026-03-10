@@ -8,60 +8,12 @@ services:
     volumes:
       - .:/var/www/html
     environment:
-      - DB_DSN=mysql:host=db;dbname=hr_staffing
+      - DB_DSN=mysql:host=db_shared_staffing;dbname=hr_staffing
       - DB_USER=root
       - DB_PASS=root
-    depends_on:
-      - db
-      - redis
-      - rabbitmq
+    networks:
+      - shared-network-staffing
 
-  # Base de Datos MySQL
-  db:
-    image: mysql:8.0
-    container_name: bd_hr_staffing
-    restart: always
-    environment:
-      MYSQL_DATABASE: hr_staffing
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "3307:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
-
-  # Redis
-  redis:
-    image: redis:7-alpine
-    container_name: yii2_redis
-
-  # RabbitMQ
-  rabbitmq:
-    image: rabbitmq:4-management-alpine
-    container_name: yii2_rabbitmq
-    ports:
-      - "15672:15672"
-
-  # Elasticsearch
-  elasticsearch:
-    # Usar versión más antigua y estable para ARM64
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-    platform: linux/amd64
-    container_name: elasticsearch-simple
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - bootstrap.memory_lock=false
-      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
-    ports:
-      - '9200:9200'
-
-  # LocalStack (S3/CloudFront)
-  localstack:
-    image: localstack/localstack
-    container_name: yii2_aws_local
-    ports:
-      - "4566:4566"
-
-volumes:
-  db_data:
+networks:
+  shared-network-staffing:
+    external: true
