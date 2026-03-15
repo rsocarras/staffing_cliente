@@ -79,6 +79,7 @@ $config = [
             ],
             'controllerMap' => [
                 'admin' => app\controllers\user\AdminController::class,
+                'role' => app\controllers\user\RoleController::class,
             ],
         ],
     ],

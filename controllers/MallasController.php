@@ -39,7 +39,7 @@ class MallasController extends Controller
                     'rules' => [
                         [
                             'allow' => true,
-                            'roles' => ['malla.aprobar'],
+                            'roles' => ['malla.aprobar', 'admin', 'administrator'],
                         ],
                     ],
                 ],
