@@ -4,6 +4,10 @@
   "scripts": {
     "sass": "sass web/assets/scss/main.scss:web/assets/css/style.css",
     "sass:watch": "sass web/assets/scss/main.scss:web/assets/css/style.css --watch",
-    "sass:no-map": "sass web/assets/scss/main.scss:web/assets/css/style.css --style=compressed --no-source-map"
+    "sass:no-map": "sass web/assets/scss/main.scss:web/assets/css/style.css --style=compressed --no-source-map",
+    "build": "npm run sass"
+  },
+  "devDependencies": {
+    "sass": "^1.92.1"
   }
 }
