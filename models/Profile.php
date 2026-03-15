@@ -45,6 +45,7 @@ use Yii;
  * @property ContabilidadCentroUtilidad $centroUtilidad
  * @property EmpleadoVenueHistory[] $empleadoVenueHistories
  * @property Empresas $empresas
+ * @property MallaProfileAsignacion[] $mallaProfileAsignacions
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property NominaItem[] $nominaItems
  * @property ProfileEventosLog[] $profileEventosLogs
@@ -218,6 +219,11 @@ class Profile extends \yii\db\ActiveRecord
     public function getMallaDistribucionHoras()
     {
         return $this->hasMany(MallaDistribucionHoras::class, ['profile_id' => 'user_id']);
+    }
+
+    public function getMallaProfileAsignacions()
+    {
+        return $this->hasMany(MallaProfileAsignacion::class, ['profile_id' => 'user_id']);
     }
 
     /**

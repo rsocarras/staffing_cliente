@@ -200,6 +200,18 @@ $page = empty($path) ? 'index' : basename($path);
                         </a>
                     </li>
                     <li>
+                        <a href="<?= Url::to(['/malla-cargo-asignacion/index']) ?>"
+                            class="<?php echo (strpos($path, 'malla-cargo-asignacion') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-briefcase-2"></i><span>Asignación malla por cargo</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= Url::to(['/malla-profile-asignacion/index']) ?>"
+                            class="<?php echo (strpos($path, 'malla-profile-asignacion') !== false) ? 'active' : ''; ?>">
+                            <i class="ti ti-user-cog"></i><span>Asignación malla por empleado</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="leave"
                             class="<?php echo ($page == 'leave' || $page == 'leave-approved' || $page == 'leave-rejected') ? 'active' : ''; ?>">
                             <i class="ti ti-beach"></i><span>Leave</span>

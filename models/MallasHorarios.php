@@ -38,6 +38,8 @@ class MallasHorarios extends \yii\db\ActiveRecord
             [['malla_id', 'dia_semana', 'hora_inicio', 'hora_fin'], 'required'],
             [['malla_id', 'dia_semana', 'minutos_descanso'], 'integer'],
             [['hora_inicio', 'hora_fin'], 'safe'],
+            [['dia_semana'], 'integer', 'min' => 1, 'max' => 7],
+            [['hora_fin'], 'validateRangoHorario'],
             [['malla_id'], 'exist', 'skipOnError' => true, 'targetClass' => Mallas::class, 'targetAttribute' => ['malla_id' => 'id']],
         ];
     }
@@ -65,6 +67,17 @@ class MallasHorarios extends \yii\db\ActiveRecord
     public function getMalla()
     {
         return $this->hasOne(Mallas::class, ['id' => 'malla_id']);
+    }
+
+    public function validateRangoHorario($attribute)
+    {
+        if (empty($this->hora_inicio) || empty($this->hora_fin)) {
+            return;
+        }
+
+        if ($this->hora_inicio === $this->hora_fin) {
+            $this->addError($attribute, 'La hora fin no puede ser igual a la hora inicio.');
+        }
     }
 
 }

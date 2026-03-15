@@ -4,20 +4,19 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
-/** @var app\models\Mallas $model */
+/** @var app\models\MallaCargoAsignacion $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Mallas', 'url' => ['index']];
+$this->title = 'Asignación #' . $model->id;
+$this->params['breadcrumbs'][] = ['label' => 'Asignación malla por cargo', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
 ?>
-<div class="mallas-view">
+<div class="malla-cargo-asignacion-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?php if (Yii::$app->user->can('malla.aprobar') && $model->estado_aprobacion === \app\models\Mallas::ESTADO_PENDIENTE): ?>
+        <?= Html::a('Actualizar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?php if (Yii::$app->user->can('malla.asignacion_cargo.aprobar') && $model->estado_aprobacion === \app\models\MallaCargoAsignacion::ESTADO_PENDIENTE): ?>
             <?= Html::beginForm(['approve', 'id' => $model->id], 'post', ['class' => 'd-inline']) ?>
                 <?= Html::submitButton('Aprobar', ['class' => 'btn btn-success']) ?>
             <?= Html::endForm() ?>
@@ -26,10 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::submitButton('Rechazar', ['class' => 'btn btn-warning']) ?>
             <?= Html::endForm() ?>
         <?php endif; ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Eliminar', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => '¿Seguro que quieres eliminar esta asignación?',
                 'method' => 'post',
             ],
         ]) ?>
@@ -40,11 +39,14 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'empresa_id',
-            'nombre',
-            'descripcion',
-            'tipo',
-            'activo',
-            'config_json',
+            [
+                'label' => 'Cargo',
+                'value' => $model->cargo ? $model->cargo->nombre : $model->cargo_id,
+            ],
+            [
+                'label' => 'Malla',
+                'value' => $model->malla ? $model->malla->nombre : $model->malla_id,
+            ],
             [
                 'attribute' => 'estado_aprobacion',
                 'value' => $model->displayEstadoAprobacion(),
@@ -54,8 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'solicitado_at',
             'aprobado_por',
             'aprobado_at',
-            'created_at',
-            'updated_at',
+            'activo:boolean',
         ],
     ]) ?>
 

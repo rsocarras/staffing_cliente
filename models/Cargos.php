@@ -20,6 +20,7 @@ use Yii;
  *
  * @property Area $area
  * @property Area $subArea
+ * @property MallaCargoAsignacion[] $mallaCargoAsignacions
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property Profile[] $profiles
  */
@@ -109,6 +110,11 @@ class Cargos extends \yii\db\ActiveRecord
     public function getMallaDistribucionHoras()
     {
         return $this->hasMany(MallaDistribucionHoras::class, ['cargo_id' => 'id']);
+    }
+
+    public function getMallaCargoAsignacions()
+    {
+        return $this->hasMany(MallaCargoAsignacion::class, ['cargo_id' => 'id']);
     }
 
     /**

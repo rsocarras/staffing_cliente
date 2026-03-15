@@ -12,21 +12,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'empresa_id')->textInput() ?>
+    <?= $form->field($model, 'empresa_id')->textInput(['readonly' => true]) ?>
 
-    <?= $form->field($model, 'nombre')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'descripcion')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'tipo')->dropDownList([ 'fija' => 'Fija', 'rotativa' => 'Rotativa', ], ['prompt' => '']) ?>
-
-    <?= $form->field($model, 'activo')->textInput() ?>
-
-    <?= $form->field($model, 'config_json')->textInput() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?= $this->render('_form_fields', ['model' => $model, 'form' => $form]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

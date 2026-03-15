@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Profile;
 use app\models\search\ProfileSearch;
+use app\services\MallaTimesheetService;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -56,8 +57,14 @@ class ProfileController extends Controller
      */
     public function actionView($user_id)
     {
+        $model = $this->findModel($user_id);
+        $anchorDate = $this->request->get('date', date('Y-m-d'));
+        $weekSchedule = MallaTimesheetService::employeeWeek((int) $model->empresas_id, (int) $model->user_id, $anchorDate);
+
         return $this->render('view', [
-            'model' => $this->findModel($user_id),
+            'model' => $model,
+            'weekSchedule' => $weekSchedule,
+            'anchorDate' => $anchorDate,
         ]);
     }
 

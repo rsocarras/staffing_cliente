@@ -2,6 +2,9 @@
 
 namespace app\controllers;
 
+use app\models\LocationSedes;
+use app\models\Profile;
+use app\services\MallaTimesheetService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -1227,13 +1230,41 @@ class PagesController extends Controller
     public function actionTimesheetWeek()
     {
         $this->layout = 'main';
-        return $this->render('/timesheet-week');
+        $empresaId = $this->currentEmpresaId();
+        $sedes = $empresaId ? LocationSedes::find()->where(['empresa_id' => $empresaId, 'activo' => 1])->orderBy(['nombre' => SORT_ASC])->all() : [];
+        $sedeId = (int) $this->request->get('sede_id', 0);
+        $anchorDate = $this->request->get('date', date('Y-m-d'));
+        $weekData = null;
+        if ($empresaId && $sedeId > 0) {
+            $weekData = MallaTimesheetService::buildWeek($empresaId, $sedeId, $anchorDate);
+        }
+
+        return $this->render('/timesheet-week', [
+            'sedes' => $sedes,
+            'sedeId' => $sedeId,
+            'anchorDate' => $anchorDate,
+            'weekData' => $weekData,
+        ]);
     }
 
     public function actionTimesheet()
     {
         $this->layout = 'main';
-        return $this->render('/timesheet');
+        $empresaId = $this->currentEmpresaId();
+        $sedes = $empresaId ? LocationSedes::find()->where(['empresa_id' => $empresaId, 'activo' => 1])->orderBy(['nombre' => SORT_ASC])->all() : [];
+        $sedeId = (int) $this->request->get('sede_id', 0);
+        $date = $this->request->get('date', date('Y-m-d'));
+        $dayData = null;
+        if ($empresaId && $sedeId > 0) {
+            $dayData = MallaTimesheetService::buildDay($empresaId, $sedeId, $date);
+        }
+
+        return $this->render('/timesheet', [
+            'sedes' => $sedes,
+            'sedeId' => $sedeId,
+            'date' => $date,
+            'dayData' => $dayData,
+        ]);
     }
 
     public function actionTodoList()
@@ -1816,6 +1847,15 @@ class PagesController extends Controller
     {
         $this->layout = 'main';
         return $this->render('/working-on-weekends');
+    }
+
+    private function currentEmpresaId(): ?int
+    {
+        if (Yii::$app->user->isGuest) {
+            return null;
+        }
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+        return $profile ? (int) $profile->empresas_id : null;
     }
 
 }
