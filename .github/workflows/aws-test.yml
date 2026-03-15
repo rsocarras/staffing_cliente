@@ -1,0 +1,32 @@
+name: Test AWS OIDC
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-aws:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::737923405902:role/github-oidc-role
+          aws-region: us-east-1
+       
+      - name: Deploy on EC2
+        run: |
+          aws ssm send-command \
+            --targets "Key=tag:git-deploy-target,Values=dev-staffing-full" \
+            --document-name "AWS-RunShellScript" \
+            --parameters commands="sudo -u ubuntu bash /home/ubuntu/pull_cliente.sh" \
+            --region us-east-1
