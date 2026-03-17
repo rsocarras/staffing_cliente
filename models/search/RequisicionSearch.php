@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Requisicion;
@@ -16,7 +17,7 @@ class RequisicionSearch extends Requisicion
     public function rules()
     {
         return [
-            [['id', 'empresa_id', 'ciudad_id', 'sede_id', 'area_id', 'cargo_id', 'numero_vacantes'], 'integer'],
+            [['id', 'empresa_cliente_id', 'empresas_id', 'ciudad_id', 'sede_id', 'area_id', 'cargo_id', 'numero_vacantes'], 'integer'],
             [['estado', 'group_uuid', 'empresa_nombre', 'ciudad_nombre'], 'safe'],
             [['fecha_ingreso', 'fecha_ingreso_desde', 'fecha_ingreso_hasta'], 'safe'],
         ];
@@ -45,8 +46,16 @@ class RequisicionSearch extends Requisicion
             return $dataProvider;
         }
 
+        $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+        if (is_numeric($tenantEmpresaId) && (int) $tenantEmpresaId > 0) {
+            $query->andWhere(['requisicion.empresas_id' => (int) $tenantEmpresaId]);
+        } else {
+            $query->where('0=1');
+            return $dataProvider;
+        }
+
         $query->andFilterWhere(['requisicion.estado' => $this->estado])
-            ->andFilterWhere(['requisicion.empresa_id' => $this->empresa_id])
+            ->andFilterWhere(['requisicion.empresa_cliente_id' => $this->empresa_cliente_id])
             ->andFilterWhere(['requisicion.ciudad_id' => $this->ciudad_id])
             ->andFilterWhere(['requisicion.sede_id' => $this->sede_id])
             ->andFilterWhere(['requisicion.area_id' => $this->area_id])

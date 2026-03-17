@@ -80,8 +80,12 @@ class MallasController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $model = $this->findModel($id);
+        $readOnly = $this->isMallaAssigned((int) $model->id) || !$this->supportsKanbanEditor($model);
+
+        return $this->render('create-kanban', [
+            'model' => $model,
+            'readOnly' => $readOnly,
         ]);
     }
 
@@ -130,6 +134,41 @@ class MallasController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+        ]);
+    }
+
+    public function actionCreateKanban($id = null)
+    {
+        if ($id !== null) {
+            $model = $this->findModel($id);
+            if ($this->isMallaAssigned((int) $model->id)) {
+                Yii::$app->session->setFlash('warning', 'La malla ya está asignada y no se puede editar desde el tablero.');
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
+
+            if (!$this->supportsKanbanEditor($model)) {
+                Yii::$app->session->setFlash(
+                    'warning',
+                    'Esta malla contiene tipos de bloque que no son compatibles con el tablero kanban. Usa el editor clásico para ajustarla.'
+                );
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
+        } else {
+            $model = new Mallas();
+            $empresaId = $this->currentEmpresaId();
+            if ($empresaId === null) {
+                Yii::$app->session->setFlash('error', 'No se pudo resolver empresas_id desde la sesión del usuario.');
+            } else {
+                $model->empresa_id = $empresaId;
+            }
+            $model->estado_aprobacion = Mallas::ESTADO_DRAFT;
+            $model->tipo = Mallas::TIPO_FIJA;
+            $model->activo = 1;
+        }
+
+        return $this->render('create-kanban', [
+            'model' => $model,
+            'readOnly' => false,
         ]);
     }
 
@@ -512,5 +551,21 @@ SQL;
                 'estado_aprobacion' => MallaProfileAsignacion::ESTADO_APROBADA,
                 'activo' => 1,
             ])->exists();
+    }
+
+    private function supportsKanbanEditor(Mallas $model): bool
+    {
+        $unsupportedTypes = array_diff(
+            array_unique(array_map(static function (MallasHorarios $horario) {
+                return (string) $horario->tipo_bloque;
+            }, $model->mallasHorarios)),
+            [
+                MallasHorarios::TIPO_WORK,
+                MallasHorarios::TIPO_BREAK,
+                MallasHorarios::TIPO_OFF,
+            ]
+        );
+
+        return empty($unsupportedTypes);
     }
 }

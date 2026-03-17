@@ -17,13 +17,15 @@ use yii\behaviors\BlameableBehavior;
  * @property int|null $parent_id
  * @property string $estado
  * @property int|null $motivo_vinculacion_id
- * @property int $empresa_id
+ * @property int $empresa_cliente_id
+ * @property int $empresas_id
  * @property string $fecha_ingreso
  * @property int $ciudad_id
  * @property int $sede_id
  * @property int $area_id
  * @property int|null $sub_area_id
  * @property int $cargo_id
+ * @property string|null $tipo_contrato
  * @property float $jornada
  * @property float $salario
  * @property float $auxilio
@@ -54,6 +56,7 @@ use yii\behaviors\BlameableBehavior;
  */
 class Requisicion extends ActiveRecord
 {
+    private static $tipoContratoEnumCache = null;
     const ESTADO_DRAFT = 'DRAFT';   // Borrador 
 
     const ESTADO_SUBMITTED = 'SUBMITTED';  
@@ -97,17 +100,20 @@ class Requisicion extends ActiveRecord
     public function rules()
     {
         return [
-            [['empresa_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'jornada', 'salario', 'auxilio', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
-            [['motivo_vinculacion_id', 'empresa_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
+            [['empresa_cliente_id', 'empresas_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'tipo_contrato', 'jornada', 'salario', 'auxilio', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
+            [['motivo_vinculacion_id', 'empresa_cliente_id', 'empresas_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
             [['fecha_ingreso', 'fecha_creacion', 'fecha_update'], 'safe'],
             [['jornada', 'salario', 'auxilio'], 'number'],
             [['salario', 'auxilio'], 'number', 'min' => 0],
             [['numero_vacantes'], 'integer', 'min' => 1],
             [['motivo_rechazo', 'vinculacion_motivo_rechazo'], 'string'],
+            [['tipo_contrato'], 'string', 'max' => 255],
+            [['tipo_contrato'], 'in', 'range' => array_keys(self::optsTipoContrato())],
             [['estado'], 'string', 'max' => 50],
             [['group_uuid'], 'string', 'max' => 36],
             [['motivo_vinculacion_id'], 'exist', 'skipOnError' => true, 'targetClass' => MotivoVinculacion::class, 'targetAttribute' => ['motivo_vinculacion_id' => 'id']],
-            [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => EmpresaCliente::class, 'targetAttribute' => ['empresa_id' => 'id']],
+            [['empresa_cliente_id'], 'exist', 'skipOnError' => true, 'targetClass' => EmpresaCliente::class, 'targetAttribute' => ['empresa_cliente_id' => 'id']],
+            [['empresas_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresas_id' => 'id']],
             [['ciudad_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['ciudad_id' => 'id']],
             [['sede_id'], 'exist', 'skipOnError' => true, 'targetClass' => LocationSedes::class, 'targetAttribute' => ['sede_id' => 'id']],
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['area_id' => 'id']],
@@ -118,6 +124,7 @@ class Requisicion extends ActiveRecord
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Requisicion::class, 'targetAttribute' => ['parent_id' => 'id']],
             [['sede_id'], 'validateSedeCiudad'],
             [['sub_area_id'], 'validateSubArea'],
+            [['empresa_cliente_id'], 'validateEmpresaClienteTenant'],
         ];
     }
 
@@ -139,6 +146,20 @@ class Requisicion extends ActiveRecord
         }
     }
 
+    public function validateEmpresaClienteTenant($attribute, $params, $validator)
+    {
+        if (empty($this->empresa_cliente_id) || empty($this->empresas_id)) {
+            return;
+        }
+        $empresaCliente = EmpresaCliente::findOne($this->empresa_cliente_id);
+        if ($empresaCliente === null) {
+            return;
+        }
+        if ((int) $empresaCliente->empresas_id !== (int) $this->empresas_id) {
+            $this->addError($attribute, 'La empresa cliente no pertenece a la empresa actual.');
+        }
+    }
+
     public function attributeLabels()
     {
         return [
@@ -147,13 +168,15 @@ class Requisicion extends ActiveRecord
             'vacante_index' => 'Vacante #',
             'estado' => 'Estado',
             'motivo_vinculacion_id' => 'Motivo vinculación',
-            'empresa_id' => 'Empresa',
+            'empresa_cliente_id' => 'Empresa cliente',
+            'empresas_id' => 'Empresa',
             'fecha_ingreso' => 'Fecha ingreso',
             'ciudad_id' => 'Ciudad',
             'sede_id' => 'Sede',
             'area_id' => 'Área',
             'sub_area_id' => 'Sub-área',
             'cargo_id' => 'Cargo',
+            'tipo_contrato' => 'Tipo de contrato',
             'jornada' => 'Jornada',
             'salario' => 'Salario',
             'auxilio' => 'Auxilio',
@@ -173,7 +196,12 @@ class Requisicion extends ActiveRecord
 
     public function getEmpresa()
     {
-        return $this->hasOne(EmpresaCliente::class, ['id' => 'empresa_id']);
+        return $this->hasOne(EmpresaCliente::class, ['id' => 'empresa_cliente_id']);
+    }
+
+    public function getEmpresas()
+    {
+        return $this->hasOne(Empresas::class, ['id' => 'empresas_id']);
     }
 
     public function getCiudad()
@@ -271,6 +299,41 @@ class Requisicion extends ActiveRecord
             self::ESTADO_ACTIVE => 'Activa',
             self::ESTADO_CANCELLED => 'Anulada',
         ];
+    }
+
+    public static function optsTipoContrato()
+    {
+        if (self::$tipoContratoEnumCache !== null) {
+            return self::$tipoContratoEnumCache;
+        }
+
+        $items = [];
+        try {
+            $column = Yii::$app->db->schema->getTableSchema(self::tableName(), true)->getColumn('tipo_contrato');
+            $dbType = $column ? (string) $column->dbType : '';
+            if (preg_match('/^enum\((.*)\)$/i', $dbType, $matches)) {
+                $values = str_getcsv($matches[1], ',', "'");
+                foreach ($values as $value) {
+                    $value = trim((string) $value);
+                    if ($value === '') {
+                        continue;
+                    }
+                    $items[$value] = ucfirst($value);
+                }
+            }
+        } catch (\Throwable $e) {
+            // fallback silencioso
+        }
+
+        if (empty($items)) {
+            $items = [
+                'directo' => 'Directo',
+                'temporal' => 'Temporal',
+            ];
+        }
+
+        self::$tipoContratoEnumCache = $items;
+        return self::$tipoContratoEnumCache;
     }
 
     public function isEditable()

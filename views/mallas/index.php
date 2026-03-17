@@ -16,6 +16,7 @@ $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.boot
 
 $createAjaxUrl = Url::to(['mallas/create-ajax']);
 $baseViewUrl = Url::to(['mallas/view']);
+$baseKanbanUrl = Url::to(['mallas/create-kanban']);
 $baseUpdateUrl = Url::to(['mallas/update']);
 $baseDeleteUrl = Url::to(['mallas/delete']);
 ?>
@@ -42,6 +43,7 @@ $baseDeleteUrl = Url::to(['mallas/delete']);
                         <input type="text" class="form-control form-control-sm" id="malla-search" placeholder="Buscar...">
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <a href="<?= Url::to(['mallas/create-kanban']) ?>" class="btn btn-primary"><i class="ti ti-layout-kanban me-1"></i>Crear Kanban</a>
                         <a href="<?= Url::to(['mallas/create']) ?>" class="btn btn-outline-secondary"><i class="ti ti-calendar-event me-1"></i>Crear completa</a>
                         <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_malla"><i class="ti ti-plus me-1"></i>Agregar Nueva</a>
                     </div>
@@ -72,6 +74,7 @@ $baseDeleteUrl = Url::to(['mallas/delete']);
                                 <td>
                                     <div class="d-inline-flex gap-2">
                                         <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
+                                        <?= Html::a('<i class="ti ti-layout-kanban"></i>', ['create-kanban', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-info fs-16', 'title' => 'Editar kanban']) ?>
                                         <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
                                         <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
                                             'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
@@ -178,6 +181,7 @@ $(document).ready(function() {
                         res.model.estado || '-',
                         '<div class="d-inline-flex gap-2">' +
                             '<a href="{$baseViewUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Ver"><i class="ti ti-eye"></i></a>' +
+                            '<a href="{$baseKanbanUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-info fs-16" title="Editar kanban"><i class="ti ti-layout-kanban"></i></a>' +
                             '<a href="{$baseUpdateUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Editar"><i class="ti ti-edit"></i></a>' +
                             '<a href="{$baseDeleteUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16" title="Eliminar" data-confirm="¿Está seguro que desea eliminar?" data-method="post"><i class="ti ti-trash"></i></a>' +
                         '</div>'

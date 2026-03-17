@@ -71,6 +71,7 @@ class RequisicionController extends Controller
     public function actionIndex()
     {
         $searchModel = new RequisicionSearch();
+        $searchModel->empresas_id = $this->currentEmpresaId();
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->pagination = false;
 
@@ -100,8 +101,10 @@ class RequisicionController extends Controller
         $model = new Requisicion();
         $model->estado = Requisicion::ESTADO_DRAFT;
         $model->numero_vacantes = 1;
+        $this->applyTenantEmpresa($model);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->validate()) {
+            $this->applyTenantEmpresa($model);
             $creadas = $this->guardarGrupoRequisiciones($model);
             if ($creadas !== null) {
                 Yii::$app->session->setFlash('success', 'Requisición creada. Se generaron ' . count($creadas) . ' vacante(s).');
@@ -121,6 +124,7 @@ class RequisicionController extends Controller
         $model = new Requisicion();
         $model->estado = Requisicion::ESTADO_DRAFT;
         $model->numero_vacantes = 1;
+        $this->applyTenantEmpresa($model);
 
         if (!$this->request->isPost || !$model->load($this->request->post())) {
             return [
@@ -129,6 +133,7 @@ class RequisicionController extends Controller
             ];
         }
 
+        $this->applyTenantEmpresa($model);
         if (!$model->validate()) {
             return [
                 'success' => false,
@@ -196,7 +201,10 @@ class RequisicionController extends Controller
     public function actionApproval()
     {
         $dataProvider = new \yii\data\ActiveDataProvider([
-            'query' => Requisicion::find()->where(['estado' => Requisicion::ESTADO_APPROVAL_PENDING])->orderBy('fecha_creacion'),
+            'query' => Requisicion::find()->where([
+                'estado' => Requisicion::ESTADO_APPROVAL_PENDING,
+                'empresas_id' => $this->currentEmpresaId(),
+            ])->orderBy('fecha_creacion'),
             'pagination' => ['pageSize' => 20],
         ]);
 
@@ -239,6 +247,7 @@ class RequisicionController extends Controller
         }
         $profiles = Profile::find()
             ->where(['like', 'num_doc', $numDoc])
+            ->andWhere(['empresas_id' => $this->currentEmpresaId()])
             ->limit(10)
             ->all();
         return [
@@ -341,6 +350,7 @@ class RequisicionController extends Controller
         $hasta = $this->request->get('hasta', date('Y-m-d'));
         $models = Requisicion::find()
             ->where(['estado' => Requisicion::ESTADO_ACTIVE])
+            ->andWhere(['empresas_id' => $this->currentEmpresaId()])
             ->andWhere(['>=', 'fecha_creacion', $desde . ' 00:00:00'])
             ->andWhere(['<=', 'fecha_creacion', $hasta . ' 23:59:59'])
             ->joinWith(['empresa', 'ciudad', 'cargo', 'profile'])
@@ -358,9 +368,9 @@ class RequisicionController extends Controller
         $anio = (int) $this->request->get('anio', date('Y'));
         $sql = "SELECT DATE_FORMAT(fecha_creacion, '%Y-%m') as mes, COUNT(*) as total 
                 FROM requisicion 
-                WHERE estado = 'ACTIVE' AND YEAR(fecha_creacion) = :anio 
+                WHERE estado = 'ACTIVE' AND YEAR(fecha_creacion) = :anio AND empresas_id = :empresas_id
                 GROUP BY mes ORDER BY mes";
-        $rows = Yii::$app->db->createCommand($sql, [':anio' => $anio])->queryAll();
+        $rows = Yii::$app->db->createCommand($sql, [':anio' => $anio, ':empresas_id' => $this->currentEmpresaId()])->queryAll();
         return $this->render('activos-por-mes', [
             'rows' => $rows,
             'anio' => $anio,
@@ -372,6 +382,7 @@ class RequisicionController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $sedes = \app\models\LocationSedes::find()
             ->where(['or', ['city_id' => $ciudad_id], ['city_id' => null]])
+            ->andWhere(['empresa_id' => $this->currentEmpresaId()])
             ->andWhere(['activo' => 1])
             ->orderBy('nombre')
             ->all();
@@ -385,6 +396,7 @@ class RequisicionController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $subAreas = \app\models\Area::find()
             ->where(['area_padre' => $area_id])
+            ->andWhere(['empresas_id' => $this->currentEmpresaId()])
             ->orderBy('nombre')
             ->all();
         return array_map(function ($a) {
@@ -394,11 +406,30 @@ class RequisicionController extends Controller
 
     protected function findModel($id)
     {
-        $model = Requisicion::findOne($id);
+        $model = Requisicion::find()
+            ->where(['id' => $id, 'empresas_id' => $this->currentEmpresaId()])
+            ->one();
         if ($model !== null) {
             return $model;
         }
         throw new NotFoundHttpException('La página solicitada no existe.');
+    }
+
+    private function currentEmpresaId(): ?int
+    {
+        $empresaId = Yii::$app->user->empresas_id ?? null;
+        if ($empresaId === null || !is_numeric($empresaId) || (int) $empresaId <= 0) {
+            return null;
+        }
+        return (int) $empresaId;
+    }
+
+    private function applyTenantEmpresa(Requisicion $model): void
+    {
+        $empresaId = $this->currentEmpresaId();
+        if ($empresaId !== null) {
+            $model->empresas_id = $empresaId;
+        }
     }
 
     private function guardarGrupoRequisiciones(Requisicion $model): ?array

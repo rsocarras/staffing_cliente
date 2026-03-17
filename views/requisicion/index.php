@@ -8,6 +8,7 @@ $this->title = 'Requisiciones de Contratación';
 $this->params['breadcrumbs'][] = $this->title;
 
 $createAjaxUrl = Url::to(['requisicion/create-ajax']);
+$tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
 ?>
 <div class="page-wrapper">
     <div class="content pb-0">
@@ -34,7 +35,7 @@ $createAjaxUrl = Url::to(['requisicion/create-ajax']);
                 <?php $form = ActiveForm::begin(['method' => 'get', 'action' => ['index'], 'options' => ['id' => 'requisicion-filter-form']]); ?>
                 <div class="row g-2">
                     <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'empresa_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos(), 'id', 'nombre'), ['prompt' => 'Empresa'])->label(false) ?></div>
+                    <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Ciudad'])->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
@@ -96,7 +97,7 @@ $modelRequisicionModal->numero_vacantes = 1;
                 'method' => 'post',
                 'enableClientValidation' => false,
             ]); ?>
-            <div class="modal-body">
+            <div class="modal-body requisicion-modal-body">
                 <div id="requisicion-form-errors" class="alert alert-danger d-none"></div>
                 <?= $this->render('_form_fields', [
                     'model' => $modelRequisicionModal,
@@ -119,6 +120,15 @@ $modelRequisicionModal->numero_vacantes = 1;
 $this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
+$this->registerCss(<<<CSS
+#add_requisicion .modal-dialog {
+    max-width: min(1140px, 96vw);
+}
+#add_requisicion .requisicion-modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+CSS);
 $this->registerJs(<<<JS
 $(function() {
     var table = $('#requisicion-table').DataTable({

@@ -41,6 +41,7 @@ $isAssigned = MallaCargoAsignacion::find()
 
     <p>
         <?php if (!$isAssigned): ?>
+            <?= Html::a('Editar Kanban', ['create-kanban', 'id' => $model->id], ['class' => 'btn btn-info']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?php endif; ?>
         <?php if ((Yii::$app->user->can('malla.aprobar') || Yii::$app->user->can('admin') || Yii::$app->user->can('administrator')) && $model->estado_aprobacion === \app\models\Mallas::ESTADO_PENDIENTE): ?>
