@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\NovedadTipo;
@@ -17,7 +18,7 @@ class NovedadTipoSearch extends NovedadTipo
     public function rules()
     {
         return [
-            [['id', 'empresa_id', 'orden', 'activo', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'orden', 'activo', 'created_at', 'updated_at'], 'integer'],
             [['nombre', 'descripcion', 'icono'], 'safe'],
         ];
     }
@@ -42,6 +43,18 @@ class NovedadTipoSearch extends NovedadTipo
     public function search($params, $formName = null)
     {
         $query = NovedadTipo::find();
+        $empresaId = Yii::$app->user->empresas_id ?? null;
+        $empresaId = (is_numeric($empresaId) && (int) $empresaId > 0) ? (int) $empresaId : null;
+
+        $empresaColumn = $this->hasAttribute('empresa_id')
+            ? 'empresa_id'
+            : ($this->hasAttribute('empresas_id') ? 'empresas_id' : null);
+
+        if ($empresaId === null || $empresaColumn === null) {
+            $query->where('0=1');
+        } else {
+            $query->andWhere([$empresaColumn => $empresaId]);
+        }
 
         // add conditions that should always apply here
 
@@ -60,7 +73,6 @@ class NovedadTipoSearch extends NovedadTipo
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'orden' => $this->orden,
             'activo' => $this->activo,
             'created_at' => $this->created_at,

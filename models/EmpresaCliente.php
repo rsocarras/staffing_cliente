@@ -46,11 +46,15 @@ class EmpresaCliente extends ActiveRecord
 
     public function getRequisiciones()
     {
-        return $this->hasMany(Requisicion::class, ['empresa_id' => 'id']);
+        return $this->hasMany(Requisicion::class, ['empresa_cliente_id' => 'id']);
     }
 
-    public static function getActivos()
+    public static function getActivos(?int $empresasId = null)
     {
-        return static::find()->where(['is_active' => 1])->orderBy('nombre')->all();
+        $query = static::find()->where(['is_active' => 1]);
+        if ($empresasId !== null && $empresasId > 0) {
+            $query->andWhere(['empresas_id' => $empresasId]);
+        }
+        return $query->orderBy('nombre')->all();
     }
 }

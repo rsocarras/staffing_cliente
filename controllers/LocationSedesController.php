@@ -6,6 +6,7 @@ use app\models\City;
 use app\models\Empresas;
 use app\models\LocationSedes;
 use app\models\Profile;
+use app\services\MallaTimesheetService;
 use app\models\search\LocationSedesSearch;
 use Yii;
 use yii\web\Controller;
@@ -63,8 +64,18 @@ class LocationSedesController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $date = $this->request->get('date', date('Y-m-d'));
+        $tab = $this->request->get('tab', 'day');
+        $dayData = MallaTimesheetService::buildDay((int) $model->empresa_id, (int) $model->id, $date);
+        $weekData = MallaTimesheetService::buildWeek((int) $model->empresa_id, (int) $model->id, $date);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'date' => $date,
+            'tab' => $tab,
+            'dayData' => $dayData,
+            'weekData' => $weekData,
         ]);
     }
 

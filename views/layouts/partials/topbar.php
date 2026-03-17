@@ -1,10 +1,38 @@
 <?php
+use app\models\Profile;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 $path = Yii::$app->request->getPathInfo();
 // Handle root path - if empty, treat as index page
 $page = empty($path) ? 'index' : basename($path);
+
+$profile = null;
+$displayName = 'Usuario';
+$displayCargo = 'Sin cargo';
+$profilePhoto = '/assets/img/profiles/avatar-01.jpg';
+
+if (!Yii::$app->user->isGuest) {
+    $profile = Profile::find()->with(['cargo'])->where(['user_id' => Yii::$app->user->id])->one();
+    if ($profile !== null) {
+        if (!empty($profile->name)) {
+            $displayName = (string) $profile->name;
+        }
+        if ($profile->cargo !== null && !empty($profile->cargo->nombre)) {
+            $displayCargo = (string) $profile->cargo->nombre;
+        } elseif (!empty($profile->position)) {
+            $displayCargo = (string) $profile->position;
+        }
+        if (!empty($profile->photo_)) {
+            $rawPhoto = trim((string) $profile->photo_);
+            if (preg_match('/^https?:\/\//i', $rawPhoto) || strpos($rawPhoto, '/') === 0) {
+                $profilePhoto = $rawPhoto;
+            } else {
+                $profilePhoto = '/' . ltrim($rawPhoto, '/');
+            }
+        }
+    }
+}
 ?>
 
     <!-- Topbar Start -->
@@ -281,15 +309,15 @@ $page = empty($path) ? 'index' : basename($path);
                 <!-- User Dropdown -->
                 <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                     <a class="topbar-link dropdown-toggle drop-arrow-none" href="#" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
-                        <img src="/assets/img/profiles/avatar-01.jpg" width="24" class="rounded-circle d-flex" alt="user-image">
+                        <img src="<?= Html::encode($profilePhoto) ?>" width="24" class="rounded-circle d-flex" alt="user-image">
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg p-3">
                         <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
                             <div class="d-flex align-items-center">
-                                <img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="">
+                                <img src="<?= Html::encode($profilePhoto) ?>" class="rounded-circle" width="42" height="42" alt="">
                                 <div class="ms-2">
-                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
-                                    <span class="d-block fs-13">Manager</span>
+                                    <h5 class="mb-1 fs-14"><?= Html::encode($displayName) ?></h5>
+                                    <span class="d-block fs-13"><?= Html::encode($displayCargo) ?></span>
                                 </div>
                             </div>
                             <span class="badge badg-sm bg-success d-flex align-items-center gap-2"> <i class="ti ti-bolt"></i>  Pro</span>
@@ -319,13 +347,19 @@ $page = empty($path) ? 'index' : basename($path);
                                 <span class="align-middle">Activity Log</span>
                             </a>
                             <!-- Item-->
-                            <a href="javascript:void(0);" class="dropdown-item">
+                            <a href="<?= Url::to(['/documentacion/manual-usuario']) ?>" class="dropdown-item">
                                 <i class="ti ti-file-pencil me-1 fs-17 align-middle"></i>
-                                <span class="align-middle">Documentation</span>
+                                <span class="align-middle">Manual de usuario</span>
+                            </a>
+                            <a href="<?= Url::to(['/documentacion/crear-requisicion']) ?>" class="dropdown-item">
+                                <i class="ti ti-notebook me-1 fs-17 align-middle"></i>
+                                <span class="align-middle">Crear requisición (guía)</span>
                             </a>
                         </div>
                         <!-- Item-->
-                        <?= \yii\helpers\Html::beginForm(['/user/security/logout'], 'post', ['class' => 'd-inline']) . \yii\helpers\Html::submitButton('<i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i><span class="align-middle text-danger">Sign Out</span>', ['class' => 'dropdown-item border-0 bg-transparent w-100 text-start']) . \yii\helpers\Html::endForm() ?>
+                        <?= Html::beginForm(['/logout'], 'post', ['class' => 'm-0']) .
+                            Html::submitButton('Sign Out', ['class' => 'dropdown-item border-0 bg-transparent w-100 text-start text-danger']) .
+                            Html::endForm() ?>
                     </div>
                 </div>
                     

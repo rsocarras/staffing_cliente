@@ -56,3 +56,4 @@ echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">' . 
 echo '<meta name="description" content="Dreams Timer is a sleek time tracking admin dashboard for managing work hours, productivity, and teams.">' . "\n";
 echo '<meta name="keywords" content="time tracking dashboard, admin template, workforce management, employee productivity, project time tracker, Dreams Timer admin panel, business dashboard UI">' . "\n";
 echo '<meta name="author" content="Dreams Technologies">' . "\n";
+echo Html::csrfMetaTags() . "\n";

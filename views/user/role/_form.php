@@ -30,6 +30,8 @@ $unassignedItems = Yii::$container->get(AuthHelper::class)->getUnassignedItems($
     ]
 ) ?>
 
+<?= $form->errorSummary($model, ['class' => 'alert alert-danger']) ?>
+
 <?= $form->field($model, 'name') ?>
 
 <?= $form->field($model, 'description') ?>

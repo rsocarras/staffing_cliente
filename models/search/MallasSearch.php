@@ -17,8 +17,8 @@ class MallasSearch extends Mallas
     public function rules()
     {
         return [
-            [['id', 'empresa_id', 'activo'], 'integer'],
-            [['nombre', 'descripcion', 'tipo', 'config_json', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'empresa_id', 'activo', 'solicitado_por', 'aprobado_por'], 'integer'],
+            [['nombre', 'descripcion', 'tipo', 'config_json', 'estado_aprobacion', 'motivo_rechazo', 'solicitado_at', 'aprobado_at', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -62,6 +62,8 @@ class MallasSearch extends Mallas
             'id' => $this->id,
             'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
+            'solicitado_por' => $this->solicitado_por,
+            'aprobado_por' => $this->aprobado_por,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
@@ -69,6 +71,8 @@ class MallasSearch extends Mallas
         $query->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'descripcion', $this->descripcion])
             ->andFilterWhere(['like', 'tipo', $this->tipo])
+            ->andFilterWhere(['like', 'estado_aprobacion', $this->estado_aprobacion])
+            ->andFilterWhere(['like', 'motivo_rechazo', $this->motivo_rechazo])
             ->andFilterWhere(['like', 'config_json', $this->config_json]);
 
         return $dataProvider;

@@ -45,6 +45,7 @@ use Yii;
  * @property ContabilidadCentroUtilidad $centroUtilidad
  * @property EmpleadoVenueHistory[] $empleadoVenueHistories
  * @property Empresas $empresas
+ * @property MallaProfileAsignacion[] $mallaProfileAsignacions
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property NominaItem[] $nominaItems
  * @property ProfileEventosLog[] $profileEventosLogs
@@ -171,6 +172,16 @@ class Profile extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[Sede]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSede()
+    {
+        return $this->hasOne(LocationSedes::class, ['id' => 'sede_id']);
+    }
+
+    /**
      * Gets query for [[CentroCosto]].
      *
      * @return \yii\db\ActiveQuery
@@ -218,6 +229,11 @@ class Profile extends \yii\db\ActiveRecord
     public function getMallaDistribucionHoras()
     {
         return $this->hasMany(MallaDistribucionHoras::class, ['profile_id' => 'user_id']);
+    }
+
+    public function getMallaProfileAsignacions()
+    {
+        return $this->hasMany(MallaProfileAsignacion::class, ['profile_id' => 'user_id']);
     }
 
     /**

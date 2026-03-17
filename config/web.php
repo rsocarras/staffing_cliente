@@ -25,6 +25,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+            'class' => app\components\WebUser::class,
             'identityClass' => app\models\User::class,
             'enableAutoLogin' => true,
             'loginUrl' => ['/user/security/login'],
@@ -78,6 +79,7 @@ $config = [
             ],
             'controllerMap' => [
                 'admin' => app\controllers\user\AdminController::class,
+                'role' => app\controllers\user\RoleController::class,
             ],
         ],
     ],
