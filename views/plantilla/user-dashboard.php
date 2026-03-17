@@ -538,7 +538,7 @@
         </div>
         <!-- End Content -->            
 
-        <?= $this->render('layouts/partials/footer') ?>
+        <?= $this->render('//layouts/partials/footer') ?>
 
     </div>
 

@@ -35,6 +35,7 @@ class Mallas extends \yii\db\ActiveRecord
      */
     const TIPO_FIJA = 'fija';
     const TIPO_ROTATIVA = 'rotativa';
+    const ESTADO_DRAFT = 'draft';
     const ESTADO_PENDIENTE = 'pendiente_aprobacion';
     const ESTADO_APROBADA = 'aprobada';
     const ESTADO_RECHAZADA = 'rechazada';
@@ -55,7 +56,7 @@ class Mallas extends \yii\db\ActiveRecord
         return [
             [['descripcion', 'config_json', 'motivo_rechazo', 'solicitado_por', 'aprobado_por', 'solicitado_at', 'aprobado_at'], 'default', 'value' => null],
             [['tipo'], 'default', 'value' => 'fija'],
-            [['estado_aprobacion'], 'default', 'value' => self::ESTADO_PENDIENTE],
+            [['estado_aprobacion'], 'default', 'value' => self::ESTADO_DRAFT],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
             [['empresa_id', 'activo', 'solicitado_por', 'aprobado_por'], 'integer'],
@@ -101,7 +102,8 @@ class Mallas extends \yii\db\ActiveRecord
      */
     public function getMallasHorarios()
     {
-        return $this->hasMany(MallasHorarios::class, ['malla_id' => 'id']);
+        return $this->hasMany(MallasHorarios::class, ['malla_id' => 'id'])
+            ->orderBy(['dia_semana' => SORT_ASC, 'hora_inicio' => SORT_ASC]);
     }
 
     public function getMallaCargoAsignacions()
@@ -130,6 +132,7 @@ class Mallas extends \yii\db\ActiveRecord
     public static function optsEstadoAprobacion()
     {
         return [
+            self::ESTADO_DRAFT => 'Borrador',
             self::ESTADO_PENDIENTE => 'Pendiente aprobación',
             self::ESTADO_APROBADA => 'Aprobada',
             self::ESTADO_RECHAZADA => 'Rechazada',

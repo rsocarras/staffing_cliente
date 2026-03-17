@@ -172,6 +172,16 @@ class Profile extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets query for [[Sede]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSede()
+    {
+        return $this->hasOne(LocationSedes::class, ['id' => 'sede_id']);
+    }
+
+    /**
      * Gets query for [[CentroCosto]].
      *
      * @return \yii\db\ActiveQuery

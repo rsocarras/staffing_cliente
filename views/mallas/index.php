@@ -42,6 +42,7 @@ $baseDeleteUrl = Url::to(['mallas/delete']);
                         <input type="text" class="form-control form-control-sm" id="malla-search" placeholder="Buscar...">
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <a href="<?= Url::to(['mallas/create']) ?>" class="btn btn-outline-secondary"><i class="ti ti-calendar-event me-1"></i>Crear completa</a>
                         <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_malla"><i class="ti ti-plus me-1"></i>Agregar Nueva</a>
                     </div>
                 </div>

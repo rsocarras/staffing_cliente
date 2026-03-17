@@ -41,12 +41,18 @@ class ProfileSearch extends Profile
      */
     public function search($params, $formName = null)
     {
-        $query = Profile::find();
-
-        // add conditions that should always apply here
+        $query = Profile::find()->with(['empresas', 'sede', 'cargo', 'area']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 25,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'name' => SORT_ASC,
+                ],
+            ],
         ]);
 
         $this->load($params, $formName);
@@ -57,7 +63,6 @@ class ProfileSearch extends Profile
             return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'user_id' => $this->user_id,
             'empresas_id' => $this->empresas_id,

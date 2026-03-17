@@ -10,8 +10,10 @@ use app\models\ChecklistStatus;
 use app\models\ChecklistItem;
 use app\services\RequisicionService;
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
@@ -24,6 +26,7 @@ class RequisicionController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'create-ajax' => ['POST'],
                     'submit' => ['POST'],
                     'approve' => ['POST'],
                     'reject' => ['POST'],
@@ -38,7 +41,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
+                        'actions' => ['index', 'view', 'create', 'create-ajax', 'update', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
                     ],
                     [
                         'allow' => true,
@@ -98,28 +101,58 @@ class RequisicionController extends Controller
         $model->estado = Requisicion::ESTADO_DRAFT;
         $model->numero_vacantes = 1;
 
-        if ($this->request->isPost && $model->load($this->request->post())) {
-            if ($model->validate()) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-                    $model->group_uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
-                    $model->vacante_index = 1;
-                    $model->save(false);
-                    RequisicionHistoryLog::registrar($model, Requisicion::ESTADO_DRAFT, 'Requisición creada', null);
-                    $creadas = Requisicion::crearGrupoVacantes($model);
-                    $transaction->commit();
-                    Yii::$app->session->setFlash('success', 'Requisición creada. Se generaron ' . count($creadas) . ' vacante(s).');
-                    return $this->redirect(['view', 'id' => $creadas[0]->id]);
-                } catch (\Throwable $e) {
-                    $transaction->rollBack();
-                    $model->addError('numero_vacantes', $e->getMessage());
-                }
+        if ($this->request->isPost && $model->load($this->request->post()) && $model->validate()) {
+            $creadas = $this->guardarGrupoRequisiciones($model);
+            if ($creadas !== null) {
+                Yii::$app->session->setFlash('success', 'Requisición creada. Se generaron ' . count($creadas) . ' vacante(s).');
+                return $this->redirect(['view', 'id' => $creadas[0]->id]);
             }
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
+    }
+
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new Requisicion();
+        $model->estado = Requisicion::ESTADO_DRAFT;
+        $model->numero_vacantes = 1;
+
+        if (!$this->request->isPost || !$model->load($this->request->post())) {
+            return [
+                'success' => false,
+                'errors' => ['general' => ['Datos inválidos.']],
+            ];
+        }
+
+        if (!$model->validate()) {
+            return [
+                'success' => false,
+                'errors' => $model->getErrors(),
+            ];
+        }
+
+        $creadas = $this->guardarGrupoRequisiciones($model);
+        if ($creadas === null) {
+            return [
+                'success' => false,
+                'errors' => $model->getErrors(),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Requisición creada. Se generaron ' . count($creadas) . ' vacante(s).',
+            'rowsHtml' => array_map(function (Requisicion $requisicion) {
+                return $this->renderPartial('_row', ['model' => $requisicion]);
+            }, $creadas),
+            'viewUrl' => Url::to(['view', 'id' => $creadas[0]->id]),
+            'canAppendToList' => !Yii::$app->user->can('requisicion_approve'),
+        ];
     }
 
     public function actionUpdate($id)
@@ -336,7 +369,7 @@ class RequisicionController extends Controller
 
     public function actionSedesPorCiudad($ciudad_id)
     {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $sedes = \app\models\LocationSedes::find()
             ->where(['or', ['city_id' => $ciudad_id], ['city_id' => null]])
             ->andWhere(['activo' => 1])
@@ -349,7 +382,7 @@ class RequisicionController extends Controller
 
     public function actionSubAreasPorArea($area_id)
     {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $subAreas = \app\models\Area::find()
             ->where(['area_padre' => $area_id])
             ->orderBy('nombre')
@@ -366,5 +399,36 @@ class RequisicionController extends Controller
             return $model;
         }
         throw new NotFoundHttpException('La página solicitada no existe.');
+    }
+
+    private function guardarGrupoRequisiciones(Requisicion $model): ?array
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+
+        try {
+            $model->group_uuid = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff)
+            );
+            $model->vacante_index = 1;
+            $model->save(false);
+            RequisicionHistoryLog::registrar($model, Requisicion::ESTADO_DRAFT, 'Requisición creada', null);
+            $creadas = Requisicion::crearGrupoVacantes($model);
+            $transaction->commit();
+
+            return $creadas;
+        } catch (\Throwable $e) {
+            $transaction->rollBack();
+            $model->addError('numero_vacantes', $e->getMessage());
+
+            return null;
+        }
     }
 }

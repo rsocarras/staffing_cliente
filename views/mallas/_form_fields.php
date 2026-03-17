@@ -15,5 +15,3 @@
 ], ['prompt' => 'Seleccione tipo']) ?>
 
 <?= $form->field($model, 'activo')->dropDownList([1 => 'Sí', 0 => 'No']) ?>
-
-<?= $form->field($model, 'config_json')->textarea(['rows' => 4]) ?>

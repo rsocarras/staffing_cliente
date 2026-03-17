@@ -12,8 +12,10 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?php if (!$model->isNewRecord): ?>
-    <?= $form->field($model, 'empresa_id')->textInput(['readonly' => true]) ?>
+    <?php if (!$model->isNewRecord && $model->hasAttribute('empresa_id')): ?>
+        <?= $form->field($model, 'empresa_id')->textInput(['readonly' => true]) ?>
+    <?php elseif (!$model->isNewRecord && $model->hasAttribute('empresas_id')): ?>
+        <?= $form->field($model, 'empresas_id')->textInput(['readonly' => true]) ?>
     <?php endif; ?>
 
     <?= $this->render('_form_fields', [

@@ -221,6 +221,9 @@ class MallaTimesheetService
             if (!$horario instanceof MallasHorarios) {
                 continue;
             }
+            if (isset($horario->tipo_bloque) && strtoupper((string) $horario->tipo_bloque) !== MallasHorarios::TIPO_WORK) {
+                continue;
+            }
             $start = self::timeToMinutes($horario->hora_inicio);
             $end = self::timeToMinutes($horario->hora_fin);
             $break = (int) $horario->minutos_descanso;

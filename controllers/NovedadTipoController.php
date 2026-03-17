@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\NovedadTipo;
-use app\models\Profile;
 use app\models\search\NovedadTipoSearch;
 use Yii;
 use yii\web\Controller;
@@ -73,12 +72,15 @@ class NovedadTipoController extends Controller
     public function actionCreate()
     {
         $model = new NovedadTipo();
+        $empresaId = $this->currentEmpresaId();
+        if ($empresaId !== null) {
+            $this->assignEmpresaToModel($model, $empresaId);
+        }
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresa_id = $profile->empresas_id;
+                if ($empresaId === null || !$this->assignEmpresaToModel($model, $empresaId)) {
+                    $model->addError('id', 'No se pudo resolver la empresa de la sesión.');
                 }
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
@@ -86,10 +88,6 @@ class NovedadTipoController extends Controller
             }
         } else {
             $model->loadDefaultValues();
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
         }
 
         return $this->render('create', [
@@ -105,13 +103,12 @@ class NovedadTipoController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = new NovedadTipo();
+        $empresaId = $this->currentEmpresaId();
 
         if ($model->load(Yii::$app->request->post())) {
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if (!$profile) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
+            if ($empresaId === null || !$this->assignEmpresaToModel($model, $empresaId)) {
+                return ['success' => false, 'errors' => ['empresa_id' => ['No se pudo resolver empresas_id desde la sesión del usuario.']]];
             }
-            $model->empresa_id = $profile->empresas_id;
             if ($model->orden === null || $model->orden === '') {
                 $model->orden = 0;
             }
@@ -178,10 +175,42 @@ class NovedadTipoController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = NovedadTipo::findOne(['id' => $id])) !== null) {
+        $model = NovedadTipo::findOne(['id' => $id]);
+        if ($model !== null) {
+            $empresaId = $this->currentEmpresaId();
+            if ($empresaId !== null) {
+                $empresaColumn = $model->hasAttribute('empresa_id')
+                    ? 'empresa_id'
+                    : ($model->hasAttribute('empresas_id') ? 'empresas_id' : null);
+                if ($empresaColumn === null || (int) $model->getAttribute($empresaColumn) !== $empresaId) {
+                    throw new NotFoundHttpException('The requested page does not exist.');
+                }
+            }
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    private function currentEmpresaId(): ?int
+    {
+        $empresaId = Yii::$app->user->empresas_id ?? null;
+        if ($empresaId === null || !is_numeric($empresaId) || (int) $empresaId <= 0) {
+            return null;
+        }
+        return (int) $empresaId;
+    }
+
+    private function assignEmpresaToModel(NovedadTipo $model, int $empresaId): bool
+    {
+        if ($model->hasAttribute('empresa_id')) {
+            $model->setAttribute('empresa_id', $empresaId);
+            return true;
+        }
+        if ($model->hasAttribute('empresas_id')) {
+            $model->setAttribute('empresas_id', $empresaId);
+            return true;
+        }
+        return false;
     }
 }
