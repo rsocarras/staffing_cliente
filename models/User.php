@@ -11,11 +11,28 @@ use Da\User\Model\User as BaseUser;
 class User extends BaseUser
 {
     /**
+     * Contraseña nueva (solo para formularios; no se persiste en BD).
+     * @var string
+     */
+    public $new_password = '';
+
+    /**
      * Datos del perfil a crear (empresas_id, num_doc, name, etc.).
      * Se establece desde el controlador antes de guardar.
      * @var array|null
      */
     public $pendingProfileData = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['new_password'], 'string', 'min' => 6, 'max' => 72],
+            [['new_password'], 'safe'],
+        ]);
+    }
 
     /**
      * {@inheritdoc}

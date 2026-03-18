@@ -28,6 +28,7 @@ class NovedadTipoController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -41,14 +42,7 @@ class NovedadTipoController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new NovedadTipoSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->render('index');
     }
 
     /**
@@ -133,6 +127,86 @@ class NovedadTipoController extends Controller
     }
 
     /**
+     * Returns JSON for DataTables server-side processing.
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $searchValue = $request->get('search', [])['value'] ?? '';
+        $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 1);
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $query = NovedadTipo::find();
+
+        // Filtro por empresa desde sesión del usuario
+        $empresaId = $this->currentEmpresaId();
+        $empresaColumn = (new NovedadTipo())->hasAttribute('empresa_id')
+            ? 'empresa_id'
+            : ((new NovedadTipo())->hasAttribute('empresas_id') ? 'empresas_id' : null);
+
+        if ($empresaId === null || $empresaColumn === null) {
+            $query->where('0=1');
+        } else {
+            $query->andWhere([$empresaColumn => $empresaId]);
+        }
+
+        $totalCount = (int) $query->count();
+
+        if ($searchValue !== '') {
+            $query->andWhere([
+                'or',
+                ['like', 'novedad_tipo.nombre', $searchValue],
+                ['like', 'novedad_tipo.descripcion', $searchValue],
+                ['like', 'novedad_tipo.icono', $searchValue],
+            ]);
+        }
+
+        $filteredCount = (int) $query->count();
+
+        $orderColumns = [
+            'novedad_tipo.id',
+            'novedad_tipo.nombre',
+            'novedad_tipo.descripcion',
+            'novedad_tipo.icono',
+            'novedad_tipo.orden',
+            'novedad_tipo.activo',
+            null,
+        ];
+        $orderBy = $orderColumns[$orderCol] ?? 'novedad_tipo.nombre';
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $query->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $data[] = [
+                $model->id,
+                '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
+                \yii\helpers\Html::encode($model->descripcion ?? '-'),
+                \yii\helpers\Html::encode($model->icono ?? '-'),
+                $model->orden !== null ? $model->orden : '-',
+                $model->activo ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>',
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $totalCount,
+            'recordsFiltered' => $filteredCount,
+            'data' => $data,
+        ];
+    }
+
+    /**
      * Updates an existing NovedadTipo model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param int $id ID
@@ -163,6 +237,11 @@ class NovedadTipoController extends Controller
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
     }
 
@@ -190,6 +269,58 @@ class NovedadTipoController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param int $id ID
+     * @return string
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param int $id ID
+     * @return string
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates NovedadTipo via AJAX. Returns JSON.
+     * @param int $id ID
+     * @return array
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Tipo de novedad actualizado correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'nombre' => $model->nombre,
+                    'descripcion' => $model->descripcion,
+                    'icono' => $model->icono,
+                    'orden' => $model->orden,
+                    'activo' => $model->activo,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     private function currentEmpresaId(): ?int

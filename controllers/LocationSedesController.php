@@ -7,7 +7,6 @@ use app\models\Empresas;
 use app\models\LocationSedes;
 use app\models\Profile;
 use app\services\MallaTimesheetService;
-use app\models\search\LocationSedesSearch;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -32,6 +31,7 @@ class LocationSedesController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
                         'get-cities' => ['GET'],
                     ],
                 ],
@@ -46,14 +46,101 @@ class LocationSedesController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new LocationSedesSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+        $empresaId = $profile ? $profile->empresas_id : null;
+
+        $query = LocationSedes::find();
+        if ($empresaId) {
+            $query->andWhere(['empresa_id' => $empresaId]);
+        }
+
+        $total = (int) (clone $query)->count();
+        $activos = (int) (clone $query)->andWhere(['activo' => 1])->count();
+        $inactivos = (int) (clone $query)->andWhere(['activo' => 0])->count();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'total' => $total,
+            'activos' => $activos,
+            'inactivos' => $inactivos,
         ]);
+    }
+
+    /**
+     * Returns JSON for DataTables server-side processing.
+     *
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
+        $empresaId = $profile ? $profile->empresas_id : null;
+
+        $request = Yii::$app->request;
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 25);
+        $searchValue = trim((string) ($request->get('search', [])['value'] ?? ''));
+        $orderCol = (int) (($request->get('order', [])[0]['column'] ?? 2));
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $query = LocationSedes::find()->alias('sede')->with(['city', 'city.country']);
+        if ($empresaId) {
+            $query->andWhere(['sede.empresa_id' => $empresaId]);
+        }
+
+        $baseQuery = LocationSedes::find();
+        if ($empresaId) {
+            $baseQuery->andWhere(['empresa_id' => $empresaId]);
+        }
+        $totalCount = (int) $baseQuery->count();
+
+        if ($searchValue !== '') {
+            $query->andWhere([
+                'or',
+                ['like', 'sede.codigo', $searchValue],
+                ['like', 'sede.nombre', $searchValue],
+                ['like', 'sede.direccion', $searchValue],
+                ['like', 'sede.codigo_externo', $searchValue],
+                ['like', 'sede.tipo_sede', $searchValue],
+            ]);
+        }
+        $filteredCount = (int) (clone $query)->count();
+
+        $orderColumns = ['sede.id', 'sede.codigo', 'sede.nombre', 'sede.direccion', 'sede.tipo_sede', null, 'sede.centro_costo', 'sede.centro_costo_staffing', 'sede.codigo_externo', 'sede.activo', null];
+        $orderBy = $orderColumns[$orderCol] ?? 'sede.nombre';
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $query->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $data[] = [
+                $model->id,
+                \yii\helpers\Html::encode($model->codigo ?? '-'),
+                '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
+                \yii\helpers\Html::encode($model->direccion ?? '-'),
+                \yii\helpers\Html::encode($model->getTipoSedeLabel()),
+                $model->city ? \yii\helpers\Html::encode($model->city->name) : '-',
+                $model->centro_costo !== null ? $model->centro_costo : '-',
+                $model->centro_costo_staffing !== null ? $model->centro_costo_staffing : '-',
+                \yii\helpers\Html::encode($model->codigo_externo ?? '-'),
+                $model->activo
+                    ? '<span class="badge badge-soft-success">Sí</span>'
+                    : '<span class="badge badge-soft-danger">No</span>',
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $totalCount,
+            'recordsFiltered' => $filteredCount,
+            'data' => $data,
+        ];
     }
 
     /**
@@ -195,16 +282,111 @@ class LocationSedesController extends Controller
 
     /**
      * Deletes an existing LocationSedes model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id ID
-     * @return \yii\web\Response
+     * @return \yii\web\Response|array
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param string $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewAjax($id)
+    {
+        $model = $this->findModel($id);
+        $date = $this->request->get('date', date('Y-m-d'));
+        $tab = $this->request->get('tab', 'day');
+        $dayData = MallaTimesheetService::buildDay((int) $model->empresa_id, (int) $model->id, $date);
+        $weekData = MallaTimesheetService::buildWeek((int) $model->empresa_id, (int) $model->id, $date);
+
+        return $this->renderPartial('_view_modal', [
+            'model' => $model,
+            'date' => $date,
+            'tab' => $tab,
+            'dayData' => $dayData,
+            'weekData' => $weekData,
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param string $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionFormAjax($id)
+    {
+        $model = $this->findModel($id);
+        $countries = \yii\helpers\ArrayHelper::map(
+            \app\models\LocationCountry::find()->where(['is_active' => 1])->orderBy('name')->all(),
+            'id',
+            'name'
+        );
+        $initialCountryId = $model->city ? $model->city->country_id : null;
+        $initialCities = [];
+        if ($initialCountryId) {
+            $initialCities = \yii\helpers\ArrayHelper::map(
+                City::find()->where(['country_id' => $initialCountryId])->orderBy('name')->all(),
+                'id',
+                'name'
+            );
+        }
+
+        return $this->renderPartial('_form_modal', [
+            'model' => $model,
+            'countries' => $countries,
+            'initialCountryId' => $initialCountryId,
+            'initialCities' => $initialCities,
+        ]);
+    }
+
+    /**
+     * Updates a LocationSedes via AJAX. Returns JSON.
+     * @param string $id ID
+     * @return array
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $cityName = $model->city ? $model->city->name : null;
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Sede actualizada correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'codigo' => $model->codigo,
+                    'nombre' => $model->nombre,
+                    'direccion' => $model->direccion,
+                    'tipo_sede' => $model->tipo_sede,
+                    'tipo_sede_label' => $model->getTipoSedeLabel(),
+                    'activo' => $model->activo,
+                    'city_id' => $model->city_id,
+                    'city_name' => $cityName,
+                    'centro_costo' => $model->centro_costo,
+                    'centro_costo_staffing' => $model->centro_costo_staffing,
+                    'codigo_externo' => $model->codigo_externo,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**

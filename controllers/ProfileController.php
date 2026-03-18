@@ -3,14 +3,17 @@
 namespace app\controllers;
 
 use app\models\Profile;
-use app\models\search\ProfileSearch;
-use app\services\MallaTimesheetService;
+use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
+use yii\web\Response;
 use yii\filters\VerbFilter;
 
 /**
- * ProfileController implements the CRUD actions for Profile model.
+ * ProfileController - Permite ver y editar únicamente el perfil del usuario logeado.
+ * Ruta principal: /profile. Todas las acciones se ejecutan por AJAX.
  */
 class ProfileController extends Controller
 {
@@ -22,10 +25,19 @@ class ProfileController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
-                        'delete' => ['POST'],
+                        'update-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -33,109 +45,81 @@ class ProfileController extends Controller
     }
 
     /**
-     * Lists all Profile models.
+     * Página principal del perfil. Carga el contenido vía AJAX.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new ProfileSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        return $this->render('index');
     }
 
     /**
-     * Displays a single Profile model.
-     * @param int $user_id User ID
+     * Retorna HTML del perfil para cargar por AJAX (ver).
+     *
      * @return string
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException
      */
-    public function actionView($user_id)
+    public function actionViewAjax()
     {
-        $model = $this->findModel($user_id);
-        $anchorDate = $this->request->get('date', date('Y-m-d'));
-        $weekSchedule = MallaTimesheetService::employeeWeek((int) $model->empresas_id, (int) $model->user_id, $anchorDate);
-
-        return $this->render('view', [
-            'model' => $model,
-            'weekSchedule' => $weekSchedule,
-            'anchorDate' => $anchorDate,
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->getCurrentUserProfile(),
         ]);
     }
 
     /**
-     * Creates a new Profile model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
+     * Retorna HTML del formulario de edición para cargar por AJAX.
+     *
+     * @return string
+     * @throws NotFoundHttpException
      */
-    public function actionCreate()
+    public function actionFormAjax()
     {
-        $model = new Profile();
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'user_id' => $model->user_id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->getCurrentUserProfile(),
         ]);
     }
 
     /**
-     * Updates an existing Profile model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $user_id User ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Actualiza el perfil vía AJAX. Retorna JSON.
+     *
+     * @return array
+     * @throws NotFoundHttpException
      */
-    public function actionUpdate($user_id)
+    public function actionUpdateAjax()
     {
-        $model = $this->findModel($user_id);
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->getCurrentUserProfile();
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'user_id' => $model->user_id]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Perfil actualizado correctamente.'),
+            ];
         }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**
-     * Deletes an existing Profile model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $user_id User ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
+     * Obtiene el perfil del usuario actualmente logeado.
+     *
+     * @return Profile
+     * @throws ForbiddenHttpException si no hay usuario logeado
+     * @throws NotFoundHttpException si no existe perfil para el usuario
      */
-    public function actionDelete($user_id)
+    protected function getCurrentUserProfile()
     {
-        $this->findModel($user_id)->delete();
-
-        return $this->redirect(['index']);
-    }
-
-    /**
-     * Finds the Profile model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $user_id User ID
-     * @return Profile the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($user_id)
-    {
-        if (($model = Profile::findOne(['user_id' => $user_id])) !== null) {
-            return $model;
+        $userId = Yii::$app->user->id;
+        if (!$userId) {
+            throw new ForbiddenHttpException('Debe iniciar sesión para acceder a su perfil.');
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        $model = Profile::findOne(['user_id' => $userId]);
+        if ($model === null) {
+            throw new NotFoundHttpException('No se encontró el perfil.');
+        }
+
+        return $model;
     }
 }

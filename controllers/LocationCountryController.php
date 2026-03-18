@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\LocationCountry;
-use app\models\SearchLocationCountry;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -27,8 +26,8 @@ class LocationCountryController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
-                        'data' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -36,18 +35,20 @@ class LocationCountryController extends Controller
     }
 
     /**
-     * Lists all LocationCountry models (solo renderiza la vista).
+     * Lists all LocationCountry models.
      *
      * @return string
      */
     public function actionIndex()
     {
-        $searchModel = new SearchLocationCountry();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
+        $total = (int) LocationCountry::find()->count();
+        $activos = (int) LocationCountry::find()->where(['is_active' => 1])->count();
+        $inactivos = (int) LocationCountry::find()->where(['is_active' => 0])->count();
 
         return $this->render('index', [
-            'dataProvider' => $dataProvider,
+            'total' => $total,
+            'activos' => $activos,
+            'inactivos' => $inactivos,
         ]);
     }
 
@@ -61,12 +62,12 @@ class LocationCountryController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $request = Yii::$app->request;
-        $draw = (int) $request->post('draw', 1);
-        $start = (int) $request->post('start', 0);
-        $length = (int) $request->post('length', 25);
-        $searchValue = trim((string) $request->post('search', [])['value'] ?? '');
-        $orderCol = (int) ($request->post('order', [['column' => 1]])[0]['column'] ?? 1);
-        $orderDir = ($request->post('order', [['dir' => 'asc']])[0]['dir'] ?? 'asc');
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 25);
+        $searchValue = trim((string) ($request->get('search', [])['value'] ?? ''));
+        $orderCol = (int) (($request->get('order', [])[0]['column'] ?? 1));
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? 'asc' : 'desc';
 
         $query = LocationCountry::find();
 
@@ -87,9 +88,11 @@ class LocationCountryController extends Controller
         $recordsFiltered = (int) (clone $query)->count();
 
         // Orden (columnas: 0=id, 1=name, 2=official_name, 3=iso_alpha2, 4=iso_alpha3, 5=region, 6=is_active)
-        $orderColumns = ['id', 'name', 'official_name', 'iso_alpha2', 'iso_alpha3', 'region', 'is_active'];
+        $orderColumns = ['id', 'name', 'official_name', 'iso_alpha2', 'iso_alpha3', 'region', 'is_active', null];
         $orderBy = $orderColumns[$orderCol] ?? 'name';
-        $query->orderBy([$orderBy => $orderDir === 'asc' ? SORT_ASC : SORT_DESC]);
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir === 'asc' ? SORT_ASC : SORT_DESC]);
+        }
 
         $models = $query->offset($start)->limit($length)->all();
 
@@ -105,7 +108,7 @@ class LocationCountryController extends Controller
                 $model->is_active
                     ? '<span class="badge bg-success">' . Yii::t('app', 'Yes') . '</span>'
                     : '<span class="badge bg-secondary">' . Yii::t('app', 'No') . '</span>',
-                $this->renderPartial('_actions', ['model' => $model]),
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }
 
@@ -205,16 +208,76 @@ class LocationCountryController extends Controller
 
     /**
      * Deletes an existing LocationCountry model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param int $id ID
-     * @return \yii\web\Response
+     * @return \yii\web\Response|array
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates a LocationCountry via AJAX. Returns JSON.
+     * @param int $id ID
+     * @return array
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'País actualizado correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'name' => $model->name,
+                    'official_name' => $model->official_name,
+                    'iso_alpha2' => $model->iso_alpha2,
+                    'iso_alpha3' => $model->iso_alpha3,
+                    'region' => $model->region,
+                    'is_active' => $model->is_active,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**

@@ -29,6 +29,7 @@ class AreaController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
                     ],
                 ],
             ]
@@ -42,14 +43,69 @@ class AreaController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new AreaSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
+        return $this->render('index');
+    }
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+    /**
+     * Returns JSON for DataTables server-side processing.
+     *
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $searchValue = $request->get('search', [])['value'] ?? '';
+        $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 1);
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $query = Area::find();
+        $totalCount = (int) $query->count();
+
+        if ($searchValue !== '') {
+            $query->andWhere([
+                'or',
+                ['like', 'area.nombre', $searchValue],
+                ['like', 'area.descripcion', $searchValue],
+                ['like', 'area.centro_utilidad', $searchValue],
+                ['like', 'area.referencia_externa', $searchValue],
+                ['like', 'area.centro_utilidad_staffing', $searchValue]
+            ]);
+        }
+        $filteredCount = (int) $query->count();
+
+        $orderColumns = ['area.id', 'area.nombre', 'area.descripcion', 'areaPadre.nombre', 'area.centro_utilidad', 'area.referencia_externa', 'area.centro_utilidad_staffing', null];
+        $orderBy = $orderColumns[$orderCol] ?? 'nombre';
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $query->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $data[] = [
+                $model->id,
+                '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
+                \yii\helpers\Html::encode($model->descripcion ?? '-'),
+                $model->areaPadre ? \yii\helpers\Html::encode($model->areaPadre->nombre) : '-',
+                $model->centro_utilidad !== null ? $model->centro_utilidad : '-',
+                $model->referencia_externa !== null ? $model->referencia_externa : '-',
+                $model->centro_utilidad_staffing !== null ? $model->centro_utilidad_staffing : '-',
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $totalCount,
+            'recordsFiltered' => $filteredCount,
+            'data' => $data,
+        ];
     }
 
     /**
@@ -169,7 +225,70 @@ class AreaController extends Controller
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates Area via AJAX. Returns JSON.
+     * @param int $id ID
+     * @return array
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $areaPadreNombre = $model->areaPadre ? $model->areaPadre->nombre : null;
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Área actualizada correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'nombre' => $model->nombre,
+                    'descripcion' => $model->descripcion,
+                    'area_padre' => $model->area_padre,
+                    'area_padre_nombre' => $areaPadreNombre,
+                    'centro_utilidad' => $model->centro_utilidad,
+                    'referencia_externa' => $model->referencia_externa,
+                    'centro_utilidad_staffing' => $model->centro_utilidad_staffing,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**

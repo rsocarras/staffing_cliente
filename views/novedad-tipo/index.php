@@ -1,23 +1,31 @@
 <?php
-use app\models\NovedadTipo;
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var app\models\search\NovedadTipoSearch $searchModel */
-/** @var yii\data\ActiveDataProvider $dataProvider */
+?>
 
-$this->title = 'Novedad Tipos';
+<?php
+$this->title = 'Tipo de Novedad';
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
+
+$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'));
+$this->registerCssFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.css'));
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
+$this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 
 $createAjaxUrl = Url::to(['novedad-tipo/create-ajax']);
-$baseViewUrl = Url::to(['novedad-tipo/view']);
-$baseUpdateUrl = Url::to(['novedad-tipo/update']);
-$baseDeleteUrl = Url::to(['novedad-tipo/delete']);
+$dataUrl = Url::to(['novedad-tipo/data']);
+$viewAjaxUrl = Url::to(['novedad-tipo/view-ajax']);
+$formAjaxUrl = Url::to(['novedad-tipo/form-ajax']);
+$updateAjaxUrl = Url::to(['novedad-tipo/update-ajax']);
+$deleteUrl = Url::to(['novedad-tipo/delete']);
+
+$csrfToken = Yii::$app->request->csrfToken;
+$csrfParam = Yii::$app->request->csrfParam;
 ?>
 
 <div class="page-wrapper">
@@ -31,7 +39,8 @@ $baseDeleteUrl = Url::to(['novedad-tipo/delete']);
                     </div>
                     <div class="text-end">
                         <ol class="breadcrumb m-0 py-0">
-                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>">Home</a></li>
+                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>"><i class="ti ti-home"></i> </a></li>
+                            <li class="breadcrumb-item">Sistema</li>
                             <li class="breadcrumb-item active" aria-current="page"><?= Html::encode($this->title) ?></li>
                         </ol>
                     </div>
@@ -64,48 +73,77 @@ $baseDeleteUrl = Url::to(['novedad-tipo/delete']);
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($dataProvider->getModels() as $model): ?>
-                            <tr>
-                                <td><?= Html::encode($model->id) ?></td>
-                                <td class="fw-medium text-dark"><?= Html::encode($model->nombre) ?></td>
-                                <td><?= Html::encode($model->descripcion ?? '-') ?></td>
-                                <td><?= Html::encode($model->icono ?? '-') ?></td>
-                                <td><?= Html::encode($model->orden ?? '-') ?></td>
-                                <td><?= $model->activo ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>' ?></td>
-                                <td>
-                                    <div class="d-inline-flex gap-2">
-                                        <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
-                                        <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
-                                        <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
-                                            'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
-                                            'title' => 'Eliminar',
-                                            'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
-                                        ]) ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
                 <!-- end table -->
             </div>
         </div>
     </div>
-    <?= $this->render('//layouts/partials/footer') ?>
+</div>
+
+<!-- Modal Ver Novedad Tipo -->
+<div class="modal fade" id="modal-view-novedad-tipo">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body" id="modal-view-novedad-tipo-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Novedad Tipo -->
+<div class="modal fade" id="modal-edit-novedad-tipo">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-edit fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Editar tipo de novedad</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Actualiza nombre, orden y estado del tipo.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3 px-4 pb-2" id="modal-edit-novedad-tipo-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit-novedad-tipo">
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar cambios</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Agregar Novedad Tipo -->
 <div class="modal fade" id="add_novedad_tipo">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Agregar Tipo de Novedad</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-circle-x"></i></button>
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-tag fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Nuevo tipo de novedad</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Define el tipo con nombre, descripción y orden.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php
-            $modelModal = new NovedadTipo();
+            $modelModal = new \app\models\NovedadTipo();
             $modelModal->loadDefaultValues();
             $formModal = \yii\widgets\ActiveForm::begin([
                 'id' => 'form-add-novedad-tipo',
@@ -114,17 +152,19 @@ $baseDeleteUrl = Url::to(['novedad-tipo/delete']);
                 'enableClientValidation' => false,
             ]);
             ?>
-            <div class="modal-body">
-                <div id="novedad-tipo-form-errors" class="alert alert-danger d-none"></div>
-                <?= $this->render('_form_fields', [
+            <div class="modal-body pt-3 px-4 pb-2">
+                <div id="novedad-tipo-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
+                <?= $this->render('_form_add_modal_fields', [
                     'model' => $modelModal,
                     'form' => $formModal,
                 ]) ?>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
                 <button type="submit" class="btn btn-primary" id="btn-save-novedad-tipo">
-                    <span class="btn-text">Guardar</span>
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar tipo</span>
                     <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
                 </button>
             </div>
@@ -137,9 +177,20 @@ $baseDeleteUrl = Url::to(['novedad-tipo/delete']);
 $js = <<<JS
 $(document).ready(function() {
     var table = $('#novedad-tipo-table').DataTable({
-        order: [[4, 'asc']],
-        pageLength: 25,
-        columnDefs: [{ orderable: false, targets: -1 }],
+        processing: true,
+        serverSide: true,
+        ajax: '{$dataUrl}',
+        columns: [
+            { data: 0 },
+            { data: 1, render: function(d) { return d || ''; } },
+            { data: 2, render: function(d) { return d || ''; } },
+            { data: 3, render: function(d) { return d || ''; } },
+            { data: 4, render: function(d) { return d || ''; } },
+            { data: 5, render: function(d) { return d || ''; } },
+            { data: 6, class: 'text-end', orderable: false, render: function(d) { return d || ''; } }
+        ],
+        order: [[1, 'asc']],
+        pageLength: 7,
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",
@@ -147,7 +198,8 @@ $(document).ready(function() {
             infoEmpty: "Mostrando 0 a 0 de 0 registros",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
-            zeroRecords: "No se encontraron registros"
+            zeroRecords: "No se encontraron registros",
+            processing: "Procesando..."
         }
     });
 
@@ -155,18 +207,144 @@ $(document).ready(function() {
         table.search(this.value).draw();
     });
 
+    $(document).on('click', '.btn-novedad-tipo-view', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-view-novedad-tipo'));
+        $('#modal-view-novedad-tipo-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        modal.show();
+
+        $.get('{$viewAjaxUrl}', { id: id }, function(html) {
+            $('#modal-view-novedad-tipo-body').html(html);
+        }).fail(function() {
+            $('#modal-view-novedad-tipo-body').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
+        });
+    });
+
+    $(document).on('click', '.btn-novedad-tipo-edit', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-edit-novedad-tipo'));
+        $('#modal-edit-novedad-tipo-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        $('#btn-save-edit-novedad-tipo').data('id', id);
+        modal.show();
+
+        $.get('{$formAjaxUrl}', { id: id }, function(html) {
+            $('#modal-edit-novedad-tipo-body').html(html);
+        }).fail(function() {
+            $('#modal-edit-novedad-tipo-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
+        });
+    });
+
+    $('#btn-save-edit-novedad-tipo').on('click', function() {
+        var id = $(this).data('id');
+        var \$form = $('#form-edit-novedad-tipo-modal');
+        var \$btn = $(this);
+        var \$errors = $('#novedad-tipo-edit-form-errors');
+
+        \$errors.addClass('d-none').empty();
+        \$btn.prop('disabled', true);
+        \$btn.find('.btn-text').addClass('d-none');
+        \$btn.find('.btn-loading').removeClass('d-none');
+
+        var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
+        if (!\$form.find('#nvt-edit-activo').is(':checked')) {
+            formData += '&NovedadTipo[activo]=0';
+        }
+
+        $.ajax({
+            url: '{$updateAjaxUrl}'.replace(/\/$/, '') + '?id=' + id,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('modal-edit-novedad-tipo'));
+                    modal.hide();
+                    table.ajax.reload(null, false);
+                } else {
+                    var errors = [];
+                    if (res.errors) {
+                        for (var k in res.errors) {
+                            errors.push(res.errors[k].join ? res.errors[k].join(' ') : res.errors[k]);
+                        }
+                    }
+                    \$errors.html(errors.join('<br>')).removeClass('d-none');
+                }
+            },
+            error: function() {
+                \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
+            },
+            complete: function() {
+                \$btn.prop('disabled', false);
+                \$btn.find('.btn-text').removeClass('d-none');
+                \$btn.find('.btn-loading').addClass('d-none');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-novedad-tipo-delete', function() {
+        var id = $(this).data('id');
+        var nombre = $(this).data('nombre') || 'este registro';
+        var \$btn = $(this);
+
+        if (typeof Swal === 'undefined') {
+            if (confirm('¿Está seguro que desea eliminar ' + nombre + '?')) {
+                doDelete(id, \$btn, table);
+            }
+            return;
+        }
+
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Se eliminará el tipo de novedad \"' + nombre + '\". Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                doDelete(id, \$btn, table);
+            }
+        });
+    });
+
+    function doDelete(id, \$btn, table) {
+        $.ajax({
+            url: '{$deleteUrl}',
+            type: 'POST',
+            data: { id: id, '{$csrfParam}': '{$csrfToken}' },
+            dataType: 'json',
+            success: function() {
+                table.ajax.reload(null, false);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Eliminado', text: 'El registro ha sido eliminado.', icon: 'success', timer: 1500, showConfirmButton: false });
+                }
+            },
+            error: function() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Error', text: 'No se pudo eliminar. Intente nuevamente.', icon: 'error' });
+                } else {
+                    alert('Error al eliminar.');
+                }
+            }
+        });
+    }
+
     $('#form-add-novedad-tipo').on('submit', function(e) {
         e.preventDefault();
+
         var \$form = $(this);
         var \$btn = $('#btn-save-novedad-tipo');
         var \$errors = $('#novedad-tipo-form-errors');
+
         \$errors.addClass('d-none').empty();
         \$btn.prop('disabled', true);
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
 
         var formData = \$form.serialize();
-        if (!\$('#novedad-tipo-activo').is(':checked')) {
+        if (!\$form.find('#nvt-add-activo').is(':checked')) {
             formData += '&NovedadTipo[activo]=0';
         }
 
@@ -180,21 +358,8 @@ $(document).ready(function() {
                     var modal = bootstrap.Modal.getInstance(document.getElementById('add_novedad_tipo'));
                     modal.hide();
                     \$form[0].reset();
-                    $('#novedad-tipo-activo').prop('checked', true);
-                    var activoBadge = res.model.activo ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>';
-                    table.row.add([
-                        res.model.id,
-                        res.model.nombre,
-                        res.model.descripcion || '-',
-                        res.model.icono || '-',
-                        res.model.orden != null ? res.model.orden : '-',
-                        activoBadge,
-                        '<div class="d-inline-flex gap-2">' +
-                            '<a href="{$baseViewUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Ver"><i class="ti ti-eye"></i></a>' +
-                            '<a href="{$baseUpdateUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Editar"><i class="ti ti-edit"></i></a>' +
-                            '<a href="{$baseDeleteUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16" title="Eliminar" data-confirm="¿Está seguro que desea eliminar?" data-method="post"><i class="ti ti-trash"></i></a>' +
-                        '</div>'
-                    ]).draw(false);
+                    $('#nvt-add-activo').prop('checked', true);
+                    table.ajax.reload(null, false);
                 } else {
                     var errors = [];
                     if (res.errors) {
@@ -205,7 +370,7 @@ $(document).ready(function() {
                     \$errors.html(errors.join('<br>')).removeClass('d-none');
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
             },
             complete: function() {
@@ -218,7 +383,7 @@ $(document).ready(function() {
 
     $('#add_novedad_tipo').on('hidden.bs.modal', function() {
         $('#form-add-novedad-tipo')[0].reset();
-        $('#novedad-tipo-activo').prop('checked', true);
+        $('#nvt-add-activo').prop('checked', true);
         $('#novedad-tipo-form-errors').addClass('d-none').empty();
     });
 });

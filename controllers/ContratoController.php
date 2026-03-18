@@ -40,6 +40,8 @@ class ContratoController extends Controller
                     'delete' => ['POST'],
                     'sub-areas' => ['GET'],
                     'cargos-por-estructura' => ['GET'],
+                    'create-ajax' => ['POST'],
+                    'update-ajax' => ['POST'],
                 ],
             ],
             'access' => [
@@ -48,12 +50,12 @@ class ContratoController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['admin', 'administrator', 'admin_total', 'rrhh', 'rrhh_interno', 'rrhh_cliente', 'operaciones_regionales', 'director_area', 'gerente_sede'],
-                        'actions' => ['index', 'view', 'sub-areas', 'cargos-por-estructura'],
+                        'actions' => ['index', 'view', 'sub-areas', 'cargos-por-estructura', 'view-ajax', 'form-ajax'],
                     ],
                     [
                         'allow' => true,
                         'roles' => ['admin', 'administrator', 'admin_total', 'rrhh', 'rrhh_interno', 'rrhh_cliente', 'operaciones_regionales', 'director_area'],
-                        'actions' => ['create', 'update', 'delete'],
+                        'actions' => ['create', 'update', 'delete', 'create-ajax', 'update-ajax'],
                     ],
                 ],
             ],
@@ -74,12 +76,45 @@ class ContratoController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $query);
         $dataProvider->pagination = false;
 
+        $summaryCounts = $this->getContratoSummaryCounts($query);
+
+        $modelForForm = new Contrato();
+        $modelForForm->empresa_id = $this->scopeService->getCurrentEmpresaId();
+        $modelForForm->estado = Contrato::ESTADO_ACTIVO;
+        $modelForForm->fecha_inicio = date('Y-m-d');
+        $formOptions = $this->buildFormOptions($modelForForm);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'filterOptions' => $this->buildFilterOptions($searchModel),
             'scope' => $scope,
+            'summaryCounts' => $summaryCounts,
+            'formOptions' => $formOptions,
+            'modelContratoAdd' => $modelForForm,
         ]);
+    }
+
+    private function getContratoSummaryCounts(ActiveQuery $baseQuery)
+    {
+        $today = date('Y-m-d');
+        $counts = [
+            'total' => (int) (clone $baseQuery)->count(),
+            'activos' => (int) (clone $baseQuery)->andWhere(['contrato.estado' => Contrato::ESTADO_ACTIVO])->count(),
+            'vigentes' => (int) (clone $baseQuery)
+                ->andWhere(['<=', 'contrato.fecha_inicio', $today])
+                ->andWhere([
+                    'or',
+                    ['contrato.fecha_fin' => null],
+                    ['>=', 'contrato.fecha_fin', $today],
+                ])
+                ->count(),
+            'liquidados' => (int) (clone $baseQuery)->andWhere([
+                'contrato.estado' => [Contrato::ESTADO_LIQUIDADO, Contrato::ESTADO_CANCELADO],
+            ])->count(),
+        ];
+
+        return $counts;
     }
 
     public function actionView($id)
@@ -157,8 +192,85 @@ class ContratoController extends Controller
         $this->assertModelScope($model, true);
         $model->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         Yii::$app->session->setFlash('success', 'Contrato eliminado correctamente.');
         return $this->redirect(['index']);
+    }
+
+    public function actionViewAjax($id)
+    {
+        $model = $this->findModel($id);
+        $this->assertModelScope($model);
+
+        return $this->renderPartial('_view_modal', [
+            'model' => $model,
+            'scope' => $this->getScopeContext(),
+        ]);
+    }
+
+    public function actionFormAjax($id)
+    {
+        $this->ensureManageAccess();
+
+        $model = $this->findModel($id);
+        $this->assertModelScope($model, true);
+
+        $distributionRows = $this->buildDistributionRowsFromModel($model);
+        $options = $this->buildFormOptions($model);
+
+        return $this->renderPartial('_form_modal', [
+            'model' => $model,
+            'distributionRows' => $distributionRows,
+            'options' => $options,
+        ]);
+    }
+
+    public function actionCreateAjax()
+    {
+        $this->ensureManageAccess();
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = new Contrato();
+        $model->empresa_id = $this->scopeService->getCurrentEmpresaId();
+        $model->estado = Contrato::ESTADO_ACTIVO;
+        $model->fecha_inicio = date('Y-m-d');
+
+        $distributionRows = $this->getPostedDistributionRows();
+
+        if ($model->load(Yii::$app->request->post()) && $this->saveContrato($model, $distributionRows)) {
+            return [
+                'success' => true,
+                'message' => 'Contrato creado correctamente.',
+                'model' => ['id' => $model->id],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
+    }
+
+    public function actionUpdateAjax($id)
+    {
+        $this->ensureManageAccess();
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $model = $this->findModel($id);
+        $this->assertModelScope($model, true);
+
+        $distributionRows = $this->getPostedDistributionRows();
+
+        if ($model->load(Yii::$app->request->post()) && $this->saveContrato($model, $distributionRows)) {
+            return [
+                'success' => true,
+                'message' => 'Contrato actualizado correctamente.',
+                'model' => ['id' => $model->id],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     public function actionSubAreas($area_id)

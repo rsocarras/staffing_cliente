@@ -40,72 +40,63 @@ $ciudadId = $model->ciudad_id ?: '';
 $areaId = $model->area_id ?: '';
 $sedeId = $model->sede_id ?: '';
 $subAreaId = $model->sub_area_id ?: '';
-$this->registerJs(<<<JS
-(function() {
-    var sedesUrl = '{$sedesUrl}';
-    var subAreasUrl = '{$subAreasUrl}';
-    var ciudadId = '{$ciudadId}';
-    var areaId = '{$areaId}';
-    var sedeId = '{$sedeId}';
-    var subAreaId = '{$subAreaId}';
+
+echo '<script>(function() {
+    var sedesUrl = ' . json_encode($sedesUrl) . ';
+    var subAreasUrl = ' . json_encode($subAreasUrl) . ';
+    var ciudadId = ' . json_encode($ciudadId) . ';
+    var areaId = ' . json_encode($areaId) . ';
+    var sedeId = ' . json_encode($sedeId) . ';
+    var subAreaId = ' . json_encode($subAreaId) . ';
 
     function resetSelect(selector, placeholder) {
-        $(selector).html('<option value="">' + placeholder + '</option>');
+        $(selector).html(\'<option value=\"\">\' + placeholder + \'</option>\');
     }
 
     function loadSedes(cid, preserveVal) {
-        var \$sel = $('#requisicion-sede_id');
-        resetSelect('#requisicion-sede_id', 'Seleccione sede');
-        if (!cid) {
-            return;
-        }
+        var $sel = $(\'#requisicion-sede_id\');
+        resetSelect(\'#requisicion-sede_id\', \'Seleccione sede\');
+        if (!cid) return;
 
         $.get(sedesUrl, { ciudad_id: cid }, function(data) {
             data.forEach(function(s) {
-                \$sel.append('<option value="' + s.id + '">' + s.nombre + '</option>');
+                $sel.append(\'<option value=\"\' + s.id + \'\">\' + s.nombre + \'</option>\');
             });
-            if (preserveVal) {
-                \$sel.val(preserveVal);
-            }
+            if (preserveVal) $sel.val(preserveVal);
         });
     }
 
     function loadSubAreas(aid, preserveVal) {
-        var \$sel = $('#requisicion-sub_area_id');
-        resetSelect('#requisicion-sub_area_id', 'Seleccione sub-área');
-        if (!aid) {
-            return;
-        }
+        var $sel = $(\'#requisicion-sub_area_id\');
+        resetSelect(\'#requisicion-sub_area_id\', \'Seleccione sub-área\');
+        if (!aid) return;
 
         $.get(subAreasUrl, { area_id: aid }, function(data) {
             data.forEach(function(a) {
-                \$sel.append('<option value="' + a.id + '">' + a.nombre + '</option>');
+                $sel.append(\'<option value=\"\' + a.id + \'\">\' + a.nombre + \'</option>\');
             });
-            if (preserveVal) {
-                \$sel.val(preserveVal);
-            }
+            if (preserveVal) $sel.val(preserveVal);
         });
     }
 
-    $('#requisicion-ciudad_id').off('change.requisicion').on('change.requisicion', function() {
+    $(\'#requisicion-ciudad_id\').off(\'change.requisicion\').on(\'change.requisicion\', function() {
         loadSedes($(this).val());
     });
 
-    $('#requisicion-area_id').off('change.requisicion').on('change.requisicion', function() {
+    $(\'#requisicion-area_id\').off(\'change.requisicion\').on(\'change.requisicion\', function() {
         loadSubAreas($(this).val());
     });
 
     if (ciudadId) {
         loadSedes(ciudadId, sedeId);
     } else {
-        resetSelect('#requisicion-sede_id', 'Seleccione sede');
+        resetSelect(\'#requisicion-sede_id\', \'Seleccione sede\');
     }
 
     if (areaId) {
         loadSubAreas(areaId, subAreaId);
     } else {
-        resetSelect('#requisicion-sub_area_id', 'Seleccione sub-área');
+        resetSelect(\'#requisicion-sub_area_id\', \'Seleccione sub-área\');
     }
-})();
-JS, \yii\web\View::POS_READY);
+})();</script>';
 ?>

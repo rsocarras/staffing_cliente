@@ -1,0 +1,203 @@
+<?php
+
+use yii\helpers\Html;
+
+/** @var app\models\LocationSedes $model */
+/** @var string $date */
+/** @var string $tab */
+/** @var array $dayData */
+/** @var array $weekData */
+?>
+
+<div class="sede-view-modal-content" data-sede-id="<?= $model->id ?>">
+    <!-- Info básica -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-primary bg-opacity-10 border-0 py-3">
+            <h6 class="mb-0 fw-semibold"><i class="ti ti-building me-2 text-primary"></i><?= Html::encode($model->nombre) ?></h6>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-hash small"></i></span>
+                        <div>
+                            <small class="text-muted d-block">Código</small>
+                            <span class="fw-medium"><?= Html::encode($model->codigo ?: '-') ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-map-pin small"></i></span>
+                        <div>
+                            <small class="text-muted d-block">Dirección</small>
+                            <span class="fw-medium"><?= Html::encode($model->direccion ?: '-') ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-category small"></i></span>
+                        <div>
+                            <small class="text-muted d-block">Tipo</small>
+                            <span class="fw-medium"><?= Html::encode($model->getTipoSedeLabel()) ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-building-skyscraper small"></i></span>
+                        <div>
+                            <small class="text-muted d-block">Ciudad</small>
+                            <span class="fw-medium"><?= $model->city ? Html::encode($model->city->name) : '-' ?></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-toggle-right small"></i></span>
+                        <div>
+                            <small class="text-muted d-block">Estado</small>
+                            <?php if ($model->activo): ?>
+                                <span class="badge badge-soft-success">Activa</span>
+                            <?php else: ?>
+                                <span class="badge badge-soft-danger">Inactiva</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Centro costo</small>
+                    <div class="fw-medium"><?= $model->centro_costo !== null ? Html::encode($model->centro_costo) : '-' ?></div>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Centro costo Staffing</small>
+                    <div class="fw-medium"><?= $model->centro_costo_staffing !== null ? Html::encode($model->centro_costo_staffing) : '-' ?></div>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Cód. externo</small>
+                    <div class="fw-medium"><?= Html::encode($model->codigo_externo ?: '-') ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mallas de empleados -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-0 py-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <h6 class="mb-0 fw-semibold"><i class="ti ti-users-group me-2"></i>Mallas de empleados</h6>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <form class="sede-view-date-form d-flex align-items-center gap-2" data-sede-id="<?= $model->id ?>">
+                    <input type="hidden" name="tab" value="<?= Html::encode($tab) ?>">
+                    <label for="sede-modal-date" class="mb-0 small text-muted">Fecha:</label>
+                    <input id="sede-modal-date" type="date" name="date" class="form-control form-control-sm" value="<?= Html::encode($date) ?>" style="max-width: 150px;">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="ti ti-filter me-1"></i>Aplicar</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body pt-0">
+            <ul class="nav nav-pills mb-3">
+                <li class="nav-item">
+                    <a class="nav-link sede-view-tab <?= $tab === 'day' ? 'active' : '' ?>" href="#" data-tab="day" data-sede-id="<?= $model->id ?>" data-date="<?= Html::encode($date) ?>">
+                        <i class="ti ti-calendar-day me-1"></i>Por día
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link sede-view-tab <?= $tab === 'week' ? 'active' : '' ?>" href="#" data-tab="week" data-sede-id="<?= $model->id ?>" data-date="<?= Html::encode($date) ?>">
+                        <i class="ti ti-calendar-week me-1"></i>Por semana
+                    </a>
+                </li>
+            </ul>
+
+            <?php if ($tab === 'week'): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="fw-semibold">Empleado</th>
+                                <th class="fw-semibold">Cargo</th>
+                                <th class="fw-semibold">Malla</th>
+                                <?php foreach ($weekData['dates'] as $d): ?>
+                                    <th class="fw-semibold text-center"><?= Html::encode(date('d M', strtotime($d))) ?></th>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($weekData['rows'])): ?>
+                                <tr>
+                                    <td colspan="<?= count($weekData['dates']) + 3 ?>" class="text-center py-4 text-muted">
+                                        <i class="ti ti-users-off fs-1 d-block mb-2 opacity-50"></i>
+                                        No hay empleados activos en esta sede.
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($weekData['rows'] as $row): ?>
+                                    <tr>
+                                        <td><span class="fw-medium"><?= Html::encode($row['name']) ?></span></td>
+                                        <td><?= Html::encode($row['cargo'] ?: '-') ?></td>
+                                        <td><?= $row['has_malla'] ? '<span class="badge bg-primary bg-opacity-10 text-primary">' . Html::encode($row['malla']->nombre) . '</span>' : '<span class="badge bg-warning bg-opacity-25 text-warning">Sin malla</span>' ?></td>
+                                        <?php foreach ($weekData['dates'] as $d): ?>
+                                            <?php $day = $row['days'][$d]; ?>
+                                            <td class="text-center">
+                                                <?php if (empty($day['segments'])): ?>
+                                                    <span class="text-muted">-</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-light text-dark"><?= Html::encode(sprintf('%02d:%02d', intdiv($day['segments'][0]['start'], 60), $day['segments'][0]['start'] % 60)) ?>...</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="fw-semibold">Empleado</th>
+                                <th class="fw-semibold">Cargo</th>
+                                <th class="fw-semibold">Malla</th>
+                                <th class="fw-semibold">Turnos del día</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (empty($dayData['rows'])): ?>
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">
+                                        <i class="ti ti-users-off fs-1 d-block mb-2 opacity-50"></i>
+                                        No hay empleados activos en esta sede.
+                                    </td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($dayData['rows'] as $row): ?>
+                                    <tr>
+                                        <td><span class="fw-medium"><?= Html::encode($row['name']) ?></span></td>
+                                        <td><?= Html::encode($row['cargo'] ?: '-') ?></td>
+                                        <td><?= $row['has_malla'] ? '<span class="badge bg-primary bg-opacity-10 text-primary">' . Html::encode($row['malla']->nombre) . '</span>' : '<span class="badge bg-warning bg-opacity-25 text-warning">Sin malla</span>' ?></td>
+                                        <td>
+                                            <?php if (empty($row['segments'])): ?>
+                                                <span class="text-muted">Sin turno</span>
+                                            <?php else: ?>
+                                                <?php foreach ($row['segments'] as $segment): ?>
+                                                    <div class="d-inline-block me-2 mb-1">
+                                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                                            <?= Html::encode(sprintf('%02d:%02d', intdiv($segment['start'], 60), $segment['start'] % 60)) ?>
+                                                            - <?= Html::encode(sprintf('%02d:%02d', intdiv($segment['end'], 60), $segment['end'] % 60)) ?>
+                                                        </span>
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

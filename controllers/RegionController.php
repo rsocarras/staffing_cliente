@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\Region;
-use app\models\search\RegionSearch;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -28,6 +27,8 @@ class RegionController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
+                        'get-parent-regions' => ['GET'],
                     ],
                 ],
             ]
@@ -41,14 +42,67 @@ class RegionController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new RegionSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
+        return $this->render('index');
+    }
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+    /**
+     * Returns JSON for DataTables server-side processing.
+     *
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $searchValue = $request->get('search', [])['value'] ?? '';
+        $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 3);
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $query = Region::find();
+        $totalCount = (int) $query->count();
+
+        if ($searchValue !== '') {
+            $query->andWhere([
+                'or',
+                ['like', 'region.code', $searchValue],
+                ['like', 'region.name', $searchValue],
+                ['like', 'region.type', $searchValue],
+                ['like', 'country.name', $searchValue],
+                ['like', 'parentRegion.name', $searchValue],
+            ]);
+        }
+        $filteredCount = (int) $query->count();
+
+        $orderColumns = ['region.id', 'country.name', 'region.code', 'region.name', 'region.type', null];
+        $orderBy = $orderColumns[$orderCol] ?? 'region.name';
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $query->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $data[] = [
+                $model->id,
+                $model->country ? \yii\helpers\Html::encode($model->country->name) : '-',
+                \yii\helpers\Html::encode($model->code),
+                '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->name) . '</span>',
+                \yii\helpers\Html::encode($model->type ?? '-'),
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $totalCount,
+            'recordsFiltered' => $filteredCount,
+            'data' => $data,
+        ];
     }
 
     /**
@@ -148,7 +202,91 @@ class RegionController extends Controller
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns parent regions by country (JSON). For dependent dropdown.
+     * @param int $country_id
+     * @param int|null $exclude_id Region ID to exclude (e.g. current region)
+     * @return array
+     */
+    public function actionGetParentRegions($country_id, $exclude_id = null)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $query = Region::find()
+            ->where(['country_id' => (int) $country_id, 'is_active' => 1])
+            ->orderBy('name');
+        if ($exclude_id) {
+            $query->andWhere(['!=', 'id', (int) $exclude_id]);
+        }
+        $regions = $query->all();
+        return array_map(function ($r) {
+            return ['id' => $r->id, 'name' => $r->name];
+        }, $regions);
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param int $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates Region via AJAX. Returns JSON.
+     * @param int $id ID
+     * @return array
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $countryName = $model->country ? $model->country->name : null;
+            $parentName = $model->parentRegion ? $model->parentRegion->name : null;
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Región actualizada correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'country_id' => $model->country_id,
+                    'code' => $model->code,
+                    'name' => $model->name,
+                    'type' => $model->type,
+                    'country_name' => $countryName,
+                    'parent_region_name' => $parentName,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**

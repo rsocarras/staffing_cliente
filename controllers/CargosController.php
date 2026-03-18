@@ -31,6 +31,7 @@ class CargosController extends Controller
                     'actions' => [
                         'delete' => ['POST'],
                         'create-ajax' => ['POST'],
+                        'update-ajax' => ['POST'],
                         'get-sub-areas' => ['GET'],
                     ],
                 ],
@@ -45,15 +46,69 @@ class CargosController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new CargosSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->query->joinWith(['area', 'subArea']);
-        $dataProvider->pagination = false; // Cargar todos para DataTables client-side
+        return $this->render('index');
+    }
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+    /**
+     * Returns JSON for DataTables server-side processing.
+     *
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $searchValue = $request->get('search', [])['value'] ?? '';
+        $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 4);
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $query = Cargos::find()->joinWith(['area', 'subArea']);
+        $totalCount = (int) $query->count();
+
+        if ($searchValue !== '') {
+            $query->andWhere([
+                'or',
+                ['like', 'cargos.codigo', $searchValue],
+                ['like', 'cargos.nombre', $searchValue],
+                ['like', 'cargos.descripcion', $searchValue],
+                ['like', 'area.nombre', $searchValue],
+                ['like', 'subArea.nombre', $searchValue],
+            ]);
+        }
+        $filteredCount = (int) $query->count();
+
+        $orderColumns = ['cargos.id', 'area.nombre', 'subArea.nombre', 'cargos.codigo', 'cargos.nombre', 'cargos.descripcion', null, null];
+        $orderBy = $orderColumns[$orderCol] ?? 'cargos.nombre';
+        if ($orderBy) {
+            $query->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $query->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $data[] = [
+                $model->id,
+                $model->area ? \yii\helpers\Html::encode($model->area->nombre) : '-',
+                $model->subArea ? \yii\helpers\Html::encode($model->subArea->nombre) : '-',
+                \yii\helpers\Html::encode($model->codigo ?? '-'),
+                '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
+                \yii\helpers\Html::encode($model->descripcion ?? '-'),
+                $model->activo ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-secondary">No</span>',
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $totalCount,
+            'recordsFiltered' => $filteredCount,
+            'data' => $data,
+        ];
     }
 
     /**
@@ -192,7 +247,72 @@ class CargosController extends Controller
     {
         $this->findModel($id)->delete();
 
+        if (Yii::$app->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param string $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param string $id ID
+     * @return string
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Updates Cargos via AJAX. Returns JSON.
+     * @param string $id ID
+     * @return array
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $areaNombre = $model->area ? $model->area->nombre : null;
+            $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
+            return [
+                'success' => true,
+                'message' => Yii::t('app', 'Cargo actualizado correctamente.'),
+                'model' => [
+                    'id' => $model->id,
+                    'codigo' => $model->codigo,
+                    'nombre' => $model->nombre,
+                    'descripcion' => $model->descripcion,
+                    'activo' => $model->activo,
+                    'area_id' => $model->area_id,
+                    'sub_area_id' => $model->sub_area_id,
+                    'area_nombre' => $areaNombre,
+                    'sub_area_nombre' => $subAreaNombre,
+                ],
+            ];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
     }
 
     /**

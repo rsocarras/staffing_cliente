@@ -1,10 +1,23 @@
 <?php
+
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $content string */
 ?>
+<?php
+$requestedRoute = Yii::$app->requestedRoute;
+// Si por algún motivo se renderiza este layout para rutas que no son de auth,
+// bloquea el acceso hasta que el usuario esté logueado.
+$allowedWhenGuestPattern = '#^(user/security/(login|logout)$|user/recovery/|site/error)$#';
+if (Yii::$app->user->isGuest && !preg_match($allowedWhenGuestPattern, $requestedRoute)) {
+    Yii::$app->response->redirect(Url::to(['/user/security/login']));
+    Yii::$app->end();
+}
+?>
+
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <?= $this->render('partials/theme-settings') ?>
@@ -18,35 +31,13 @@ use yii\web\View;
 <?= $this->render('partials/body') ?>
 <?php $this->beginBody() ?>
 
-    <!-- Begin Wrapper -->
-    <div class="main-wrapper">
+<div class="main-wrapper">
+    <?= $content ?>
+</div>
 
-        <?php
-            $trimmedContent = ltrim($content);
-            $controllerId = Yii::$app->controller ? Yii::$app->controller->id : null;
-            $skipAutoWrapper = ($controllerId === 'pages');
-            $alreadyWrapped = $skipAutoWrapper || str_starts_with($trimmedContent, '<div class="page-wrapper">');
-        ?>
-
-        <?php if ($alreadyWrapped): ?>
-            <?= $content ?> <!-- Main content of the page -->
-        <?php else: ?>
-            <div class="page-wrapper">
-
-                <!-- Start Content -->
-                <div class="content">
-
-                    <?= $content ?> <!-- Main content of the page -->
-
-                </div>
-            </div>
-        <?php endif; ?>
-
-    </div>
-    <!-- End Wrapper -->
-
-    <?= $this->render('partials/vendor-scripts') ?>
+<?= $this->render('partials/vendor-scripts') ?>
 <?php $this->endBody() ?>
 </body>
+
 </html>
 <?php $this->endPage() ?>
