@@ -3,62 +3,22 @@
 use yii\helpers\Url;
 
 $path = Yii::$app->request->getPathInfo();
-$page = empty($path) ? 'index' : basename($path);
-$controllerId = Yii::$app->controller ? Yii::$app->controller->id : '';
-$actionId = (Yii::$app->controller && Yii::$app->controller->action) ? Yii::$app->controller->action->id : '';
-$isDashboardActive = ($controllerId === 'site' && $actionId === 'index')
-    || ($controllerId === 'pages' && $actionId === 'index')
-    || ($path === '')
-    || ($path === 'index');
-$isMallasActive = in_array($controllerId, ['mallas', 'malla-cargo-asignacion', 'malla-profile-asignacion'], true);
+$homeUrl = Yii::$app->homeUrl;
 
-$plantillaDir = Yii::getAlias('@app/views/plantilla');
-$plantillaFiles = glob($plantillaDir . '/*.php') ?: [];
-$plantillaPages = [];
-foreach ($plantillaFiles as $file) {
-    $plantillaPages[] = basename($file, '.php');
-}
-sort($plantillaPages);
-
-$plantillaGroups = [
-    'User' => [],
-    'UI' => [],
-    'Forms' => [],
-    'Icons' => [],
-    'Charts' => [],
-    'Otros' => [],
-];
-
-foreach ($plantillaPages as $slug) {
-    if (strpos($slug, 'user-') === 0) {
-        $plantillaGroups['User'][] = $slug;
-    } elseif (strpos($slug, 'ui-') === 0) {
-        $plantillaGroups['UI'][] = $slug;
-    } elseif (strpos($slug, 'form-') === 0) {
-        $plantillaGroups['Forms'][] = $slug;
-    } elseif (strpos($slug, 'icon-') === 0) {
-        $plantillaGroups['Icons'][] = $slug;
-    } elseif (strpos($slug, 'chart-') === 0) {
-        $plantillaGroups['Charts'][] = $slug;
-    } else {
-        $plantillaGroups['Otros'][] = $slug;
-    }
-}
-
-$isPlantillaActive = in_array($page, $plantillaPages, true) || strpos($path, 'pages/') !== false;
 ?>
 
-<div class="sidebar" id="sidebar">
+<div class="sidebar bg-primary" id="sidebar">
     <div class="sidebar-logo">
-        <a href="<?= Url::to(['/']) ?>" class="logo logo-normal">
-            <img src="/assets/img/logo.svg" alt="Logo">
+        <!-- Logo Normal -->
+        <a href="<?= $homeUrl ?>" class="logo logo-normal">
+            <img src="<?= $homeUrl ?>assets/img/logo.png" alt="Logo">
         </a>
-        <a href="<?= Url::to(['/']) ?>" class="logo-small">
-            <img src="/assets/img/logo-small.svg" alt="Logo">
+
+        <!-- Logo Small (iniciales cuando está minimizado) -->
+        <a href="<?= $homeUrl ?>" class="logo-small logo-initials">
+            <span class="logo-initials-text">SG</span>
         </a>
-        <a href="<?= Url::to(['/']) ?>" class="dark-logo">
-            <img src="/assets/img/logo-white.svg" alt="Logo">
-        </a>
+
         <button class="sidebar-close">
             <i class="ti ti-x align-middle"></i>
         </button>
@@ -68,107 +28,54 @@ $isPlantillaActive = in_array($page, $plantillaPages, true) || strpos($path, 'pa
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li class="menu-title"><span>Sistema</span></li>
-                <li>
-                    <a href="<?= Url::to(['/']) ?>" class="<?= $isDashboardActive ? 'active' : '' ?>">
-                        <i class="ti ti-layout-grid-add"></i><span>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/novedad-tipo/index']) ?>" class="<?= (strpos($path, 'novedad-tipo') !== false) ? 'active' : '' ?>">
-                        <i class="ti ti-list-details"></i><span>Tipo de Novedad</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/requisicion/index']) ?>" class="<?= (strpos($path, 'requisicion') !== false) ? 'active' : '' ?>">
-                        <i class="ti ti-file-certificate"></i><span>Requisiciones</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/profile/index']) ?>" class="<?= ($controllerId === 'profile') ? 'active' : '' ?>">
-                        <i class="ti ti-users"></i><span>Empleados / colaboradores</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/location-sedes/index']) ?>" class="<?= (strpos($path, 'location-sedes') !== false) ? 'active' : '' ?>">
-                        <i class="ti ti-building"></i><span>Sedes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/area/index']) ?>" class="<?= (strpos($path, 'area') !== false) ? 'active' : '' ?>">
-                        <i class="ti ti-folders"></i><span>Áreas</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= Url::to(['/contrato/index']) ?>" class="<?= (strpos($path, 'contrato') !== false && strpos($path, 'contrato-tipos') === false) ? 'active' : '' ?>">
-                        <i class="ti ti-id-badge-2"></i><span>Contratos</span>
-                    </a>
-                </li>
+                <li><a href="<?= Url::to(['/']) ?>" class="<?php echo ($path == '/') ? 'active' : ''; ?>"><i class="ti ti-layout-grid-add"></i><span>Dashboard</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo ($path == 'sistema/empleados') ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/contratos']) ?>" class="<?php echo ($path == 'sistema/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Contratos</span></a></li>
 
                 <li class="menu-title"><span>Mallas</span></li>
                 <li class="submenu">
-                    <a href="javascript:void(0);" class="<?= $isMallasActive ? 'active subdrop' : '' ?>">
-                        <i class="ti ti-calendar-time"></i><span>Módulo mallas</span>
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-calendar-time"></i><span>Gestion de mallas</span>
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <li>
-                            <a href="<?= Url::to(['/mallas/index']) ?>" class="<?= ($controllerId === 'mallas' && $actionId === 'index') ? 'active' : '' ?>">
-                                Mallas
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= Url::to(['/mallas/create']) ?>" class="<?= ($controllerId === 'mallas' && $actionId === 'create') ? 'active' : '' ?>">
-                                Crear malla
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= Url::to(['/mallas/view', 'id' => 1]) ?>" class="<?= ($controllerId === 'mallas' && $actionId === 'view') ? 'active' : '' ?>">
-                                Ver malla (ejemplo ID 1)
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= Url::to(['/malla-cargo-asignacion/index']) ?>" class="<?= ($controllerId === 'malla-cargo-asignacion') ? 'active' : '' ?>">
-                                Asignación por cargo
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= Url::to(['/malla-profile-asignacion/index']) ?>" class="<?= ($controllerId === 'malla-profile-asignacion') ? 'active' : '' ?>">
-                                Asignación por empleado
-                            </a>
-                        </li>
+                        <li><a href="<?= Url::to(['/mallas/list']) ?>" class="<?php echo ($path == 'mallas/list') ? 'active' : ''; ?>">Listado</a></li>
+                        <li><a href="<?= Url::to(['/mallas/crear']) ?>" class="<?php echo ($path == 'mallas/crear') ? 'active' : ''; ?>">Crear malla</a></li>
+                        <li><a href="<?= Url::to(['/mallas/view', 'id' => 1]) ?>" class="<?php echo ($path == 'mallas/view') ? 'active' : ''; ?>">Ver malla (ejemplo ID 1)</a></li>
+                        <li><a href="<?= Url::to(['/mallas/cargo-asignacion']) ?>" class="<?php echo ($path == 'mallas/cargo-asignacion') ? 'active' : ''; ?>">Asignación por cargo</a></li>
+                        <li><a href="<?= Url::to(['/mallas/profile-asignacion']) ?>" class="<?php echo ($path == 'mallas/profile-asignacion') ? 'active' : ''; ?>">Asignación por empleado</a></li>
                     </ul>
                 </li>
 
-                <li class="menu-title"><span>Plantilla</span></li>
+                <li class="menu-title"><span>Administración</span></li>
                 <li class="submenu">
-                    <a href="javascript:void(0);" class="<?= $isPlantillaActive ? 'active subdrop' : '' ?>">
-                        <i class="ti ti-layout-list"></i><span>Vistas de plantilla</span>
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-user-star"></i><span>Gestion de usuarios</span>
                         <span class="menu-arrow"></span>
                     </a>
                     <ul>
-                        <?php foreach ($plantillaGroups as $group => $items): ?>
-                            <?php if (empty($items)) {
-                                continue;
-                            } ?>
-                            <li class="submenu submenu-two">
-                                <a href="javascript:void(0);" class="<?= in_array($page, $items, true) ? 'active subdrop' : '' ?>">
-                                    <?= $group ?>
-                                    <span class="menu-arrow inside-submenu"></span>
-                                </a>
-                                <ul>
-                                    <?php foreach ($items as $slug): ?>
-                                        <li>
-                                            <a href="<?= Url::to(['/pages/' . $slug]) ?>" class="<?= ($page === $slug) ? 'active' : '' ?>">
-                                                <?= ucwords(str_replace('-', ' ', $slug)) ?>
-                                            </a>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </li>
-                        <?php endforeach; ?>
+                        <li><a href="<?= Url::to(['/usuarios']) ?>" class="<?php echo ($path == 'usuarios') ? 'active' : ''; ?>">Usuarios</a></li>
+                        <li><a href="<?= Url::to(['/usuarios/roles']) ?>" class="<?php echo ($path == 'usuarios/roles') ? 'active' : ''; ?>">Roles</a></li>
+                        <li><a href="<?= Url::to(['/usuarios/permisos']) ?>" class="<?php echo ($path == 'usuarios/permisos') ? 'active' : ''; ?>">Permisos</a></li>
                     </ul>
                 </li>
+
+                <li class="menu-title"><span>Reclutamiento</span></li>
+                <li>
+                    <a href="<?= Url::to(['/reclutamiento/candidatos']) ?>" class="<?php echo ($path == 'reclutamiento/candidatos') ? 'active' : ''; ?>">
+                        <i class="ti ti-user-shield"></i><span>Candidatos</span>
+                    </a>
+                </li>
+
+                <li class="menu-title"><span>Configuración</span></li>
+                <li><a href="<?= Url::to(['/configuracion/areas']) ?>" class="<?php echo ($path == 'configuracion/areas') ? 'active' : ''; ?>"><i class="ti ti-folders"></i><span>Áreas</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/cargos']) ?>" class="<?php echo ($path == 'configuracion/cargos') ? 'active' : ''; ?>"><i class="ti ti-briefcase"></i><span>Cargos</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/contratos']) ?>" class="<?php echo ($path == 'configuracion/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Tipos de Contratos</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/sedes']) ?>" class="<?php echo ($path == 'configuracion/sedes') ? 'active' : ''; ?>"><i class="ti ti-building"></i><span>Sedes</span></a></li>
             </ul>
         </div>
     </div>
 </div>
+<!-- Sidenav Menu End -->

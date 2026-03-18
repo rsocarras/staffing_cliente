@@ -1,4 +1,5 @@
 <?php
+
 use app\models\Mallas;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -10,7 +11,8 @@ use yii\helpers\Url;
 $this->title = 'Mallas';
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
+$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'));
+$this->registerCssFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.css'));
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 
@@ -64,26 +66,26 @@ $baseDeleteUrl = Url::to(['mallas/delete']);
                         </thead>
                         <tbody>
                             <?php foreach ($dataProvider->getModels() as $model): ?>
-                            <tr>
-                                <td><?= Html::encode($model->id) ?></td>
-                                <td><?= Html::encode($model->empresa_id) ?></td>
-                                <td class="fw-medium text-dark"><?= Html::encode($model->nombre) ?></td>
-                                <td><?= Html::encode($model->descripcion) ?></td>
-                                <td><?= Html::encode($model->displayTipo()) ?></td>
-                                <td><?= Html::encode($model->displayEstadoAprobacion()) ?></td>
-                                <td>
-                                    <div class="d-inline-flex gap-2">
-                                        <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
-                                        <?= Html::a('<i class="ti ti-layout-kanban"></i>', ['create-kanban', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-info fs-16', 'title' => 'Editar kanban']) ?>
-                                        <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
-                                        <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
-                                            'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
-                                            'title' => 'Eliminar',
-                                            'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
-                                        ]) ?>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td><?= Html::encode($model->id) ?></td>
+                                    <td><?= Html::encode($model->empresa_id) ?></td>
+                                    <td class="fw-medium text-dark"><?= Html::encode($model->nombre) ?></td>
+                                    <td><?= Html::encode($model->descripcion) ?></td>
+                                    <td><?= Html::encode($model->displayTipo()) ?></td>
+                                    <td><?= Html::encode($model->displayEstadoAprobacion()) ?></td>
+                                    <td>
+                                        <div class="d-inline-flex gap-2">
+                                            <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
+                                            <?= Html::a('<i class="ti ti-layout-kanban"></i>', ['create-kanban', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-info fs-16', 'title' => 'Editar kanban']) ?>
+                                            <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
+                                            <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
+                                                'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
+                                                'title' => 'Eliminar',
+                                                'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
+                                            ]) ?>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>

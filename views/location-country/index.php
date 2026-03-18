@@ -5,116 +5,156 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var yii\data\ActiveDataProvider $dataProvider */
+/** @var int $total */
+/** @var int $activos */
+/** @var int $inactivos */
 
-$this->title = Yii::t('app', 'Location Countries');
+$this->title = Yii::t('app', 'Países');
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
+$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'));
+$this->registerCssFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.css'));
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
+$this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 
 $createAjaxUrl = Url::to(['location-country/create-ajax']);
-$baseViewUrl = Url::to(['location-country/view']);
-$baseUpdateUrl = Url::to(['location-country/update']);
-$baseDeleteUrl = Url::to(['location-country/delete']);
+$dataUrl = Url::to(['location-country/data']);
+$viewAjaxUrl = Url::to(['location-country/view-ajax']);
+$formAjaxUrl = Url::to(['location-country/form-ajax']);
+$updateAjaxUrl = Url::to(['location-country/update-ajax']);
+$deleteUrl = Url::to(['location-country/delete']);
+$csrfToken = Yii::$app->request->csrfToken;
+$csrfParam = Yii::$app->request->csrfParam;
 ?>
+
 <div class="page-wrapper">
+    <div class="content">
+        <div class="card mb-0">
+            <div class="card-body">
+                <!-- Page Header -->
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
+                    <div class="flex-grow-1">
+                        <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
+                    </div>
+                    <div class="text-end">
+                        <ol class="breadcrumb m-0 py-0">
+                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>"><i class="ti ti-home"></i></a></li>
+                            <li class="breadcrumb-item"><?= Yii::t('app', 'Ubicación') ?></li>
+                            <li class="breadcrumb-item active" aria-current="page"><?= Html::encode($this->title) ?></li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- End Page Header -->
 
-    <!-- Start Content -->
-    <div class="content pb-0">
-
-        <!-- Page Header -->
-        <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3">
-            <div class="flex-grow-1">
-                <h4 class="mb-0"><?= Html::encode($this->title) ?></h4>
-            </div>
-            <div class="text-end">
-                <ol class="breadcrumb m-0 py-0">
-                    <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>">Home</a></li>
-                    <li class="breadcrumb-item"><a href="javascript:void(0);"><?= Yii::t('app', 'Location') ?></a></li>
-                    <li class="breadcrumb-item active"><?= Html::encode($this->title) ?></li>
-                </ol>
-            </div>
-        </div>
-        <!-- End Page Header -->
-
-        <!-- Start Search and Filter -->
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-            <div class="input-group w-auto input-group-flat">
-                <span class="input-group-text border-end-0"><i class="ti ti-search"></i></span>
-                <input type="text" class="form-control form-control-sm" id="location-country-search" placeholder="Buscar...">
-            </div>
-            <div class="d-flex align-items-center gap-3 flex-wrap">
-                <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_location_country"><i class="ti ti-plus me-1"></i><?= Yii::t('app', 'Agregar País') ?></a>
-            </div>
-        </div>
-        <!-- End Search and Filter -->
-
-        <!-- start row -->
-        <div class="row">
-
-            <div class="col-sm-12">
-                <div class="card">
-                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
-                        <div>
-                            <h4 class="card-title mb-1"><?= Yii::t('app', 'Countries') ?></h4>
-                            <p class="card-text mb-0">
-                                <?= Yii::t('app', 'List of countries with search, sort and pagination.') ?>
-                            </p>
+                <!-- Summary Cards -->
+                <div class="row row-gap-4 mb-4">
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-dark flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-world fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Total países</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($total ?? 0) ?></h4>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-nowrap" id="location-country-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th><?= Yii::t('app', 'Name') ?></th>
-                                        <th><?= Yii::t('app', 'Official Name') ?></th>
-                                        <th><?= Yii::t('app', 'ISO Alpha2') ?></th>
-                                        <th><?= Yii::t('app', 'ISO Alpha3') ?></th>
-                                        <th><?= Yii::t('app', 'Region') ?></th>
-                                        <th><?= Yii::t('app', 'Active') ?></th>
-                                        <th class="text-end"><?= Yii::t('app', 'Actions') ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($dataProvider->getModels() as $model): ?>
-                                    <tr>
-                                        <td><?= $model->id ?></td>
-                                        <td><?= Html::encode($model->name) ?></td>
-                                        <td><?= Html::encode($model->official_name) ?></td>
-                                        <td><?= Html::encode($model->iso_alpha2) ?></td>
-                                        <td><?= Html::encode($model->iso_alpha3) ?></td>
-                                        <td><?= Html::encode($model->region) ?></td>
-                                        <td>
-                                            <?php if ($model->is_active): ?>
-                                                <span class="badge bg-success"><?= Yii::t('app', 'Yes') ?></span>
-                                            <?php else: ?>
-                                                <span class="badge bg-secondary"><?= Yii::t('app', 'No') ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-end">
-                                            <?= $this->render('_actions', ['model' => $model]) ?>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-success flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-circle-check fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Activos</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($activos ?? 0) ?></h4>
+                                </div>
+                            </div>
                         </div>
-                    </div><!-- end card body -->
-                </div><!-- end card -->
-            </div><!-- end col -->
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-danger flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-circle-x fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Inactivos</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($inactivos ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Summary Cards -->
 
+                <!-- Start Search and Filter -->
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_location_country"><i class="ti ti-plus me-1"></i><?= Yii::t('app', 'Agregar País') ?></a>
+                    </div>
+                </div>
+                <!-- End Search and Filter -->
+
+                <!-- start table -->
+                <div class="table-responsive">
+                    <table class="table table-nowrap bg-white border mb-0" id="location-country-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th><?= Yii::t('app', 'Name') ?></th>
+                                <th><?= Yii::t('app', 'Official Name') ?></th>
+                                <th><?= Yii::t('app', 'ISO Alpha2') ?></th>
+                                <th><?= Yii::t('app', 'ISO Alpha3') ?></th>
+                                <th><?= Yii::t('app', 'Region') ?></th>
+                                <th><?= Yii::t('app', 'Active') ?></th>
+                                <th class="text-center"><?= Yii::t('app', 'Actions') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <!-- end table -->
+            </div>
         </div>
-        <!-- end row -->
-
     </div>
-    <!-- End Content -->
+</div>
 
-    <?= $this->render('//layouts/partials/footer') ?>
+<!-- Modal Ver País -->
+<div class="modal fade" id="modal-view-country">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body" id="modal-view-country-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Modal Editar País -->
+<div class="modal fade" id="modal-edit-country">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><?= Yii::t('app', 'Editar País') ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-edit-country-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit-country">
+                    <span class="btn-text">Guardar</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Agregar País -->
@@ -123,7 +163,7 @@ $baseDeleteUrl = Url::to(['location-country/delete']);
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title"><?= Yii::t('app', 'Agregar País') ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-circle-x"></i></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php
             $modelCountryModal = new LocationCountry();
@@ -159,9 +199,21 @@ $baseDeleteUrl = Url::to(['location-country/delete']);
 $js = <<<JS
 $(document).ready(function() {
     var table = $('#location-country-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{$dataUrl}',
+        columns: [
+            { data: 0 },
+            { data: 1, render: function(d) { return d || ''; } },
+            { data: 2, render: function(d) { return d || ''; } },
+            { data: 3 },
+            { data: 4 },
+            { data: 5, render: function(d) { return d || ''; } },
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
+        ],
         order: [[1, 'asc']],
         pageLength: 25,
-        columnDefs: [{ orderable: false, targets: -1 }],
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",
@@ -169,13 +221,125 @@ $(document).ready(function() {
             infoEmpty: "Mostrando 0 a 0 de 0 registros",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
-            zeroRecords: "No se encontraron registros"
+            zeroRecords: "No se encontraron registros",
+            processing: "Procesando..."
         }
     });
 
-    $('#location-country-search').on('keyup', function() {
-        table.search(this.value).draw();
+    $(document).on('click', '.btn-country-view', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-view-country'));
+        $('#modal-view-country-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        modal.show();
+        $.get('{$viewAjaxUrl}', { id: id }, function(html) {
+            $('#modal-view-country-body').html(html);
+        }).fail(function() {
+            $('#modal-view-country-body').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
+        });
     });
+
+    $(document).on('click', '.btn-country-edit', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-edit-country'));
+        $('#modal-edit-country-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        $('#btn-save-edit-country').data('id', id);
+        modal.show();
+        $.get('{$formAjaxUrl}', { id: id }, function(html) {
+            $('#modal-edit-country-body').html(html);
+        }).fail(function() {
+            $('#modal-edit-country-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
+        });
+    });
+
+    $('#btn-save-edit-country').on('click', function() {
+        var id = $(this).data('id');
+        var \$form = $('#form-edit-location-country-modal');
+        var \$btn = $(this);
+        var \$errors = $('#location-country-edit-form-errors');
+        \$errors.addClass('d-none').empty();
+        \$btn.prop('disabled', true);
+        \$btn.find('.btn-text').addClass('d-none');
+        \$btn.find('.btn-loading').removeClass('d-none');
+        var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
+        if (!\$('#locationcountry-is_active').is(':checked')) {
+            formData += '&LocationCountry[is_active]=0';
+        }
+        $.ajax({
+            url: '{$updateAjaxUrl}'.replace(/\/$/, '') + '?id=' + id,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('modal-edit-country')).hide();
+                    table.ajax.reload(null, false);
+                } else {
+                    var errors = [];
+                    if (res.errors) {
+                        for (var k in res.errors) {
+                            errors.push(res.errors[k].join ? res.errors[k].join(' ') : res.errors[k]);
+                        }
+                    }
+                    \$errors.html(errors.join('<br>')).removeClass('d-none');
+                }
+            },
+            error: function() {
+                \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
+            },
+            complete: function() {
+                \$btn.prop('disabled', false);
+                \$btn.find('.btn-text').removeClass('d-none');
+                \$btn.find('.btn-loading').addClass('d-none');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-country-delete', function() {
+        var id = $(this).data('id');
+        var nombre = $(this).data('nombre') || 'este registro';
+        if (typeof Swal === 'undefined') {
+            if (confirm('¿Está seguro que desea eliminar ' + nombre + '?')) {
+                doDelete(id);
+            }
+            return;
+        }
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Se eliminará el país "' + nombre + '". Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                doDelete(id);
+            }
+        });
+    });
+
+    function doDelete(id) {
+        $.ajax({
+            url: '{$deleteUrl}',
+            type: 'POST',
+            data: { id: id, '{$csrfParam}': '{$csrfToken}' },
+            dataType: 'json',
+            success: function() {
+                table.ajax.reload(null, false);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Eliminado', text: 'El país ha sido eliminado.', icon: 'success', timer: 1500, showConfirmButton: false });
+                }
+            },
+            error: function() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Error', text: 'No se pudo eliminar. Intente nuevamente.', icon: 'error' });
+                } else {
+                    alert('Error al eliminar.');
+                }
+            }
+        });
+    }
 
     $('#form-add-location-country').on('submit', function(e) {
         e.preventDefault();
@@ -199,24 +363,9 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(res) {
                 if (res.success) {
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('add_location_country'));
-                    modal.hide();
+                    bootstrap.Modal.getInstance(document.getElementById('add_location_country')).hide();
                     \$form[0].reset();
-                    var isActiveBadge = res.model.is_active ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-secondary">No</span>';
-                    table.row.add([
-                        res.model.id,
-                        res.model.name,
-                        res.model.official_name || '-',
-                        res.model.iso_alpha2,
-                        res.model.iso_alpha3,
-                        res.model.region || '-',
-                        isActiveBadge,
-                        '<div class="d-inline-flex gap-2">' +
-                            '<a href="{$baseViewUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Ver"><i class="ti ti-eye"></i></a>' +
-                            '<a href="{$baseUpdateUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Editar"><i class="ti ti-edit"></i></a>' +
-                            '<a href="{$baseDeleteUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16" title="Eliminar" data-confirm="¿Está seguro que desea eliminar?" data-method="post"><i class="ti ti-trash"></i></a>' +
-                        '</div>'
-                    ]).draw(false);
+                    table.ajax.reload(null, false);
                 } else {
                     var errors = [];
                     if (res.errors) {
@@ -227,13 +376,13 @@ $(document).ready(function() {
                     \$errors.html(errors.join('<br>')).removeClass('d-none');
                 }
             },
-            error: function(xhr) {
+            error: function() {
                 \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
             },
             complete: function() {
                 \$btn.prop('disabled', false);
                 \$btn.find('.btn-text').removeClass('d-none');
-                \$btn.find('.btn-loading').removeClass('d-none');
+                \$btn.find('.btn-loading').addClass('d-none');
             }
         });
     });

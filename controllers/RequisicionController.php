@@ -10,6 +10,7 @@ use app\models\ChecklistStatus;
 use app\models\ChecklistItem;
 use app\services\RequisicionService;
 use Yii;
+use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -28,6 +29,7 @@ class RequisicionController extends Controller
                     'delete' => ['POST'],
                     'create-ajax' => ['POST'],
                     'submit' => ['POST'],
+                    'update-ajax' => ['POST'],
                     'approve' => ['POST'],
                     'reject' => ['POST'],
                     'assign-person' => ['POST'],
@@ -41,7 +43,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'view', 'create', 'create-ajax', 'update', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
+                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
                     ],
                     [
                         'allow' => true,
@@ -83,6 +85,109 @@ class RequisicionController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * Returns JSON for DataTables server-side processing.
+     *
+     * @return array
+     */
+    public function actionData()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $request = Yii::$app->request;
+
+        $draw = (int) $request->get('draw', 1);
+        $start = (int) $request->get('start', 0);
+        $length = (int) $request->get('length', 10);
+        $searchValue = $request->get('search', [])['value'] ?? '';
+        $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 0);
+        $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
+
+        $searchModel = new RequisicionSearch();
+        $searchModel->empresas_id = $this->currentEmpresaId();
+        $dataProvider = $searchModel->search($request->queryParams);
+
+        /** @var \yii\db\ActiveQuery $baseQuery */
+        $baseQuery = clone $dataProvider->query;
+
+        if (Yii::$app->user->can('requisicion_approve')) {
+            $baseQuery->andWhere(['!=', 'requisicion.estado', Requisicion::ESTADO_DRAFT]);
+        }
+
+        // Persona (profile) is required for the table column.
+        $baseQuery->joinWith(['profile']);
+
+        $recordsTotal = (int) $baseQuery->count();
+
+        /** @var \yii\db\ActiveQuery $filteredQuery */
+        $filteredQuery = clone $baseQuery;
+        if (is_string($searchValue) && trim($searchValue) !== '') {
+            $v = trim($searchValue);
+            $filteredQuery->andWhere([
+                'or',
+                ['like', 'requisicion.id', $v],
+                ['like', 'requisicion.group_uuid', $v],
+                ['like', 'requisicion.estado', $v],
+                ['like', 'empresa_cliente.nombre', $v],
+                ['like', 'city.name', $v],
+                ['like', 'location_sedes.nombre', $v],
+                ['like', 'area.nombre', $v],
+                ['like', 'cargo.nombre', $v],
+                ['like', 'profile.name', $v],
+            ]);
+        }
+
+        $recordsFiltered = (int) $filteredQuery->count();
+
+        $orderColumns = [
+            'requisicion.id',
+            'requisicion.group_uuid',
+            'requisicion.estado',
+            'requisicion.fecha_creacion',
+            'empresa_cliente.nombre',
+            'city.name',
+            'location_sedes.nombre',
+            'area.nombre',
+            'requisicion.fecha_ingreso',
+            'profile.name',
+            null,
+        ];
+        $orderBy = $orderColumns[$orderCol] ?? 'requisicion.fecha_creacion';
+        if ($orderBy) {
+            $filteredQuery->orderBy([$orderBy => $orderDir]);
+        }
+
+        $models = $filteredQuery->offset($start)->limit($length)->all();
+
+        $data = [];
+        foreach ($models as $model) {
+            $parts = explode('-', $model->group_uuid ?? '');
+            $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
+            $fechaIngreso = $model->fecha_ingreso ? Yii::$app->formatter->asDate($model->fecha_ingreso) : '-';
+            $persona = $model->profile ? ($model->profile->name ?: '-') : '-';
+
+            $data[] = [
+                (string) $model->id,
+                Html::a(Html::encode($shortUuid) . ' #' . (int) $model->vacante_index, ['view', 'id' => $model->id], ['title' => $model->group_uuid]),
+                '<span class="badge bg-' . Requisicion::estadoBadgeClass($model->estado) . '">' . Html::encode(Requisicion::optsEstado()[$model->estado] ?? $model->estado) . '</span>',
+                Html::encode($model->tiempoTotalDesdeCreacion ?: '-'),
+                Html::encode($model->empresa->nombre ?? '-'),
+                Html::encode($model->ciudad->name ?? '-'),
+                Html::encode($model->sede->nombre ?? '-'),
+                Html::encode($model->cargo->nombre ?? '-'),
+                Html::encode((string) $fechaIngreso),
+                Html::encode($persona),
+                $this->renderPartial('_actions_dropdown', ['model' => $model]),
+            ];
+        }
+
+        return [
+            'draw' => $draw,
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data,
+        ];
     }
 
     public function actionView($id)
@@ -176,6 +281,52 @@ class RequisicionController extends Controller
         ]);
     }
 
+    /**
+     * Returns HTML for view modal (AJAX).
+     * @param int $id
+     * @return string
+     */
+    public function actionViewAjax($id)
+    {
+        return $this->renderPartial('_view_modal', [
+            'model' => $this->findModel($id),
+        ]);
+    }
+
+    /**
+     * Returns HTML for edit form modal (AJAX).
+     * @param int $id
+     * @return string
+     */
+    public function actionFormAjax($id)
+    {
+        return $this->renderPartial('_form_modal', [
+            'model' => $this->findModel($id),
+            'esCreacion' => false,
+        ]);
+    }
+
+    /**
+     * Updates requisición via AJAX. Returns JSON.
+     * @param int $id
+     * @return array
+     */
+    public function actionUpdateAjax($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $model = $this->findModel($id);
+
+        if (!$model->isEditable()) {
+            return ['success' => false, 'errors' => ['general' => ['No se puede editar esta requisición.']]];
+        }
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return ['success' => true];
+        }
+
+        return ['success' => false, 'errors' => $model->getErrors()];
+    }
+
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
@@ -183,6 +334,11 @@ class RequisicionController extends Controller
             throw new \yii\web\ForbiddenHttpException('No se puede eliminar esta requisición.');
         }
         $model->delete();
+        if ($this->request->isAjax) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ['success' => true];
+        }
+
         return $this->redirect(['index']);
     }
 

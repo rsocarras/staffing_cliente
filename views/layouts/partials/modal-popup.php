@@ -11935,7 +11935,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -11946,7 +11946,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -11986,7 +11986,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -11997,7 +11997,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -12064,7 +12064,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -12075,7 +12075,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -12114,7 +12114,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -12125,7 +12125,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <div class="input-group w-auto input-group-flat">
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="16:45">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                     </div>
                                 </div>
@@ -15638,7 +15638,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <label class="form-label">Start Time<span class="text-danger ms-1">*</span></label>
                                     <div class="input-group w-auto input-group-flat">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="01:00">
                                     </div>
@@ -15649,7 +15649,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <label class="form-label">End Time<span class="text-danger ms-1">*</span></label>
                                     <div class="input-group w-auto input-group-flat">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="01:00">
                                     </div>
@@ -15688,7 +15688,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <label class="form-label">Start Time<span class="text-danger ms-1">*</span></label>
                                     <div class="input-group w-auto input-group-flat">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="01:00">
                                     </div>
@@ -15699,7 +15699,7 @@ $page = empty($path) ? 'index' : basename($path);
                                     <label class="form-label">End Time<span class="text-danger ms-1">*</span></label>
                                     <div class="input-group w-auto input-group-flat">
                                         <span class="input-group-text">
-                                            <i class="ti ti-clock"></i>
+                                            <i class="ti ti-clock-hour-3"></i>
                                         </span>
                                         <input type="text" class="form-control" data-provider="timepickr" data-default-time="01:00">
                                     </div>

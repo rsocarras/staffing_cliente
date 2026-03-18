@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Layout parcial para índices con DataTables.
  * Uso: $this->render('//layouts/_datatable_index', [
@@ -11,6 +12,7 @@
  *   'actionParams' => function($model) { return ['id' => $model->id]; },
  * ]);
  */
+
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -53,24 +55,24 @@ $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.boot
                                 <thead>
                                     <tr>
                                         <?php foreach ($columns as $col): ?>
-                                        <th><?= Html::encode($col['label']) ?></th>
+                                            <th><?= Html::encode($col['label']) ?></th>
                                         <?php endforeach; ?>
                                         <th class="text-end"><?= Yii::t('app', 'Actions') ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($dataProvider->getModels() as $model): ?>
-                                    <tr>
-                                        <?php foreach ($columns as $col): ?>
-                                        <td><?= is_callable($col['value']) ? $col['value']($model) : Html::encode($model->{$col['value']} ?? '') ?></td>
-                                        <?php endforeach; ?>
-                                        <td class="text-end">
-                                            <?php $params = $actionParams($model); ?>
-                                            <?= Html::a('<i class="ti ti-eye"></i>', array_merge(['view'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => Yii::t('app', 'View')]) ?>
-                                            <?= Html::a('<i class="ti ti-edit"></i>', array_merge(['update'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => Yii::t('app', 'Update')]) ?>
-                                            <?= Html::a('<i class="ti ti-trash"></i>', array_merge(['delete'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-danger rounded-pill', 'title' => Yii::t('app', 'Delete'), 'data' => ['confirm' => Yii::t('app', 'Are you sure you want to delete this item?'), 'method' => 'post']]) ?>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <?php foreach ($columns as $col): ?>
+                                                <td><?= is_callable($col['value']) ? $col['value']($model) : Html::encode($model->{$col['value']} ?? '') ?></td>
+                                            <?php endforeach; ?>
+                                            <td class="text-end">
+                                                <?php $params = $actionParams($model); ?>
+                                                <?= Html::a('<i class="ti ti-eye"></i>', array_merge(['view'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => Yii::t('app', 'View')]) ?>
+                                                <?= Html::a('<i class="ti ti-edit"></i>', array_merge(['update'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => Yii::t('app', 'Update')]) ?>
+                                                <?= Html::a('<i class="ti ti-trash"></i>', array_merge(['delete'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-danger rounded-pill', 'title' => Yii::t('app', 'Delete'), 'data' => ['confirm' => Yii::t('app', 'Are you sure you want to delete this item?'), 'method' => 'post']]) ?>
+                                            </td>
+                                        </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>

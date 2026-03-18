@@ -17,7 +17,7 @@ $config = [
             'cookieValidationKey' => '3nnFLL-fN8rdekwmQbVnN6SoSrZ75QNe',
         ], !empty($params['baseUrl']) ? ['hostInfo' => $params['baseUrl']] : []),
 
-                'session' => [
+        'session' => [
             'name' => 'STAFFING_CLIENTE_SID',  // Nombre único para no compartir sesión con otros proyectos Yii que usen la misma BD
         ],
 
@@ -25,8 +25,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'class' => app\components\WebUser::class,
-            'identityClass' => app\models\User::class,
+            'identityClass' => Da\User\Model\User::class,
             'enableAutoLogin' => true,
             'loginUrl' => ['/user/security/login'],
         ],
@@ -52,16 +51,45 @@ $config = [
             ],
         ],
         'db' => $db,
-        
-       'urlManager' => [
+
+        'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
-              'sitemap.xml' => 'seo/sitemap',
-              'login' => 'user/security/login',
-              'logout' => 'user/security/logout',
+                'sitemap.xml' => 'seo/sitemap',
+                'login' => 'user/security/login',
+                'logout' => 'user/security/logout',
+                'profile' => 'profile/index',
+                'profile/<action:[\w-]+>' => 'profile/<action>',
+                'sistema/contratos' => 'contrato/index',
+                'sistema/contratos/<action:[\w-]+>' => 'contrato/<action>',
+                'sistema/novedad-tipo' => 'novedad-tipo/index',
+                'sistema/novedad-tipo/<action:[\w-]+>' => 'novedad-tipo/<action>',
+                'sistema/requisicion' => 'requisicion/index',
+                'sistema/requisicion/<action:[\w-]+>' => 'requisicion/<action>',
+                'sistema/empleados' => 'empleados/index',
+                'sistema/empleados/<action:[\w-]+>' => 'empleados/<action>',
+                'mallas/list' => 'mallas/index',
+                'mallas/crear' => 'mallas/create',
+                'mallas/view' => 'mallas/view',
+                'mallas/cargo-asignacion' => 'malla-cargo-asignacion/index',
+                'mallas/profile-asignacion' => 'malla-profile-asignacion/index',
+                'usuarios' => 'user-management/index',
+                'usuarios/roles' => 'rbac/roles',
+                'usuarios/permisos' => 'rbac/permissions',
+                'usuarios/<action:[\w-]+>' => 'user-management/<action>',
+                'reclutamiento/candidatos' => 'candidatos/index',
+                'reclutamiento/candidatos/<action:[\w-]+>' => 'candidatos/<action>',
+                'configuracion/areas' => 'area/index',
+                'configuracion/areas/<action:[\w-]+>' => 'area/<action>',
+                'configuracion/sedes' => 'location-sedes/index',
+                'configuracion/sedes/<action:[\w-]+>' => 'location-sedes/<action>',
+                'configuracion/cargos' => 'cargos/index',
+                'configuracion/cargos/<action:[\w-]+>' => 'cargos/<action>',
+                'configuracion/contratos' => 'contrato-tipos/index',
+                'configuracion/contratos/<action:[\w-]+>' => 'contrato-tipos/<action>',
             ],
-          ],
+        ],
 
     ],
     'modules' => [
@@ -69,6 +97,10 @@ $config = [
             'class' => Da\User\Module::class,
             'administrators' => ['admin'],
             'viewPath' => '@app/views/user',
+            'enableRegistration' => true,
+            'enableEmailConfirmation' => false,
+            'allowPasswordRecovery' => true,
+            'enableFlashMessages' => true,
             'mailParams' => [
                 'fromEmail' => 'noreply@' . ($_SERVER['HTTP_HOST'] ?? 'localhost'),
                 'welcomeMailSubject' => 'Bienvenido',
@@ -79,6 +111,7 @@ $config = [
             ],
             'controllerMap' => [
                 'admin' => app\controllers\user\AdminController::class,
+                'security' => app\controllers\user\SecurityController::class,
                 'role' => app\controllers\user\RoleController::class,
             ],
         ],

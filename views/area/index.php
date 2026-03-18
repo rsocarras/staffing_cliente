@@ -1,23 +1,28 @@
 <?php
+
 use app\models\Area;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var yii\web\View $this */
-/** @var app\models\search\AreaSearch $searchModel */
-/** @var yii\data\ActiveDataProvider $dataProvider */
 
 $this->title = 'Areas';
 $this->params['breadcrumbs'][] = $this->title;
 
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
+$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'));
+$this->registerCssFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.css'));
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
+$this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 
 $createAjaxUrl = Url::to(['area/create-ajax']);
-$baseViewUrl = Url::to(['area/view']);
-$baseUpdateUrl = Url::to(['area/update']);
-$baseDeleteUrl = Url::to(['area/delete']);
+$dataUrl = Url::to(['area/data']);
+$viewAjaxUrl = Url::to(['area/view-ajax']);
+$formAjaxUrl = Url::to(['area/form-ajax']);
+$updateAjaxUrl = Url::to(['area/update-ajax']);
+$deleteUrl = Url::to(['area/delete']);
+$csrfToken = Yii::$app->request->csrfToken;
+$csrfParam = Yii::$app->request->csrfParam;
 ?>
 
 <div class="page-wrapper">
@@ -31,7 +36,8 @@ $baseDeleteUrl = Url::to(['area/delete']);
                     </div>
                     <div class="text-end">
                         <ol class="breadcrumb m-0 py-0">
-                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>">Home</a></li>
+                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>"><i class="ti ti-home"></i> </a></li>
+                            <li class="breadcrumb-item">Configuración</li>
                             <li class="breadcrumb-item active" aria-current="page"><?= Html::encode($this->title) ?></li>
                         </ol>
                     </div>
@@ -40,10 +46,6 @@ $baseDeleteUrl = Url::to(['area/delete']);
 
                 <!-- Start Search and Filter -->
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-                    <div class="input-group w-auto input-group-flat">
-                        <span class="input-group-text border-end-0"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control form-control-sm" id="area-search" placeholder="Buscar...">
-                    </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
                         <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_area"><i class="ti ti-plus me-1"></i>Agregar Nueva</a>
                     </div>
@@ -62,49 +64,33 @@ $baseDeleteUrl = Url::to(['area/delete']);
                                 <th>Centro Utilidad</th>
                                 <th>Ref. Externa</th>
                                 <th>Centro Utilidad Staffing</th>
-                                <th class="text-end">Acciones</th>
+                                <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php foreach ($dataProvider->getModels() as $model): ?>
-                            <tr>
-                                <td><?= Html::encode($model->id) ?></td>
-                                <td class="fw-medium text-dark"><?= Html::encode($model->nombre) ?></td>
-                                <td><?= Html::encode($model->descripcion) ?></td>
-                                <td><?= $model->areaPadre ? Html::encode($model->areaPadre->nombre) : '-' ?></td>
-                                <td><?= $model->centro_utilidad !== null ? Html::encode($model->centro_utilidad) : '-' ?></td>
-                                <td><?= $model->referencia_externa !== null ? Html::encode($model->referencia_externa) : '-' ?></td>
-                                <td><?= $model->centro_utilidad_staffing !== null ? Html::encode($model->centro_utilidad_staffing) : '-' ?></td>
-                                <td>
-                                    <div class="d-inline-flex gap-2">
-                                        <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
-                                        <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
-                                        <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
-                                            'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
-                                            'title' => 'Eliminar',
-                                            'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
-                                        ]) ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
                 <!-- end table -->
             </div>
         </div>
     </div>
-    <?= $this->render('//layouts/partials/footer') ?>
 </div>
 
 <!-- Modal Agregar Área -->
 <div class="modal fade" id="add_area">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Agregar Área</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"><i class="ti ti-circle-x"></i></button>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-building-community fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Nueva área</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Completa los datos para registrar un área en la organización.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php
             $modelAreaModal = new \app\models\Area();
@@ -116,17 +102,19 @@ $baseDeleteUrl = Url::to(['area/delete']);
                 'enableClientValidation' => false,
             ]);
             ?>
-            <div class="modal-body">
-                <div id="area-form-errors" class="alert alert-danger d-none"></div>
-                <?= $this->render('_form_fields', [
+            <div class="modal-body pt-3 px-4 pb-2">
+                <div id="area-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
+                <?= $this->render('_form_add_modal_fields', [
                     'model' => $modelAreaModal,
                     'form' => $formArea,
                 ]) ?>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
                 <button type="submit" class="btn btn-primary" id="btn-save-area">
-                    <span class="btn-text">Guardar</span>
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar área</span>
                     <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
                 </button>
             </div>
@@ -135,13 +123,69 @@ $baseDeleteUrl = Url::to(['area/delete']);
     </div>
 </div>
 
+<!-- Modal Ver Área -->
+<div class="modal fade" id="modal-view-area">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body" id="modal-view-area-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Área -->
+<div class="modal fade" id="modal-edit-area">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-edit fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Editar área</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Actualiza los datos del área seleccionada.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3 px-4 pb-2" id="modal-edit-area-body">
+                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            </div>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit-area">
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar cambios</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 $js = <<<JS
 $(document).ready(function() {
     var table = $('#area-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{$dataUrl}',
+        columns: [
+            { data: 0 },
+            { data: 1, render: function(d) { return d || ''; } },
+            { data: 2 },
+            { data: 3 },
+            { data: 4 },
+            { data: 5 },
+            { data: 6 },
+            { data: 7, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
+        ],
         order: [[1, 'asc']],
-        pageLength: 25,
-        columnDefs: [{ orderable: false, targets: -1 }],
+        pageLength: 7,
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",
@@ -149,13 +193,135 @@ $(document).ready(function() {
             infoEmpty: "Mostrando 0 a 0 de 0 registros",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             paginate: { first: "Primero", last: "Último", next: "Siguiente", previous: "Anterior" },
-            zeroRecords: "No se encontraron registros"
+            zeroRecords: "No se encontraron registros",
+            processing: "Procesando..."
         }
     });
 
-    $('#area-search').on('keyup', function() {
-        table.search(this.value).draw();
+    function getActionsHtml(id, nombre) {
+        nombre = nombre || '';
+        return '<div class="dropdown">' +
+            '<button type="button" class="dropdown-toggle drop-arrow-none btn btn-icon btn-sm btn-outline-light" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Acciones"><i class="ti ti-dots-vertical fs-16"></i></button>' +
+            '<ul class="dropdown-menu dropdown-menu-end">' +
+                '<li><a href="javascript:void(0);" class="dropdown-item btn-area-view" data-id="' + id + '"><i class="ti ti-eye me-2"></i>Ver</a></li>' +
+                '<li><a href="javascript:void(0);" class="dropdown-item btn-area-edit" data-id="' + id + '"><i class="ti ti-edit me-2"></i>Editar</a></li>' +
+                '<li><a href="javascript:void(0);" class="dropdown-item text-danger btn-area-delete" data-id="' + id + '" data-nombre="' + nombre.replace(/"/g, '&quot;') + '"><i class="ti ti-trash me-2"></i>Eliminar</a></li>' +
+            '</ul></div>';
+    }
+
+    $(document).on('click', '.btn-area-view', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-view-area'));
+        $('#modal-view-area-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        modal.show();
+        $.get('{$viewAjaxUrl}', { id: id }, function(html) {
+            $('#modal-view-area-body').html(html);
+        }).fail(function() {
+            $('#modal-view-area-body').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
+        });
     });
+
+    $(document).on('click', '.btn-area-edit', function() {
+        var id = $(this).data('id');
+        var modal = new bootstrap.Modal(document.getElementById('modal-edit-area'));
+        $('#modal-edit-area-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        $('#btn-save-edit-area').data('id', id);
+        modal.show();
+        $.get('{$formAjaxUrl}', { id: id }, function(html) {
+            $('#modal-edit-area-body').html(html);
+        }).fail(function() {
+            $('#modal-edit-area-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
+        });
+    });
+
+    $('#btn-save-edit-area').on('click', function() {
+        var id = $(this).data('id');
+        var \$form = $('#form-edit-area-modal');
+        var \$btn = $(this);
+        var \$errors = $('#area-edit-form-errors');
+        \$errors.addClass('d-none').empty();
+        \$btn.prop('disabled', true);
+        \$btn.find('.btn-text').addClass('d-none');
+        \$btn.find('.btn-loading').removeClass('d-none');
+        var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
+        $.ajax({
+            url: '{$updateAjaxUrl}'.replace(/\/$/, '') + '?id=' + id,
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(res) {
+                if (res.success) {
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('modal-edit-area'));
+                    modal.hide();
+                    table.ajax.reload(null, false);
+                } else {
+                    var errors = [];
+                    if (res.errors) {
+                        for (var k in res.errors) {
+                            errors.push(res.errors[k].join ? res.errors[k].join(' ') : res.errors[k]);
+                        }
+                    }
+                    \$errors.html(errors.join('<br>')).removeClass('d-none');
+                }
+            },
+            error: function() {
+                \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
+            },
+            complete: function() {
+                \$btn.prop('disabled', false);
+                \$btn.find('.btn-text').removeClass('d-none');
+                \$btn.find('.btn-loading').addClass('d-none');
+            }
+        });
+    });
+
+    $(document).on('click', '.btn-area-delete', function() {
+        var id = $(this).data('id');
+        var nombre = $(this).data('nombre') || 'este registro';
+        var \$btn = $(this);
+        if (typeof Swal === 'undefined') {
+            if (confirm('¿Está seguro que desea eliminar ' + nombre + '?')) {
+                doDelete(id, \$btn, table);
+            }
+            return;
+        }
+        Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Se eliminará el área "' + nombre + '". Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                doDelete(id, \$btn, table);
+            }
+        });
+    });
+
+    function doDelete(id, \$btn, table) {
+        $.ajax({
+            url: '{$deleteUrl}',
+            type: 'POST',
+            data: { id: id, '{$csrfParam}': '{$csrfToken}' },
+            dataType: 'json',
+            success: function() {
+                table.ajax.reload(null, false);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Eliminado', text: 'El área ha sido eliminada.', icon: 'success', timer: 1500, showConfirmButton: false });
+                }
+            },
+            error: function() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({ title: 'Error', text: 'No se pudo eliminar. Intente nuevamente.', icon: 'error' });
+                } else {
+                    alert('Error al eliminar.');
+                }
+            }
+        });
+    }
 
     $('#form-add-area').on('submit', function(e) {
         e.preventDefault();
@@ -181,20 +347,7 @@ $(document).ready(function() {
                     if (\$select.length && res.model.nombre) {
                         \$select.append($('<option></option>').val(res.model.id).text(res.model.nombre));
                     }
-                    table.row.add([
-                        res.model.id,
-                        res.model.nombre,
-                        res.model.descripcion || '-',
-                        res.model.area_padre_nombre || '-',
-                        res.model.centro_utilidad != null ? res.model.centro_utilidad : '-',
-                        res.model.referencia_externa != null ? res.model.referencia_externa : '-',
-                        res.model.centro_utilidad_staffing != null ? res.model.centro_utilidad_staffing : '-',
-                        '<div class="d-inline-flex gap-2">' +
-                            '<a href="{$baseViewUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Ver"><i class="ti ti-eye"></i></a>' +
-                            '<a href="{$baseUpdateUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16" title="Editar"><i class="ti ti-edit"></i></a>' +
-                            '<a href="{$baseDeleteUrl}?id=' + res.model.id + '" class="btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16" title="Eliminar" data-confirm="¿Está seguro que desea eliminar?" data-method="post"><i class="ti ti-trash"></i></a>' +
-                        '</div>'
-                    ]).draw(false);
+                    table.ajax.reload(null, false);
                 } else {
                     var errors = [];
                     if (res.errors) {
