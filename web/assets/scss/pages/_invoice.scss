@@ -1,0 +1,89 @@
+@use "../variables" as *;
+@use "../utils/mixins" as *;
+
+//
+// invoice.scss
+//
+
+.custom-select-spacing {
+    width: 65px;
+}
+.custom-progress-bar-height {
+    height: 33px;
+}
+.custom-input-width {
+    width: 100px;
+}
+.w-120 {
+    width: 120px;
+}
+.mw-250 {
+    min-width: 250px;
+}
+
+// Task
+.task-collapse {
+    &.collapsed {
+        i {
+            transform: rotate(-180deg);
+        }
+    }
+}
+
+// Manual time
+.card.manual-time-card {
+    border-top: 1px solid $border-color;
+    border-bottom: 1px solid $border-color;
+    border-left: 1px solid $border-color;
+    border-right: transparent;
+    border-radius: 0;
+    @include respond-below(lg) {
+        border-right: 1px solid $border-color;
+        border-radius: 5px;
+    }
+}
+
+.invoice-logo .logo-dark {
+    display: none;
+}
+.text-truncate {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+}
+
+// Activity Logs
+.log-item {
+    &::after {
+        content: "";
+        border-left: 1px dashed var(--border-color);
+        position: absolute;
+        left: 20px;
+        top: 30px;
+        height: calc(100% - 60px);
+        @include respond-below(lg) {
+            display: none;
+        }
+    }
+}
+.custom-progress-bar {
+    height: 10px;
+}
+.custom-progress-bar-md {
+    height: 24px;
+}
+p {
+    font-size: 14px;
+}
+.btn-group-primary {
+    .btn-check {
+        &:checked + .btn {
+            background: $primary !important;
+            border-color: $primary !important;
+            color: $darkmode-white;
+        }
+    }
+}
+
+

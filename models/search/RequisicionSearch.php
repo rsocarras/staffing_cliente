@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -46,7 +47,7 @@ class RequisicionSearch extends Requisicion
             return $dataProvider;
         }
 
-        $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+        $tenantEmpresaId = TenantContext::currentEmpresaId();
         if (is_numeric($tenantEmpresaId) && (int) $tenantEmpresaId > 0) {
             $query->andWhere(['requisicion.empresas_id' => (int) $tenantEmpresaId]);
         } else {

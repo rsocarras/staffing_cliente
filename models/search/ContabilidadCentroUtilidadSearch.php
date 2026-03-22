@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ContabilidadCentroUtilidad;
@@ -42,8 +43,7 @@ class ContabilidadCentroUtilidadSearch extends ContabilidadCentroUtilidad
     public function search($params, $formName = null)
     {
         $query = ContabilidadCentroUtilidad::find();
-
-        // add conditions that should always apply here
+        TenantContext::applyFilter($query, 'empresa_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -60,7 +60,6 @@ class ContabilidadCentroUtilidadSearch extends ContabilidadCentroUtilidad
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -1,0 +1,137 @@
+/* Color primario #0B315E */
+:root,
+:root[data-color=primary],
+[data-color=primary] {
+    --primary: #0B315E;
+    --primary-hover: #0E3D6B;
+    --primary-transparent: #d4e8f8;
+    --primary-rgb: 11, 49, 94;
+}
+
+/* Sidebar con bg-primary: texto blanco */
+.sidebar.bg-primary .sidebar-menu a,
+.sidebar.bg-primary .sidebar-menu .menu-title span,
+.sidebar.bg-primary .sidebar-menu i,
+.sidebar.bg-primary .sidebar-menu .menu-arrow,
+.sidebar.bg-primary .sidebar-menu a span,
+.sidebar.bg-primary .sidebar-logo a {
+    color: #FFFFFF !important;
+}
+
+.sidebar.bg-primary .sidebar-menu a:hover,
+.sidebar.bg-primary .sidebar-menu li.submenu>a:hover,
+.sidebar.bg-primary .sidebar-menu a.active,
+.sidebar.bg-primary .sidebar-menu li.active>a {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Asegura que el span interno también quede blanco (el theme base lo pisa) */
+.sidebar.bg-primary .sidebar-menu a:hover span,
+.sidebar.bg-primary .sidebar-menu a.active span,
+.sidebar.bg-primary .sidebar-menu li.submenu ul li a:hover span,
+.sidebar.bg-primary .sidebar-menu li.submenu ul li a.active span {
+    color: #FFFFFF !important;
+}
+
+.sidebar.bg-primary .sidebar-menu li.submenu ul li a:hover {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* Tu sidebar marca 'active' en el <a>, no en el <li> */
+.sidebar.bg-primary .sidebar-menu li.submenu ul li a.active {
+    color: #FFFFFF !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.sidebar.bg-primary .sidebar-close {
+    color: #FFFFFF !important;
+}
+
+/* Refuerzo para estados active/hover (el theme base usa border-left azul) */
+.sidebar.bg-primary .sidebar-menu > ul > li > a.active,
+.sidebar.bg-primary .sidebar-menu > ul > li > a:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+    border-left: 3px solid #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+
+/* Sub-items active/hover dentro de submenús */
+.sidebar.bg-primary .sidebar-menu > ul > li.submenu ul li a.active,
+.sidebar.bg-primary .sidebar-menu > ul > li.submenu ul li a:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    border-left: 3px solid #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+
+.sidebar .sidebar-logo img,
+.sidebar .sidebar-logo .logo img,
+.sidebar .sidebar-logo .dark-logo img {
+    max-width: 100%;
+    max-height: 64px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Logo centrado en sidebar */
+.sidebar .sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-bottom: none;
+}
+
+.sidebar .sidebar-logo .logo,
+.sidebar .sidebar-logo .logo-normal,
+.sidebar .sidebar-logo .dark-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar .sidebar-logo .logo img,
+.sidebar .sidebar-logo .dark-logo img {
+    margin: 0 auto;
+}
+
+/* Footer fijado al porcentaje de la pantalla (sticky footer) */
+.main-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* El área de contenido crece para empujar el footer al fondo del viewport */
+.main-wrapper>.page-wrapper,
+.main-wrapper>div:not(.sidebar):not(.footer) {
+    flex: 1;
+    min-height: 0;
+    /* Permite que el contenido haga scroll correctamente */
+}
+
+.main-wrapper .footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+/* Iniciales SG cuando sidebar está minimizado (solo en mini-sidebar) */
+.mini-sidebar .sidebar .sidebar-logo .logo-small.logo-initials {
+    height: 56px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-decoration: none;
+}
+
+.sidebar .sidebar-logo .logo-initials-text {
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: inherit;
+    line-height: 1;
+}

@@ -1,0 +1,20 @@
+@use "../variables" as *;
+
+//
+// coming-soon.scss
+//
+
+.counting-number-box {
+	li {
+		.counts-card {
+			width: 60px;
+			height: 60px;
+		}
+	}
+}
+ul {
+    padding: 0;
+    li {
+        list-style-type: none;
+    }
+}

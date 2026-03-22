@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Profile;
@@ -42,6 +43,7 @@ class ProfileSearch extends Profile
     public function search($params, $formName = null)
     {
         $query = Profile::find()->with(['empresas', 'sede', 'cargo', 'area']);
+        TenantContext::applyFilter($query, 'empresas_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -65,7 +67,6 @@ class ProfileSearch extends Profile
 
         $query->andFilterWhere([
             'user_id' => $this->user_id,
-            'empresas_id' => $this->empresas_id,
             'birthday' => $this->birthday,
             'sede_id' => $this->sede_id,
             'cargo_id' => $this->cargo_id,

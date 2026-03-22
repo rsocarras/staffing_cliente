@@ -2,10 +2,9 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\Area;
 use app\models\Cargos;
-use app\models\Empresas;
-use app\models\Profile;
 use app\models\search\CargosSearch;
 use Yii;
 use yii\web\Controller;
@@ -66,8 +65,9 @@ class CargosController extends Controller
         $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 4);
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
-        $query = Cargos::find()->joinWith(['area', 'subArea']);
-        $totalCount = (int) $query->count();
+        $query = Cargos::find()->alias('cargos')->joinWith(['area', 'subArea']);
+        TenantContext::applyFilter($query, 'cargos.empresa_id');
+        $totalCount = (int) (clone $query)->count();
 
         if ($searchValue !== '') {
             $query->andWhere([
@@ -79,7 +79,7 @@ class CargosController extends Controller
                 ['like', 'subArea.nombre', $searchValue],
             ]);
         }
-        $filteredCount = (int) $query->count();
+        $filteredCount = (int) (clone $query)->count();
 
         $orderColumns = ['cargos.id', 'area.nombre', 'subArea.nombre', 'cargos.codigo', 'cargos.nombre', 'cargos.descripcion', null, null];
         $orderBy = $orderColumns[$orderCol] ?? 'cargos.nombre';
@@ -135,20 +135,14 @@ class CargosController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresa_id = $profile->empresas_id;
-                }
+                $model->empresa_id = TenantContext::requireEmpresaId();
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -166,14 +160,7 @@ class CargosController extends Controller
         $model = new Cargos();
 
         if ($model->load(Yii::$app->request->post())) {
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if (!$profile) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
-            }
-            $model->empresa_id = $profile->empresas_id;
-            if (!Empresas::findOne($model->empresa_id)) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['La empresa seleccionada no existe en el sistema. Contacte al administrador.']]];
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 $areaNombre = $model->area ? $model->area->nombre : null;
                 $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
@@ -208,7 +195,10 @@ class CargosController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $subAreas = Area::find()
-            ->where(['area_padre' => (int) $area_id])
+            ->where([
+                'area_padre' => (int) $area_id,
+                'empresas_id' => TenantContext::requireEmpresaId(),
+            ])
             ->orderBy('nombre')
             ->all();
         return array_map(function ($a) {
@@ -227,8 +217,11 @@ class CargosController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -292,24 +285,27 @@ class CargosController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $areaNombre = $model->area ? $model->area->nombre : null;
-            $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
-            return [
-                'success' => true,
-                'message' => Yii::t('app', 'Cargo actualizado correctamente.'),
-                'model' => [
-                    'id' => $model->id,
-                    'codigo' => $model->codigo,
-                    'nombre' => $model->nombre,
-                    'descripcion' => $model->descripcion,
-                    'activo' => $model->activo,
-                    'area_id' => $model->area_id,
-                    'sub_area_id' => $model->sub_area_id,
-                    'area_nombre' => $areaNombre,
-                    'sub_area_nombre' => $subAreaNombre,
-                ],
-            ];
+        if ($model->load(Yii::$app->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                $areaNombre = $model->area ? $model->area->nombre : null;
+                $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Cargo actualizado correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'codigo' => $model->codigo,
+                        'nombre' => $model->nombre,
+                        'descripcion' => $model->descripcion,
+                        'activo' => $model->activo,
+                        'area_id' => $model->area_id,
+                        'sub_area_id' => $model->sub_area_id,
+                        'area_nombre' => $areaNombre,
+                        'sub_area_nombre' => $subAreaNombre,
+                    ],
+                ];
+            }
         }
 
         return ['success' => false, 'errors' => $model->getErrors()];
@@ -324,7 +320,7 @@ class CargosController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Cargos::findOne(['id' => $id])) !== null) {
+        if (($model = Cargos::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

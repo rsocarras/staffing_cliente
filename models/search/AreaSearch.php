@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Area;
@@ -42,8 +43,7 @@ class AreaSearch extends Area
     public function search($params, $formName = null)
     {
         $query = Area::find();
-
-        // add conditions that should always apply here
+        TenantContext::applyFilter($query, 'empresas_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -62,7 +62,6 @@ class AreaSearch extends Area
             'id' => $this->id,
             'user_create' => $this->user_create,
             'area_padre' => $this->area_padre,
-            'empresas_id' => $this->empresas_id,
             'centro_utilidad' => $this->centro_utilidad,
             'referencia_externa' => $this->referencia_externa,
             'centro_utilidad_staffing' => $this->centro_utilidad_staffing,

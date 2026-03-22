@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Empresas;
@@ -42,8 +43,12 @@ class EmpresasSearch extends Empresas
     public function search($params, $formName = null)
     {
         $query = Empresas::find();
-
-        // add conditions that should always apply here
+        $tenantId = TenantContext::currentEmpresaId();
+        if ($tenantId === null) {
+            $query->where('0=1');
+        } else {
+            $query->andWhere(['id' => $tenantId]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

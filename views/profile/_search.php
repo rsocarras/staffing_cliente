@@ -2,6 +2,7 @@
 
 use app\models\Area;
 use app\models\Cargos;
+use app\components\TenantContext;
 use app\models\Empresas;
 use app\models\LocationSedes;
 use app\models\Profile;
@@ -12,6 +13,20 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var app\models\search\ProfileSearch $model */
 /** @var yii\widgets\ActiveForm $form */
+
+$tenantEmpresaId = TenantContext::currentEmpresaId();
+$tenantEmpresas = $tenantEmpresaId
+    ? Empresas::find()->where(['id' => $tenantEmpresaId])->orderBy(['name' => SORT_ASC])->all()
+    : [];
+$tenantSedes = $tenantEmpresaId
+    ? LocationSedes::find()->where(['empresa_id' => $tenantEmpresaId])->orderBy(['nombre' => SORT_ASC])->all()
+    : [];
+$tenantAreas = $tenantEmpresaId
+    ? Area::find()->where(['empresas_id' => $tenantEmpresaId])->orderBy(['nombre' => SORT_ASC])->all()
+    : [];
+$tenantCargos = $tenantEmpresaId
+    ? Cargos::find()->where(['empresa_id' => $tenantEmpresaId])->orderBy(['nombre' => SORT_ASC])->all()
+    : [];
 ?>
 
 <div class="profile-search">
@@ -37,26 +52,27 @@ use yii\widgets\ActiveForm;
         <?= $form->field($model, 'tipo_doc')->dropDownList(Profile::optsTipoDoc(), ['prompt' => 'Todos']) ?>
     </div>
     <div class="col-md-3">
+        <?= Html::activeHiddenInput($model, 'empresas_id', ['value' => $tenantEmpresaId]) ?>
         <?= $form->field($model, 'empresas_id')->dropDownList(
-            ArrayHelper::map(Empresas::find()->orderBy(['name' => SORT_ASC])->all(), 'id', 'name'),
-            ['prompt' => 'Todas']
+            ArrayHelper::map($tenantEmpresas, 'id', 'name'),
+            ['prompt' => 'Sin tenant', 'disabled' => true]
         ) ?>
     </div>
     <div class="col-md-3">
         <?= $form->field($model, 'sede_id')->dropDownList(
-            ArrayHelper::map(LocationSedes::find()->orderBy(['nombre' => SORT_ASC])->all(), 'id', 'nombre'),
+            ArrayHelper::map($tenantSedes, 'id', 'nombre'),
             ['prompt' => 'Todas']
         ) ?>
     </div>
     <div class="col-md-3">
         <?= $form->field($model, 'area_id')->dropDownList(
-            ArrayHelper::map(Area::find()->orderBy(['nombre' => SORT_ASC])->all(), 'id', 'nombre'),
+            ArrayHelper::map($tenantAreas, 'id', 'nombre'),
             ['prompt' => 'Todas']
         ) ?>
     </div>
     <div class="col-md-3">
         <?= $form->field($model, 'cargo_id')->dropDownList(
-            ArrayHelper::map(Cargos::find()->orderBy(['nombre' => SORT_ASC])->all(), 'id', 'nombre'),
+            ArrayHelper::map($tenantCargos, 'id', 'nombre'),
             ['prompt' => 'Todos']
         ) ?>
     </div>

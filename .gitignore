@@ -50,3 +50,10 @@ tests/_support/_generated
 *.db
 
 /web/assets/*
+!/web/assets/css/
+!/web/assets/scss/
+!/web/assets/scss/**
+!/web/assets/img/
+!/web/assets/img/**
+!/web/assets/js/
+!/web/assets/js/**

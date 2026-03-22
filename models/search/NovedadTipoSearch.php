@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -43,7 +44,7 @@ class NovedadTipoSearch extends NovedadTipo
     public function search($params, $formName = null)
     {
         $query = NovedadTipo::find();
-        $empresaId = Yii::$app->user->empresas_id ?? null;
+        $empresaId = TenantContext::currentEmpresaId();
         $empresaId = (is_numeric($empresaId) && (int) $empresaId > 0) ? (int) $empresaId : null;
 
         $empresaColumn = $this->hasAttribute('empresa_id')

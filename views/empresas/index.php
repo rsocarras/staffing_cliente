@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 echo $this->render('//layouts/_datatable_index', [
     'title' => $this->title,
-    'createLabel' => 'Create Empresas',
+    'showCreateButton' => false,
     'tableId' => 'empresas-table',
     'dataProvider' => $dataProvider,
     'columns' => [
@@ -24,4 +24,9 @@ echo $this->render('//layouts/_datatable_index', [
     'actionParams' => function (Empresas $model) {
         return ['id' => $model->id];
     },
+    'actionButtons' => [
+        'view' => true,
+        'update' => true,
+        'delete' => false,
+    ],
 ]);

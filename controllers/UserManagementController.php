@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
+use app\models\Profile;
 use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
@@ -80,18 +82,18 @@ class UserManagementController extends Controller
         $orderDir = (strtolower($request->get('order', [])[0]['dir'] ?? 'asc') === 'desc') ? SORT_DESC : SORT_ASC;
         $auth = Yii::$app->authManager;
 
-        $query = User::find();
-        $totalCount = (int) $query->count();
+        $query = $this->tenantUsersQuery();
+        $totalCount = (int) (clone $query)->count();
 
         if ($searchValue !== '') {
             $query->andWhere([
                 'or',
-                ['like', 'username', $searchValue],
-                ['like', 'email', $searchValue],
-                ['like', 'phone', $searchValue],
+                ['like', 'u.username', $searchValue],
+                ['like', 'u.email', $searchValue],
+                ['like', 'p.telefono', $searchValue],
             ]);
         }
-        $filteredCount = (int) $query->count();
+        $filteredCount = (int) (clone $query)->count();
 
         $orderColumns = [null, 'username', 'email', 'created_at', null, null, 'blocked_at'];
         $orderBy = $orderColumns[$orderCol] ?? 'username';
@@ -178,6 +180,7 @@ class UserManagementController extends Controller
         $auth = Yii::$app->authManager;
         $model->load(Yii::$app->request->post());
         $post = Yii::$app->request->post('User', []);
+        $model->pendingProfileData = $this->buildPendingProfileData($model, $post);
         if (array_key_exists('isConfirmed', $post)) {
             $model->confirmed_at = (!empty($post['isConfirmed'])) ? time() : null;
         }
@@ -189,6 +192,7 @@ class UserManagementController extends Controller
         if (!$model->save(false)) {
             return ['success' => false, 'errors' => ['general' => ['No se pudo guardar el usuario.']]];
         }
+        $this->syncProfileFromPost($model, $post);
         $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
         foreach ($roleNames as $name) {
             $role = $auth->getRole($name);
@@ -212,12 +216,14 @@ class UserManagementController extends Controller
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
             $post = Yii::$app->request->post('User', []);
+            $model->pendingProfileData = $this->buildPendingProfileData($model, $post);
             if (array_key_exists('isConfirmed', $post)) {
                 $model->confirmed_at = (!empty($post['isConfirmed'])) ? time() : null;
             }
             $model->password_hash = Yii::$app->security->generatePasswordHash($model->new_password ?: bin2hex(random_bytes(8)));
             $model->auth_key = Yii::$app->security->generateRandomString();
             if ($model->validate() && $model->save(false)) {
+                $this->syncProfileFromPost($model, $post);
                 $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
                 foreach ($roleNames as $name) {
                     $role = $auth->getRole($name);
@@ -260,6 +266,7 @@ class UserManagementController extends Controller
         if (!$model->save(false)) {
             return ['success' => false, 'errors' => ['general' => ['No se pudo guardar.']]];
         }
+        $this->syncProfileFromPost($model, $post);
         $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
         foreach (array_keys($allRoles) as $name) {
             $role = $auth->getRole($name);
@@ -298,6 +305,7 @@ class UserManagementController extends Controller
             }
 
             if ($model->validate() && $model->save(false)) {
+                $this->syncProfileFromPost($model, $post);
                 $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
                 foreach (array_keys($allRoles) as $name) {
                     $role = $auth->getRole($name);
@@ -346,10 +354,51 @@ class UserManagementController extends Controller
      */
     protected function findModel($id)
     {
-        $model = User::findOne($id);
+        $model = $this->tenantUsersQuery()
+            ->andWhere(['u.id' => $id])
+            ->one();
         if ($model === null) {
             throw new NotFoundHttpException('Usuario no encontrado.');
         }
         return $model;
+    }
+
+    private function tenantUsersQuery()
+    {
+        $query = User::find()
+            ->alias('u')
+            ->innerJoinWith(['profile p']);
+        TenantContext::applyFilter($query, 'p.empresas_id');
+
+        return $query;
+    }
+
+    private function buildPendingProfileData(User $user, array $post): array
+    {
+        $profile = $user->profile;
+
+        return [
+            'empresas_id' => TenantContext::requireEmpresaId(),
+            'num_doc' => $profile ? ($profile->num_doc ?? '0000000') : '0000000',
+            'name' => $profile ? ($profile->name ?? $user->username) : $user->username,
+            'tipo_doc' => $profile ? ($profile->tipo_doc ?? Profile::TIPO_DOC_CC) : Profile::TIPO_DOC_CC,
+            'estado' => $profile ? ($profile->estado ?? Profile::ESTADO_ACTIVO) : Profile::ESTADO_ACTIVO,
+            'telefono' => $post['phone'] ?? ($profile ? ($profile->telefono ?? null) : null),
+            'position' => $profile ? ($profile->position ?? null) : null,
+        ];
+    }
+
+    private function syncProfileFromPost(User $user, array $post): void
+    {
+        $profile = $user->profile;
+        if ($profile === null) {
+            return;
+        }
+
+        $profile->empresas_id = TenantContext::requireEmpresaId();
+        if (array_key_exists('phone', $post)) {
+            $profile->telefono = $post['phone'] !== '' ? (string) $post['phone'] : null;
+        }
+        $profile->save(false);
     }
 }

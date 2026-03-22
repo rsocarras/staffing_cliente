@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\MaestrosConceptos;
@@ -42,8 +43,7 @@ class MaestrosConceptosSearch extends MaestrosConceptos
     public function search($params, $formName = null)
     {
         $query = MaestrosConceptos::find();
-
-        // add conditions that should always apply here
+        TenantContext::applyFilter($query, 'empresa_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -60,7 +60,6 @@ class MaestrosConceptosSearch extends MaestrosConceptos
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'active' => $this->active,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
