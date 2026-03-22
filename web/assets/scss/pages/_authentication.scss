@@ -1,0 +1,150 @@
+@use "../variables" as *;
+@use "../utils/mixins" as *;
+
+//
+// authentication.scss
+//
+
+.auth-brand {
+    .logo-dark {
+        display: inline-block;
+    }
+
+    .logo-light {
+        display: none;
+    }
+}
+
+// Dark mode
+html[data-bs-theme="dark"] {
+    .auth-brand {
+        .logo-light {
+            display: inline-block;
+        }
+
+        .logo-dark {
+            display: none;
+        }
+    }
+}
+.login-or {
+    span {
+        font-family: "Albert Sans", sans-serif;
+        font-size: 13px;
+    }
+	&::after {
+		width: 100%;
+		content: "";
+		border-top: 1px solid $border-color;
+		position: absolute;
+		top: 50%;
+		right: 0;
+	}
+	&::before {
+		width: 100%;
+		content: "";
+		border-top: 1px solid $border-color;
+		position: absolute;
+		top: 50%;
+		left: 0;
+	}
+}
+.otp-input {
+	input {
+		width: 48px !important;
+		height: 48px;
+		border: 2px solid $border-color;
+		&.active {
+			border: 2px solid $primary;
+		}
+	}
+}
+
+// Error
+.error-images {
+	img {
+		max-width: 400px;
+		@include respond-below(md) {
+			max-width: 280px;
+		}
+	}
+}
+.forgot-password {
+    font-family: "Albert Sans", sans-serif;
+    color: $gray-600;
+}
+.login-item {
+    border: 1px solid $border-color;
+    padding: 40px;
+    border-radius: $border-radius;
+    @include respond-below(lg) {
+        padding: 24px;
+    }
+}
+
+.pricing-tab {
+	width: 300px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.nav-link {
+		font-size: 14px;
+	}
+}
+
+.bg-cover-gradient {
+	background: $bg-cover-gradient;
+}
+
+.bg-overlay-img {
+	width: 100%;
+	left: 0;
+	right: 0;
+	bottom: -210px;
+}
+
+.login-laptop {
+	width: 430px;
+}
+.authentication-bg-03 {
+	position: absolute;
+	top: 25px;
+	right: 95px;
+	z-index: 0;
+}
+
+// coming soon
+
+.timer-cover {
+    width: 70px;
+    height: 70px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $white;
+    border: 1px solid $white;
+    border-radius: 5px;
+    margin-bottom: 4px;
+    @include respond-below(md) {
+        width: 50px;
+        height: 50px;
+    }
+}
+.subscribe-form {
+    position: relative;
+    input {
+        position: relative;
+    }
+    .btn {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+.theme-image {
+    &.active {
+        border: 1px solid $primary;
+    }
+}
