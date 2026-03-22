@@ -17,6 +17,12 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 $tableId = $tableId ?? 'datatable-index';
+$showCreateButton = $showCreateButton ?? true;
+$actionButtons = array_merge([
+    'view' => true,
+    'update' => true,
+    'delete' => true,
+], $actionButtons ?? []);
 ?>
 <?php
 $this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
@@ -45,9 +51,11 @@ $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.boot
                             <h4 class="card-title mb-1"><?= Html::encode($title) ?></h4>
                             <p class="card-text mb-0"><?= Yii::t('app', 'List with search, sort and pagination.') ?></p>
                         </div>
-                        <div>
-                            <?= Html::a('<i class="ti ti-plus me-1 align-middle"></i>' . ($createLabel ?? 'Create'), ['create'], ['class' => 'btn btn-primary']) ?>
-                        </div>
+                        <?php if ($showCreateButton): ?>
+                            <div>
+                                <?= Html::a('<i class="ti ti-plus me-1 align-middle"></i>' . ($createLabel ?? 'Create'), ['create'], ['class' => 'btn btn-primary']) ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -68,9 +76,15 @@ $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.boot
                                             <?php endforeach; ?>
                                             <td class="text-end">
                                                 <?php $params = $actionParams($model); ?>
-                                                <?= Html::a('<i class="ti ti-eye"></i>', array_merge(['view'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => Yii::t('app', 'View')]) ?>
-                                                <?= Html::a('<i class="ti ti-edit"></i>', array_merge(['update'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => Yii::t('app', 'Update')]) ?>
-                                                <?= Html::a('<i class="ti ti-trash"></i>', array_merge(['delete'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-danger rounded-pill', 'title' => Yii::t('app', 'Delete'), 'data' => ['confirm' => Yii::t('app', 'Are you sure you want to delete this item?'), 'method' => 'post']]) ?>
+                                                <?php if ($actionButtons['view']): ?>
+                                                    <?= Html::a('<i class="ti ti-eye"></i>', array_merge(['view'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => Yii::t('app', 'View')]) ?>
+                                                <?php endif; ?>
+                                                <?php if ($actionButtons['update']): ?>
+                                                    <?= Html::a('<i class="ti ti-edit"></i>', array_merge(['update'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => Yii::t('app', 'Update')]) ?>
+                                                <?php endif; ?>
+                                                <?php if ($actionButtons['delete']): ?>
+                                                    <?= Html::a('<i class="ti ti-trash"></i>', array_merge(['delete'], $params), ['class' => 'btn btn-icon btn-sm btn-soft-danger rounded-pill', 'title' => Yii::t('app', 'Delete'), 'data' => ['confirm' => Yii::t('app', 'Are you sure you want to delete this item?'), 'method' => 'post']]) ?>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

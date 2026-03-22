@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\Requisicion;
 use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
@@ -573,11 +574,7 @@ class RequisicionController extends Controller
 
     private function currentEmpresaId(): ?int
     {
-        $empresaId = Yii::$app->user->empresas_id ?? null;
-        if ($empresaId === null || !is_numeric($empresaId) || (int) $empresaId <= 0) {
-            return null;
-        }
-        return (int) $empresaId;
+        return TenantContext::currentEmpresaId();
     }
 
     private function applyTenantEmpresa(Requisicion $model): void

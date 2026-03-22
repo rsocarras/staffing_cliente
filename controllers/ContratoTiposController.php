@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\ContratoTipos;
-use app\models\Profile;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -42,13 +42,8 @@ class ContratoTiposController extends Controller
      */
     public function actionIndex()
     {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        $empresaId = $profile ? $profile->empresas_id : null;
-
         $query = ContratoTipos::find();
-        if ($empresaId) {
-            $query->andWhere(['or', ['empresa_id' => $empresaId], ['empresa_id' => null]]);
-        }
+        TenantContext::applyFilter($query, 'empresa_id', true);
 
         $total = (int) (clone $query)->count();
         $activos = (int) (clone $query)->andWhere(['activo' => 1])->count();
@@ -70,9 +65,6 @@ class ContratoTiposController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        $empresaId = $profile ? $profile->empresas_id : null;
-
         $request = Yii::$app->request;
         $draw = (int) $request->get('draw', 1);
         $start = (int) $request->get('start', 0);
@@ -82,14 +74,10 @@ class ContratoTiposController extends Controller
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
         $query = ContratoTipos::find();
-        if ($empresaId) {
-            $query->andWhere(['or', ['empresa_id' => $empresaId], ['empresa_id' => null]]);
-        }
+        TenantContext::applyFilter($query, 'empresa_id', true);
 
         $baseQuery = ContratoTipos::find();
-        if ($empresaId) {
-            $baseQuery->andWhere(['or', ['empresa_id' => $empresaId], ['empresa_id' => null]]);
-        }
+        TenantContext::applyFilter($baseQuery, 'empresa_id', true);
         $totalCount = (int) $baseQuery->count();
 
         if ($searchValue !== '') {
@@ -157,20 +145,14 @@ class ContratoTiposController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresa_id = $profile->empresas_id;
-                }
+                $model->empresa_id = TenantContext::requireEmpresaId();
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -188,10 +170,7 @@ class ContratoTiposController extends Controller
         $model = new ContratoTipos();
 
         if ($model->load(Yii::$app->request->post())) {
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 return [
                     'success' => true,
@@ -320,7 +299,7 @@ class ContratoTiposController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = ContratoTipos::findOne(['id' => $id])) !== null) {
+        if (($model = ContratoTipos::findOne(['id' => $id])) !== null && TenantContext::matchesModel($model, 'empresa_id', true)) {
             return $model;
         }
 

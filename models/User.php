@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\components\TenantContext;
 use Da\User\Model\User as BaseUser;
 
 /**
@@ -88,6 +89,11 @@ class User extends BaseUser
      */
     protected function resolveDefaultEmpresasId()
     {
+        $tenantId = TenantContext::currentEmpresaId();
+        if ($tenantId !== null) {
+            return $tenantId;
+        }
+
         $profile = \Yii::$app->user->identity && \Yii::$app->user->identity->profile
             ? \Yii::$app->user->identity->profile
             : null;
@@ -106,5 +112,27 @@ class User extends BaseUser
     public function getProfile()
     {
         return $this->hasOne(Profile::class, ['user_id' => 'id']);
+    }
+
+    public function getEmpresas_id(): ?int
+    {
+        $profile = $this->profile;
+        if ($profile === null || !$profile->empresas_id) {
+            return null;
+        }
+
+        return (int) $profile->empresas_id;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->profile ? $this->profile->telefono : null;
+    }
+
+    public function setPhone($value): void
+    {
+        if ($this->profile !== null) {
+            $this->profile->telefono = $value !== null ? (string) $value : null;
+        }
     }
 }

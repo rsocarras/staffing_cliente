@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\MallaCargoAsignacion;
 use app\models\MallaProfileAsignacion;
 use app\models\Mallas;
@@ -726,12 +727,7 @@ class MallasHorariosController extends Controller
 
     private function currentEmpresaId(): ?int
     {
-        $empresaId = Yii::$app->user->empresas_id ?? null;
-        if ($empresaId === null || (int) $empresaId <= 0) {
-            return null;
-        }
-
-        return (int) $empresaId;
+        return TenantContext::currentEmpresaId();
     }
 
     private function isMallaAssigned(int $mallaId): bool

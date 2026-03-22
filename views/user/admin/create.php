@@ -3,7 +3,6 @@
 use app\models\Empresas;
 use app\models\Profile;
 use yii\bootstrap5\ActiveForm;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /**
@@ -17,7 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $profile = new Profile();
 $profile->loadDefaultValues();
-$empresasList = ArrayHelper::map(Empresas::find()->orderBy('name')->all(), 'id', 'name');
+$tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+$tenantEmpresa = $tenantEmpresaId ? Empresas::findOne($tenantEmpresaId) : null;
+$tenantName = $tenantEmpresa ? $tenantEmpresa->name : 'Tenant no disponible';
+$profile->empresas_id = $tenantEmpresaId;
 $module = Yii::$app->getModule('user');
 ?>
 
@@ -49,7 +51,12 @@ $module = Yii::$app->getModule('user');
     </div>
     <div class="col-md-6">
         <h5 class="mb-3"><?= Yii::t('usuario', 'Profile details') ?></h5>
-        <?= $form->field($profile, 'empresas_id')->dropDownList($empresasList, ['prompt' => 'Seleccione empresa...']) ?>
+        <?= Html::activeHiddenInput($profile, 'empresas_id', ['value' => $tenantEmpresaId]) ?>
+        <div class="mb-3">
+            <label class="form-label" for="tenant-empresa-label"><?= Html::encode($profile->getAttributeLabel('empresas_id')) ?></label>
+            <input id="tenant-empresa-label" type="text" class="form-control" value="<?= Html::encode($tenantName) ?>" readonly>
+            <div class="form-text">El usuario quedará asociado al tenant actual.</div>
+        </div>
         <?= $form->field($profile, 'num_doc')->textInput(['maxlength' => 40]) ?>
         <?= $form->field($profile, 'name')->textInput(['maxlength' => 255]) ?>
         <?= $form->field($profile, 'tipo_doc')->dropDownList(Profile::optsTipoDoc(), ['prompt' => '']) ?>

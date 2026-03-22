@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\Area;
-use app\models\Profile;
 use app\models\search\AreaSearch;
 use Yii;
 use yii\web\Controller;
@@ -63,8 +63,9 @@ class AreaController extends Controller
         $orderCol = (int) ($request->get('order', [])[0]['column'] ?? 1);
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
-        $query = Area::find();
-        $totalCount = (int) $query->count();
+        $query = Area::find()->alias('area');
+        TenantContext::applyFilter($query, 'area.empresas_id');
+        $totalCount = (int) (clone $query)->count();
 
         if ($searchValue !== '') {
             $query->andWhere([
@@ -76,7 +77,7 @@ class AreaController extends Controller
                 ['like', 'area.centro_utilidad_staffing', $searchValue]
             ]);
         }
-        $filteredCount = (int) $query->count();
+        $filteredCount = (int) (clone $query)->count();
 
         $orderColumns = ['area.id', 'area.nombre', 'area.descripcion', 'areaPadre.nombre', 'area.centro_utilidad', 'area.referencia_externa', 'area.centro_utilidad_staffing', null];
         $orderBy = $orderColumns[$orderCol] ?? 'nombre';
@@ -134,18 +135,14 @@ class AreaController extends Controller
             if ($model->load($this->request->post())) {
                 $model->uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
                 $model->user_create = Yii::$app->user->id;
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresas_id = $profile->empresas_id;
-                } else {
-                    $model->addError('empresas_id', 'El usuario no tiene perfil asociado a una empresa.');
-                }
+                $model->empresas_id = TenantContext::requireEmpresaId();
                 if (!$model->hasErrors() && $model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
+            $model->empresas_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -165,12 +162,7 @@ class AreaController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $model->uuid = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
             $model->user_create = Yii::$app->user->id;
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresas_id = $profile->empresas_id;
-            } else {
-                return ['success' => false, 'errors' => ['empresas_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
-            }
+            $model->empresas_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 $areaPadreNombre = $model->areaPadre ? $model->areaPadre->nombre : null;
                 return [
@@ -205,8 +197,11 @@ class AreaController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->empresas_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -270,22 +265,25 @@ class AreaController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $areaPadreNombre = $model->areaPadre ? $model->areaPadre->nombre : null;
-            return [
-                'success' => true,
-                'message' => Yii::t('app', 'Área actualizada correctamente.'),
-                'model' => [
-                    'id' => $model->id,
-                    'nombre' => $model->nombre,
-                    'descripcion' => $model->descripcion,
-                    'area_padre' => $model->area_padre,
-                    'area_padre_nombre' => $areaPadreNombre,
-                    'centro_utilidad' => $model->centro_utilidad,
-                    'referencia_externa' => $model->referencia_externa,
-                    'centro_utilidad_staffing' => $model->centro_utilidad_staffing,
-                ],
-            ];
+        if ($model->load(Yii::$app->request->post())) {
+            $model->empresas_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                $areaPadreNombre = $model->areaPadre ? $model->areaPadre->nombre : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Área actualizada correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'nombre' => $model->nombre,
+                        'descripcion' => $model->descripcion,
+                        'area_padre' => $model->area_padre,
+                        'area_padre_nombre' => $areaPadreNombre,
+                        'centro_utilidad' => $model->centro_utilidad,
+                        'referencia_externa' => $model->referencia_externa,
+                        'centro_utilidad_staffing' => $model->centro_utilidad_staffing,
+                    ],
+                ];
+            }
         }
 
         return ['success' => false, 'errors' => $model->getErrors()];
@@ -300,7 +298,7 @@ class AreaController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Area::findOne(['id' => $id])) !== null) {
+        if (($model = Area::findOne(['id' => $id, 'empresas_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

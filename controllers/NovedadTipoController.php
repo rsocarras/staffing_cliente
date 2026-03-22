@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\NovedadTipo;
 use app\models\search\NovedadTipoSearch;
 use Yii;
@@ -325,11 +326,7 @@ class NovedadTipoController extends Controller
 
     private function currentEmpresaId(): ?int
     {
-        $empresaId = Yii::$app->user->empresas_id ?? null;
-        if ($empresaId === null || !is_numeric($empresaId) || (int) $empresaId <= 0) {
-            return null;
-        }
-        return (int) $empresaId;
+        return TenantContext::currentEmpresaId();
     }
 
     private function assignEmpresaToModel(NovedadTipo $model, int $empresaId): bool

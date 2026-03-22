@@ -2,7 +2,7 @@
 
 namespace app\controllers\user;
 
-use app\models\Empresas;
+use app\components\TenantContext;
 use app\models\Profile;
 use app\models\User;
 use Da\User\Event\UserEvent;
@@ -48,7 +48,7 @@ class AdminController extends \Da\User\Controller\AdminController
 
         // Datos del perfil para afterSave
         $user->pendingProfileData = [
-            'empresas_id' => $post['Profile']['empresas_id'] ?? null,
+            'empresas_id' => TenantContext::requireEmpresaId(),
             'num_doc' => $post['Profile']['num_doc'] ?? '0000000',
             'name' => $post['Profile']['name'] ?? $user->username,
             'tipo_doc' => $post['Profile']['tipo_doc'] ?? Profile::TIPO_DOC_CC,
@@ -106,7 +106,7 @@ class AdminController extends \Da\User\Controller\AdminController
         if ($user->load(Yii::$app->request->post())) {
             $post = Yii::$app->request->post();
             $user->pendingProfileData = [
-                'empresas_id' => $post['Profile']['empresas_id'] ?? null,
+                'empresas_id' => TenantContext::requireEmpresaId(),
                 'num_doc' => $post['Profile']['num_doc'] ?? '0000000',
                 'name' => $post['Profile']['name'] ?? $user->username,
                 'tipo_doc' => $post['Profile']['tipo_doc'] ?? Profile::TIPO_DOC_CC,
@@ -155,7 +155,7 @@ class AdminController extends \Da\User\Controller\AdminController
         if ($profile === null) {
             $profile = new Profile();
             $profile->user_id = $user->id;
-            $profile->empresas_id = Empresas::find()->select('id')->limit(1)->scalar() ?: 1;
+            $profile->empresas_id = TenantContext::requireEmpresaId();
             $profile->num_doc = '0000000';
             $profile->tipo_doc = Profile::TIPO_DOC_CC;
             $profile->estado = Profile::ESTADO_ACTIVO;
@@ -173,6 +173,7 @@ class AdminController extends \Da\User\Controller\AdminController
         $user = $this->make(User::class, [], ['scenario' => 'create']);
         $profile = new Profile();
         $profile->loadDefaultValues();
+        $profile->empresas_id = TenantContext::requireEmpresaId();
 
         return $this->renderPartial('@app/views/user/admin/_create_modal_form', [
             'user' => $user,

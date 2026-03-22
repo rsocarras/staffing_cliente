@@ -13,13 +13,25 @@ class WebUser extends User
     protected function afterLogin($identity, $cookieBased, $duration)
     {
         parent::afterLogin($identity, $cookieBased, $duration);
-        Yii::$app->session->set(self::STATE_EMPRESA_ID, $this->extractEmpresaId($identity));
+        $this->refreshTenantState($identity);
     }
 
     protected function afterLogout($identity)
     {
         parent::afterLogout($identity);
         Yii::$app->session->remove(self::STATE_EMPRESA_ID);
+    }
+
+    public function refreshTenantState(?IdentityInterface $identity = null): ?int
+    {
+        $empresaId = $this->extractEmpresaId($identity ?? $this->identity);
+        if ($empresaId === null) {
+            Yii::$app->session->remove(self::STATE_EMPRESA_ID);
+            return null;
+        }
+
+        Yii::$app->session->set(self::STATE_EMPRESA_ID, $empresaId);
+        return $empresaId;
     }
 
     /**
@@ -32,16 +44,7 @@ class WebUser extends User
             return (int) $value;
         }
 
-        if ($this->identity !== null) {
-            $identityEmpresa = $this->extractEmpresaId($this->identity);
-            if ($identityEmpresa !== null) {
-                // Si no estaba cargado en estado de sesión, lo persistimos.
-                Yii::$app->session->set(self::STATE_EMPRESA_ID, $identityEmpresa);
-                return $identityEmpresa;
-            }
-        }
-
-        return null;
+        return $this->refreshTenantState();
     }
 
     private function extractEmpresaId(?IdentityInterface $identity): ?int
@@ -52,6 +55,16 @@ class WebUser extends User
 
         if (isset($identity->empresas_id) && (int) $identity->empresas_id > 0) {
             return (int) $identity->empresas_id;
+        }
+
+        try {
+            $profile = $identity->profile ?? null;
+        } catch (\Throwable $exception) {
+            $profile = null;
+        }
+
+        if ($profile !== null && isset($profile->empresas_id) && (int) $profile->empresas_id > 0) {
+            return (int) $profile->empresas_id;
         }
 
         return null;

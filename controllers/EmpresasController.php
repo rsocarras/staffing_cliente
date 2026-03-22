@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\Empresas;
 use app\models\search\EmpresasSearch;
+use yii\web\ForbiddenHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -68,19 +70,7 @@ class EmpresasController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Empresas();
-
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        throw new ForbiddenHttpException('La creación de tenants solo está disponible en staffing_admin.');
     }
 
     /**
@@ -112,9 +102,7 @@ class EmpresasController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        throw new ForbiddenHttpException('La eliminación de tenants solo está disponible en staffing_admin.');
     }
 
     /**
@@ -126,7 +114,12 @@ class EmpresasController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Empresas::findOne(['id' => $id])) !== null) {
+        $tenantId = TenantContext::requireEmpresaId();
+        if ((int) $id !== $tenantId) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
+        if (($model = Empresas::findOne(['id' => $tenantId])) !== null) {
             return $model;
         }
 

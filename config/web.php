@@ -25,7 +25,8 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => Da\User\Model\User::class,
+            'class' => app\components\WebUser::class,
+            'identityClass' => app\models\User::class,
             'enableAutoLogin' => true,
             'loginUrl' => ['/user/security/login'],
         ],
@@ -67,6 +68,8 @@ $config = [
                 'sistema/novedad-tipo/<action:[\w-]+>' => 'novedad-tipo/<action>',
                 'sistema/requisicion' => 'requisicion/index',
                 'sistema/requisicion/<action:[\w-]+>' => 'requisicion/<action>',
+                'sistema/presupuesto' => 'presupuesto/index',
+                'sistema/presupuesto/<action:[\w-]+>' => 'presupuesto/<action>',
                 'sistema/empleados' => 'empleados/index',
                 'sistema/empleados/<action:[\w-]+>' => 'empleados/<action>',
                 'mallas/list' => 'mallas/index',

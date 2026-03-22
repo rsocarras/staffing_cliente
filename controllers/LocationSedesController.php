@@ -2,10 +2,9 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\City;
-use app\models\Empresas;
 use app\models\LocationSedes;
-use app\models\Profile;
 use app\services\MallaTimesheetService;
 use Yii;
 use yii\web\Controller;
@@ -46,13 +45,8 @@ class LocationSedesController extends Controller
      */
     public function actionIndex()
     {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        $empresaId = $profile ? $profile->empresas_id : null;
-
         $query = LocationSedes::find();
-        if ($empresaId) {
-            $query->andWhere(['empresa_id' => $empresaId]);
-        }
+        TenantContext::applyFilter($query, 'empresa_id');
 
         $total = (int) (clone $query)->count();
         $activos = (int) (clone $query)->andWhere(['activo' => 1])->count();
@@ -74,9 +68,6 @@ class LocationSedesController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        $empresaId = $profile ? $profile->empresas_id : null;
-
         $request = Yii::$app->request;
         $draw = (int) $request->get('draw', 1);
         $start = (int) $request->get('start', 0);
@@ -86,14 +77,10 @@ class LocationSedesController extends Controller
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
         $query = LocationSedes::find()->alias('sede')->with(['city', 'city.country']);
-        if ($empresaId) {
-            $query->andWhere(['sede.empresa_id' => $empresaId]);
-        }
+        TenantContext::applyFilter($query, 'sede.empresa_id');
 
         $baseQuery = LocationSedes::find();
-        if ($empresaId) {
-            $baseQuery->andWhere(['empresa_id' => $empresaId]);
-        }
+        TenantContext::applyFilter($baseQuery, 'empresa_id');
         $totalCount = (int) $baseQuery->count();
 
         if ($searchValue !== '') {
@@ -177,20 +164,14 @@ class LocationSedesController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresa_id = $profile->empresas_id;
-                }
+                $model->empresa_id = TenantContext::requireEmpresaId();
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -208,14 +189,7 @@ class LocationSedesController extends Controller
         $model = new LocationSedes();
 
         if ($model->load(Yii::$app->request->post())) {
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if (!$profile) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
-            }
-            $model->empresa_id = $profile->empresas_id;
-            if (!Empresas::findOne($model->empresa_id)) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['La empresa seleccionada no existe en el sistema. Contacte al administrador.']]];
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 $cityName = $model->city ? $model->city->name : null;
                 return [
@@ -271,8 +245,11 @@ class LocationSedesController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -364,26 +341,29 @@ class LocationSedesController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $cityName = $model->city ? $model->city->name : null;
-            return [
-                'success' => true,
-                'message' => Yii::t('app', 'Sede actualizada correctamente.'),
-                'model' => [
-                    'id' => $model->id,
-                    'codigo' => $model->codigo,
-                    'nombre' => $model->nombre,
-                    'direccion' => $model->direccion,
-                    'tipo_sede' => $model->tipo_sede,
-                    'tipo_sede_label' => $model->getTipoSedeLabel(),
-                    'activo' => $model->activo,
-                    'city_id' => $model->city_id,
-                    'city_name' => $cityName,
-                    'centro_costo' => $model->centro_costo,
-                    'centro_costo_staffing' => $model->centro_costo_staffing,
-                    'codigo_externo' => $model->codigo_externo,
-                ],
-            ];
+        if ($model->load(Yii::$app->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                $cityName = $model->city ? $model->city->name : null;
+                return [
+                    'success' => true,
+                    'message' => Yii::t('app', 'Sede actualizada correctamente.'),
+                    'model' => [
+                        'id' => $model->id,
+                        'codigo' => $model->codigo,
+                        'nombre' => $model->nombre,
+                        'direccion' => $model->direccion,
+                        'tipo_sede' => $model->tipo_sede,
+                        'tipo_sede_label' => $model->getTipoSedeLabel(),
+                        'activo' => $model->activo,
+                        'city_id' => $model->city_id,
+                        'city_name' => $cityName,
+                        'centro_costo' => $model->centro_costo,
+                        'centro_costo_staffing' => $model->centro_costo_staffing,
+                        'codigo_externo' => $model->codigo_externo,
+                    ],
+                ];
+            }
         }
 
         return ['success' => false, 'errors' => $model->getErrors()];
@@ -398,7 +378,7 @@ class LocationSedesController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = LocationSedes::findOne(['id' => $id])) !== null) {
+        if (($model = LocationSedes::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

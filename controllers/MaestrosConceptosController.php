@@ -2,8 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\MaestrosConceptos;
-use app\models\Profile;
 use app\models\search\MaestrosConceptosSearch;
 use Yii;
 use yii\web\Controller;
@@ -76,20 +76,14 @@ class MaestrosConceptosController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-                if ($profile) {
-                    $model->empresa_id = $profile->empresas_id;
-                }
+                $model->empresa_id = TenantContext::requireEmpresaId();
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if ($profile) {
-                $model->empresa_id = $profile->empresas_id;
-            }
+            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -107,11 +101,7 @@ class MaestrosConceptosController extends Controller
         $model = new MaestrosConceptos();
 
         if ($model->load(Yii::$app->request->post())) {
-            $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-            if (!$profile) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['El usuario no tiene perfil asociado a una empresa.']]];
-            }
-            $model->empresa_id = $profile->empresas_id;
+            $model->empresa_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 return [
                     'success' => true,
@@ -142,8 +132,11 @@ class MaestrosConceptosController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -174,7 +167,7 @@ class MaestrosConceptosController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = MaestrosConceptos::findOne(['id' => $id])) !== null) {
+        if (($model = MaestrosConceptos::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 
