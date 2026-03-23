@@ -3,21 +3,21 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "novedad_tipo".
  *
  * @property int $id
- * @property int $empresa_id
  * @property string $nombre
  * @property string|null $descripcion
  * @property string|null $icono
  * @property int $orden
  * @property int $activo
- * @property int $created_at
- * @property int $updated_at
+ * @property string $created_at
+ * @property string $updated_at
  *
- * @property Empresas $empresa
  * @property NovedadConcepto[] $novedadConceptos
  * @property NovedadFlujoPaso[] $novedadFlujoPasos
  * @property NovedadTipoCampo[] $novedadTipoCampos
@@ -25,7 +25,20 @@ use Yii;
  */
 class NovedadTipo extends \yii\db\ActiveRecord
 {
-
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -42,14 +55,13 @@ class NovedadTipo extends \yii\db\ActiveRecord
     {
         return [
             [['descripcion', 'icono'], 'default', 'value' => null],
-            [['updated_at'], 'default', 'value' => 0],
             [['activo'], 'default', 'value' => 1],
-            [['empresa_id', 'nombre'], 'required'],
-            [['empresa_id', 'orden', 'activo', 'created_at', 'updated_at'], 'integer'],
+            [['nombre'], 'required'],
+            [['orden', 'activo'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['descripcion'], 'string'],
             [['nombre'], 'string', 'max' => 100],
             [['icono'], 'string', 'max' => 50],
-            [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresa_id' => 'id']],
         ];
     }
 
@@ -60,7 +72,6 @@ class NovedadTipo extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'empresa_id' => 'Empresa ID',
             'nombre' => 'Nombre',
             'descripcion' => 'Descripcion',
             'icono' => 'Icono',
@@ -69,16 +80,6 @@ class NovedadTipo extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
-    }
-
-    /**
-     * Gets query for [[Empresa]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getEmpresa()
-    {
-        return $this->hasOne(Empresas::class, ['id' => 'empresa_id']);
     }
 
     /**
@@ -120,5 +121,4 @@ class NovedadTipo extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Novedad::class, ['novedad_tipo_id' => 'id']);
     }
-
 }

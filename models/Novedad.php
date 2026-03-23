@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\Schema;
 
 /**
  * This is the model class for table "novedad".
@@ -12,6 +14,7 @@ use Yii;
  * @property int $profile_id
  * @property int $concepto_id
  * @property int $novedad_tipo_id
+ * @property int|null $novedad_flujo_id (solo si existe la columna en BD)
  * @property string $estado
  * @property string $datos
  * @property string|null $schema_snapshot
@@ -19,12 +22,14 @@ use Yii;
  * @property int|null $paso_actual_id
  * @property int $es_masivo
  * @property int|null $lote_masivo_id
- * @property int $created_at
- * @property int $updated_at
+ * @property int|string $created_at Unix o datetime según esquema BD
+ * @property int|string $updated_at Unix o datetime según esquema BD
  *
  * @property NovedadConcepto $concepto
  * @property Empresas $empresa
  * @property NovedadTipo $novedadTipo
+ * @property NovedadFlujo|null $novedadFlujo
+ * @property NovedadStep|null $pasoActual
  */
 class Novedad extends \yii\db\ActiveRecord
 {
@@ -46,16 +51,60 @@ class Novedad extends \yii\db\ActiveRecord
     }
 
     /**
+     * La migración `m250322_120000_add_novedad_flujo_id_to_novedad` agrega la columna.
+     */
+    public static function hasNovedadFlujoIdColumn(): bool
+    {
+        static $cached = null;
+        if ($cached === null) {
+            $cached = static::getTableSchema()->getColumn('novedad_flujo_id') !== null;
+        }
+        return $cached;
+    }
+
+    /**
+     * En MySQL suele ser DATETIME; en otros entornos puede ser INT (epoch).
+     */
+    public static function timestampsAreDatetimeColumns(): bool
+    {
+        static $cached = null;
+        if ($cached === null) {
+            $col = static::getTableSchema()->getColumn('created_at');
+            $cached = $col !== null && in_array($col->type, [
+                Schema::TYPE_DATETIME,
+                Schema::TYPE_TIMESTAMP,
+                Schema::TYPE_DATE,
+            ], true);
+        }
+        return $cached;
+    }
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => function () {
+                    return static::timestampsAreDatetimeColumns()
+                        ? date('Y-m-d H:i:s')
+                        : time();
+                },
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
-        return [
+        $rules = [
             [['schema_snapshot', 'alertas', 'paso_actual_id', 'lote_masivo_id'], 'default', 'value' => null],
             [['estado'], 'default', 'value' => 'borrador'],
-            [['updated_at'], 'default', 'value' => 0],
             [['empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'datos'], 'required'],
-            [['empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'paso_actual_id', 'es_masivo', 'lote_masivo_id', 'created_at', 'updated_at'], 'integer'],
+            [['empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'paso_actual_id', 'es_masivo', 'lote_masivo_id'], 'integer'],
             [['estado'], 'string'],
             [['datos', 'schema_snapshot', 'alertas'], 'safe'],
             ['estado', 'in', 'range' => array_keys(self::optsEstado())],
@@ -63,6 +112,24 @@ class Novedad extends \yii\db\ActiveRecord
             [['empresa_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresa_id' => 'id']],
             [['novedad_tipo_id'], 'exist', 'skipOnError' => true, 'targetClass' => NovedadTipo::class, 'targetAttribute' => ['novedad_tipo_id' => 'id']],
         ];
+        if (static::hasNovedadFlujoIdColumn()) {
+            $rules[] = [['novedad_flujo_id'], 'default', 'value' => null];
+            $rules[] = [['novedad_flujo_id'], 'integer'];
+            $rules[] = [
+                ['novedad_flujo_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => NovedadFlujo::class,
+                'targetAttribute' => ['novedad_flujo_id' => 'id'],
+            ];
+        }
+        if (static::timestampsAreDatetimeColumns()) {
+            $rules[] = [['created_at', 'updated_at'], 'safe'];
+        } else {
+            $rules[] = [['updated_at'], 'default', 'value' => 0];
+            $rules[] = [['created_at', 'updated_at'], 'integer'];
+        }
+        return $rules;
     }
 
     /**
@@ -70,7 +137,7 @@ class Novedad extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-        return [
+        $labels = [
             'id' => 'ID',
             'empresa_id' => 'Empresa ID',
             'profile_id' => 'Profile ID',
@@ -86,6 +153,10 @@ class Novedad extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
+        if (static::hasNovedadFlujoIdColumn()) {
+            $labels['novedad_flujo_id'] = 'Flujo de novedad';
+        }
+        return $labels;
     }
 
     /**
@@ -118,6 +189,26 @@ class Novedad extends \yii\db\ActiveRecord
         return $this->hasOne(NovedadTipo::class, ['id' => 'novedad_tipo_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getNovedadFlujo()
+    {
+        if (!static::hasNovedadFlujoIdColumn()) {
+            return $this->hasOne(NovedadFlujo::class, ['id' => 'id'])->andWhere('0=1');
+        }
+        return $this->hasOne(NovedadFlujo::class, ['id' => 'novedad_flujo_id']);
+    }
+
+    /**
+     * Paso actual dentro del flujo (tabla novedad_step).
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPasoActual()
+    {
+        return $this->hasOne(NovedadStep::class, ['id' => 'paso_actual_id']);
+    }
 
     /**
      * column estado ENUM value labels

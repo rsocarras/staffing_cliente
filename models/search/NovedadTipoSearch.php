@@ -3,10 +3,11 @@
 namespace app\models\search;
 
 use app\components\TenantContext;
+use app\models\NovedadTipo;
+use app\models\Profile;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\NovedadTipo;
 
 /**
  * NovedadTipoSearch represents the model behind the search form of `app\models\NovedadTipo`.
@@ -46,6 +47,12 @@ class NovedadTipoSearch extends NovedadTipo
         $query = NovedadTipo::find();
         $empresaId = TenantContext::currentEmpresaId();
         $empresaId = (is_numeric($empresaId) && (int) $empresaId > 0) ? (int) $empresaId : null;
+        if ($empresaId === null && (Yii::$app->user->id ?? null) !== null) {
+            $profile = Profile::findOne(['user_id' => (int) Yii::$app->user->id]);
+            if ($profile !== null && (int) $profile->empresas_id > 0) {
+                $empresaId = (int) $profile->empresas_id;
+            }
+        }
 
         $empresaColumn = $this->hasAttribute('empresa_id')
             ? 'empresa_id'

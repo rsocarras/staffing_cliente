@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\components\TenantContext;
 use app\models\NovedadTipo;
+use app\models\Profile;
 use app\models\search\NovedadTipoSearch;
 use Yii;
 use yii\web\Controller;
@@ -67,16 +68,8 @@ class NovedadTipoController extends Controller
     public function actionCreate()
     {
         $model = new NovedadTipo();
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $this->assignEmpresaToModel($model, $empresaId);
-        }
-
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                if ($empresaId === null || !$this->assignEmpresaToModel($model, $empresaId)) {
-                    $model->addError('id', 'No se pudo resolver la empresa de la sesión.');
-                }
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
@@ -98,12 +91,8 @@ class NovedadTipoController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = new NovedadTipo();
-        $empresaId = $this->currentEmpresaId();
 
         if ($model->load(Yii::$app->request->post())) {
-            if ($empresaId === null || !$this->assignEmpresaToModel($model, $empresaId)) {
-                return ['success' => false, 'errors' => ['empresa_id' => ['No se pudo resolver empresas_id desde la sesión del usuario.']]];
-            }
             if ($model->orden === null || $model->orden === '') {
                 $model->orden = 0;
             }
@@ -144,18 +133,6 @@ class NovedadTipoController extends Controller
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
         $query = NovedadTipo::find();
-
-        // Filtro por empresa desde sesión del usuario
-        $empresaId = $this->currentEmpresaId();
-        $empresaColumn = (new NovedadTipo())->hasAttribute('empresa_id')
-            ? 'empresa_id'
-            : ((new NovedadTipo())->hasAttribute('empresas_id') ? 'empresas_id' : null);
-
-        if ($empresaId === null || $empresaColumn === null) {
-            $query->where('0=1');
-        } else {
-            $query->andWhere([$empresaColumn => $empresaId]);
-        }
 
         $totalCount = (int) $query->count();
 
@@ -257,15 +234,6 @@ class NovedadTipoController extends Controller
     {
         $model = NovedadTipo::findOne(['id' => $id]);
         if ($model !== null) {
-            $empresaId = $this->currentEmpresaId();
-            if ($empresaId !== null) {
-                $empresaColumn = $model->hasAttribute('empresa_id')
-                    ? 'empresa_id'
-                    : ($model->hasAttribute('empresas_id') ? 'empresas_id' : null);
-                if ($empresaColumn === null || (int) $model->getAttribute($empresaColumn) !== $empresaId) {
-                    throw new NotFoundHttpException('The requested page does not exist.');
-                }
-            }
             return $model;
         }
 

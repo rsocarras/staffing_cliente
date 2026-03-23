@@ -29,6 +29,7 @@ $homeUrl = Yii::$app->homeUrl;
             <ul>
                 <li class="menu-title"><span>Sistema</span></li>
                 <li><a href="<?= Url::to(['/']) ?>" class="<?php echo ($path == '/') ? 'active' : ''; ?>"><i class="ti ti-layout-grid-add"></i><span>Dashboard</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0) ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Novedades</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
                 <li class="submenu">
@@ -85,6 +86,7 @@ $homeUrl = Yii::$app->homeUrl;
                 <li><a href="<?= Url::to(['/configuracion/cargos']) ?>" class="<?php echo ($path == 'configuracion/cargos') ? 'active' : ''; ?>"><i class="ti ti-briefcase"></i><span>Cargos</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/contratos']) ?>" class="<?php echo ($path == 'configuracion/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Tipos de Contratos</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/sedes']) ?>" class="<?php echo ($path == 'configuracion/sedes') ? 'active' : ''; ?>"><i class="ti ti-building"></i><span>Sedes</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/novedad-flujo']) ?>" class="<?php echo (strpos($path, 'configuracion/novedad-flujo') === 0) ? 'active' : ''; ?>"><i class="ti ti-route"></i><span>Flujos de novedad</span></a></li>
             </ul>
         </div>
     </div>

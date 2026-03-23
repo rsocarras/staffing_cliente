@@ -16,9 +16,22 @@ class NovedadSearch extends Novedad
      */
     public function rules()
     {
+        $intAttrs = ['id', 'empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'paso_actual_id', 'es_masivo', 'lote_masivo_id'];
+        if (!Novedad::timestampsAreDatetimeColumns()) {
+            $intAttrs[] = 'created_at';
+            $intAttrs[] = 'updated_at';
+        }
+        if (Novedad::hasNovedadFlujoIdColumn()) {
+            $intAttrs[] = 'novedad_flujo_id';
+        }
+        $safeAttrs = ['estado', 'datos', 'schema_snapshot', 'alertas'];
+        if (Novedad::timestampsAreDatetimeColumns()) {
+            $safeAttrs[] = 'created_at';
+            $safeAttrs[] = 'updated_at';
+        }
         return [
-            [['id', 'empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'paso_actual_id', 'es_masivo', 'lote_masivo_id', 'created_at', 'updated_at'], 'integer'],
-            [['estado', 'datos', 'schema_snapshot', 'alertas'], 'safe'],
+            [$intAttrs, 'integer'],
+            [$safeAttrs, 'safe'],
         ];
     }
 
@@ -58,7 +71,7 @@ class NovedadSearch extends Novedad
         }
 
         // grid filtering conditions
-        $query->andFilterWhere([
+        $filter = [
             'id' => $this->id,
             'empresa_id' => $this->empresa_id,
             'profile_id' => $this->profile_id,
@@ -69,7 +82,11 @@ class NovedadSearch extends Novedad
             'lote_masivo_id' => $this->lote_masivo_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-        ]);
+        ];
+        if (Novedad::hasNovedadFlujoIdColumn()) {
+            $filter['novedad_flujo_id'] = $this->novedad_flujo_id;
+        }
+        $query->andFilterWhere($filter);
 
         $query->andFilterWhere(['like', 'estado', $this->estado])
             ->andFilterWhere(['like', 'datos', $this->datos])
