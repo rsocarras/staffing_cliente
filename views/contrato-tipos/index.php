@@ -30,10 +30,10 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 <div class="page-wrapper">
     <div class="content">
-        <div class="card mb-0">
-            <div class="card-body">
-                <!-- Page Header -->
-                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
+        <!-- 1. Encabezado -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
                     </div>
@@ -45,15 +45,18 @@ $csrfParam = Yii::$app->request->csrfParam;
                         </ol>
                     </div>
                 </div>
-                <!-- End Page Header -->
+            </div>
+        </div>
 
-                <!-- Summary Cards -->
-                <div class="row row-gap-4 mb-4">
+        <!-- 2. Cards resumen -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="row row-gap-4">
                     <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
                         <div class="card mb-0 flex-fill shadow-sm">
                             <div class="card-body d-flex align-items-center">
                                 <div class="avatar avatar-lg rounded-circle bg-dark flex-shrink-0 me-3">
-                                    <span class="avatar-title text-white"><i class="ti ti-file-text fs-22"></i></span>
+                                    <span class="avatar-title text-white"><i class="ti ti-building fs-22"></i></span>
                                 </div>
                                 <div>
                                     <p class="mb-0 text-muted fs-13">Total tipos</p>
@@ -89,17 +92,18 @@ $csrfParam = Yii::$app->request->csrfParam;
                         </div>
                     </div>
                 </div>
-                <!-- End Summary Cards -->
+            </div>
+        </div>
 
-                <!-- Start Search and Filter -->
+        <!-- 3. Contenido: acciones y tabla -->
+        <div class="card mb-0">
+            <div class="card-body py-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
                     <div class="d-flex align-items-center gap-3 flex-wrap">
                         <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_contrato_tipo"><i class="ti ti-plus me-1"></i>Agregar Nuevo</a>
                     </div>
                 </div>
-                <!-- End Search and Filter -->
 
-                <!-- start table -->
                 <div class="table-responsive">
                     <table class="table table-nowrap bg-white border mb-0" id="contrato-tipos-table">
                         <thead>
@@ -116,7 +120,6 @@ $csrfParam = Yii::$app->request->csrfParam;
                         <tbody></tbody>
                     </table>
                 </div>
-                <!-- end table -->
             </div>
         </div>
     </div>
@@ -124,11 +127,16 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 <!-- Modal Ver Tipo de Contrato -->
 <div class="modal fade" id="modal-view-contrato-tipo">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
-            <div class="modal-body" id="modal-view-contrato-tipo-body">
-                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 py-2 px-3">
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0" id="modal-view-contrato-tipo-body">
+                <div class="text-center py-5 px-3">
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <p class="text-muted mt-2 mb-0">Cargando...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -246,12 +254,12 @@ $(document).ready(function() {
     $(document).on('click', '.btn-contrato-tipo-view', function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-view-contrato-tipo'));
-        $('#modal-view-contrato-tipo-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
+        $('#modal-view-contrato-tipo-body').html('<div class="text-center py-5 px-3"><span class="spinner-border text-primary"></span><p class="text-muted mt-2 mb-0">Cargando...</p></div>');
         modal.show();
         $.get('{$viewAjaxUrl}', { id: id }, function(html) {
             $('#modal-view-contrato-tipo-body').html(html);
         }).fail(function() {
-            $('#modal-view-contrato-tipo-body').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
+            $('#modal-view-contrato-tipo-body').html('<div class="alert alert-danger border-0 m-3">Error al cargar los datos.</div>');
         });
     });
 

@@ -2,11 +2,10 @@
 
 use app\models\Profile;
 use yii\helpers\Html;
-use yii\helpers\Url;
 
 /** @var app\models\Profile $model */
 
-$avatarUrl = $model->photo_ ? Url::to($model->photo_) : Url::to('@web/assets/img/users/user-13.jpg');
+$avatarUrl = $model->getPhotoPublicUrl();
 ?>
 
 <!-- Profile -->

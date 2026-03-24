@@ -634,6 +634,24 @@ class Novedad extends ActiveRecord
         return $items[$e] ?? $e;
     }
 
+    /**
+     * Clase Bootstrap (variante badge-soft-*) según estado de la novedad.
+     */
+    public static function estadoBadgeSoftClass(string $estado): string
+    {
+        switch ($estado) {
+            case self::ESTADO_APROBADA:
+                return 'success';
+            case self::ESTADO_RECHAZADA:
+                return 'danger';
+            case self::ESTADO_PENDIENTE:
+                return 'warning';
+            case self::ESTADO_BORRADOR:
+            default:
+                return 'secondary';
+        }
+    }
+
     public function puedeCrearSegunTipo(): bool
     {
         if (!Yii::$app instanceof WebApplication || Yii::$app->user->isGuest) {

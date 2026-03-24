@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\MallaCargoAsignacion;
 use app\models\Mallas;
-use app\models\Profile;
 use app\models\search\MallaCargoAsignacionSearch;
 use Yii;
 use yii\filters\AccessControl;
@@ -64,10 +64,7 @@ class MallaCargoAsignacionController extends Controller
 
         $query = MallaCargoAsignacion::find()->joinWith(['cargo', 'malla']);
 
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $query->andWhere(['malla_cargo_asignacion.empresa_id' => $empresaId]);
-        }
+        TenantContext::applyFilter($query, 'malla_cargo_asignacion.empresa_id');
 
         $totalCount = (int) $query->count();
 
@@ -100,11 +97,13 @@ class MallaCargoAsignacionController extends Controller
 
         $data = [];
         foreach ($models as $model) {
+            $estadoCls = MallaCargoAsignacion::estadoAprobacionBadgeSoftClass($model->estado_aprobacion);
+            $estadoHtml = '<span class="badge badge-soft-' . $estadoCls . '">' . \yii\helpers\Html::encode($model->displayEstadoAprobacion()) . '</span>';
             $data[] = [
                 (int) $model->id,
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->cargo ? $model->cargo->nombre : ($model->cargo_id ?? '-')) . '</span>',
                 \yii\helpers\Html::encode($model->malla ? $model->malla->nombre : ($model->malla_id ?? '-')),
-                \yii\helpers\Html::encode($model->displayEstadoAprobacion()),
+                $estadoHtml,
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }
@@ -150,13 +149,10 @@ class MallaCargoAsignacionController extends Controller
     public function actionCreate()
     {
         $model = new MallaCargoAsignacion();
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $model->empresa_id = $empresaId;
-        }
+        $model->empresa_id = TenantContext::requireEmpresaId();
 
         if ($this->request->isPost && $model->load($this->request->post())) {
-            $model->empresa_id = $empresaId ?: $model->empresa_id;
+            $model->empresa_id = TenantContext::requireEmpresaId();
             $model->estado_aprobacion = MallaCargoAsignacion::ESTADO_PENDIENTE;
             $model->motivo_rechazo = null;
             $model->solicitado_por = Yii::$app->user->id;
@@ -187,16 +183,13 @@ class MallaCargoAsignacionController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $model = new MallaCargoAsignacion();
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $model->empresa_id = $empresaId;
-        }
+        $model->empresa_id = TenantContext::requireEmpresaId();
 
         if (!$this->request->isPost || !$model->load($this->request->post())) {
             return ['success' => false, 'errors' => ['general' => ['Datos inválidos.']]];
         }
 
-        $model->empresa_id = $empresaId ?: $model->empresa_id;
+        $model->empresa_id = TenantContext::requireEmpresaId();
         $model->estado_aprobacion = MallaCargoAsignacion::ESTADO_PENDIENTE;
         $model->motivo_rechazo = null;
         $model->solicitado_por = Yii::$app->user->id;
@@ -325,23 +318,12 @@ class MallaCargoAsignacionController extends Controller
 
     protected function findModel($id): MallaCargoAsignacion
     {
-        $model = MallaCargoAsignacion::findOne(['id' => $id]);
+        $model = MallaCargoAsignacion::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()]);
         if ($model === null) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
 
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null && (int) $model->empresa_id !== (int) $empresaId) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-
         return $model;
-    }
-
-    private function currentEmpresaId(): ?int
-    {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        return $profile ? (int) $profile->empresas_id : null;
     }
 
     private function isMallaAprobada(int $mallaId): bool

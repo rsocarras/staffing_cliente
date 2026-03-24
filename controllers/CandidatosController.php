@@ -97,13 +97,14 @@ class CandidatosController extends Controller
         foreach ($models as $model) {
             $estadoLabels = Candidato::optsEstado();
             $estadoLabel = $estadoLabels[$model->estado] ?? $model->estado;
+            $estadoCls = Candidato::estadoBadgeSoftClass($model->estado);
             $data[] = [
                 $model->id,
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombres) . '</span>',
                 \yii\helpers\Html::encode($model->apellidos),
                 \yii\helpers\Html::encode($model->correo ?? '-'),
                 \yii\helpers\Html::encode($model->telefono ?? '-'),
-                '<span class="badge bg-secondary">' . \yii\helpers\Html::encode($estadoLabel) . '</span>',
+                '<span class="badge badge-soft-' . $estadoCls . '">' . \yii\helpers\Html::encode($estadoLabel) . '</span>',
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }

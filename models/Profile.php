@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\Url;
 
 /**
  * This is the model class for table "profile".
@@ -25,6 +26,7 @@ use Yii;
  * @property string|null $birthday
  * @property string|null $position
  * @property string|null $photo_
+ * @property \yii\web\UploadedFile|null $photoFile Subida de imagen para el formulario (no persistida en BD)
  * @property string|null $instagram
  * @property string|null $tiktok
  * @property string|null $linkedin
@@ -39,8 +41,6 @@ use Yii;
  * @property int|null $centro_utilidad_id
  * @property string|null $city
  * @property int|null $area_id
- *
- * @property-write \yii\web\UploadedFile|null $photoFile solo para formulario de perfil
  *
  * @property Area $area
  * @property Cargos $cargo
@@ -153,6 +153,14 @@ class Profile extends \yii\db\ActiveRecord
             [['gravatar_id'], 'string', 'max' => 32],
             [['telefono', 'city'], 'string', 'max' => 45],
             [['position', 'photo_'], 'string', 'max' => 245],
+            [
+                ['photoFile'],
+                'file',
+                'skipOnEmpty' => true,
+                'extensions' => ['png', 'jpg', 'jpeg', 'gif', 'webp'],
+                'maxSize' => 2 * 1024 * 1024,
+                'wrongExtension' => 'Solo se permiten imágenes PNG, JPG, GIF o WebP.',
+            ],
             [['instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'address'], 'string', 'max' => 145],
             ['tipo_doc', 'in', 'range' => array_keys(self::optsTipoDoc())],
             ['sexo', 'in', 'range' => array_keys(self::optsSexo())],
@@ -174,37 +182,38 @@ class Profile extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'user_id' => Yii::t('app', 'User ID'),
-            'tipo_doc' => Yii::t('app', 'Tipo Doc'),
-            'num_doc' => Yii::t('app', 'Num Doc'),
-            'name' => Yii::t('app', 'Name'),
-            'public_email' => Yii::t('app', 'Public Email'),
-            'gravatar_email' => Yii::t('app', 'Gravatar Email'),
-            'gravatar_id' => Yii::t('app', 'Gravatar ID'),
-            'location' => Yii::t('app', 'Location'),
-            'timezone' => Yii::t('app', 'Timezone'),
-            'bio' => Yii::t('app', 'Bio'),
-            'sexo' => Yii::t('app', 'Sexo'),
-            'empresas_id' => Yii::t('app', 'Empresas ID'),
-            'about' => Yii::t('app', 'About'),
-            'estado' => Yii::t('app', 'Estado'),
-            'telefono' => Yii::t('app', 'Telefono'),
-            'birthday' => Yii::t('app', 'Birthday'),
-            'position' => Yii::t('app', 'Position'),
-            'photo_' => Yii::t('app', 'Photo'),
-            'instagram' => Yii::t('app', 'Instagram'),
-            'tiktok' => Yii::t('app', 'Tiktok'),
-            'linkedin' => Yii::t('app', 'Linkedin'),
-            'youtube' => Yii::t('app', 'Youtube'),
-            'website' => Yii::t('app', 'Website'),
-            'address' => Yii::t('app', 'Address'),
-            'data_json' => Yii::t('app', 'Data Json'),
-            'sede_id' => Yii::t('app', 'Sede ID'),
-            'cargo_id' => Yii::t('app', 'Cargo ID'),
-            'centro_costo_id' => Yii::t('app', 'Centro Costo ID'),
-            'centro_utilidad_id' => Yii::t('app', 'Centro Utilidad ID'),
-            'city' => Yii::t('app', 'City'),
-            'area_id' => Yii::t('app', 'Area ID'),
+            'user_id' => 'User ID',
+            'tipo_doc' => 'Tipo Doc',
+            'num_doc' => 'Num Doc',
+            'name' => 'Name',
+            'public_email' => 'Public Email',
+            'gravatar_email' => 'Gravatar Email',
+            'gravatar_id' => 'Gravatar ID',
+            'location' => 'Location',
+            'timezone' => 'Timezone',
+            'bio' => 'Bio',
+            'sexo' => 'Sexo',
+            'empresas_id' => 'Empresas ID',
+            'about' => 'About',
+            'estado' => 'Estado',
+            'telefono' => 'Telefono',
+            'birthday' => 'Birthday',
+            'position' => 'Position',
+            'photo_' => 'Photo',
+            'photoFile' => 'Foto de perfil',
+            'instagram' => 'Instagram',
+            'tiktok' => 'Tiktok',
+            'linkedin' => 'Linkedin',
+            'youtube' => 'Youtube',
+            'website' => 'Website',
+            'address' => 'Address',
+            'data_json' => 'Data Json',
+            'sede_id' => 'Sede ID',
+            'cargo_id' => 'Cargo ID',
+            'centro_costo_id' => 'Centro Costo ID',
+            'centro_utilidad_id' => 'Centro Utilidad ID',
+            'city' => 'City',
+            'area_id' => 'Area ID',
         ];
     }
 
@@ -348,6 +357,21 @@ class Profile extends \yii\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
+    /**
+     * URL pública de la foto (ruta relativa, absoluta al sitio o URL externa).
+     */
+    public function getPhotoPublicUrl(): string
+    {
+        if ($this->photo_ === null || $this->photo_ === '') {
+            return Url::to('@web/assets/img/users/user-13.jpg');
+        }
+        $raw = trim((string) $this->photo_);
+        if (preg_match('#^https?://#i', $raw) || str_starts_with($raw, '/')) {
+            return $raw;
+        }
+
+        return '/' . ltrim($raw, '/');
+    }
 
     /**
      * column tipo_doc ENUM value labels
@@ -388,6 +412,21 @@ class Profile extends \yii\db\ActiveRecord
             self::ESTADO_ACTIVO => Yii::t('app', 'activo'),
             self::ESTADO_INACTIVO => Yii::t('app', 'inactivo'),
         ];
+    }
+
+    /**
+     * Clase Bootstrap (variante badge-soft-*) para el estado del colaborador.
+     */
+    public static function estadoBadgeSoftClass(?string $estado): string
+    {
+        if ($estado === self::ESTADO_ACTIVO) {
+            return 'success';
+        }
+        if ($estado === self::ESTADO_INACTIVO) {
+            return 'danger';
+        }
+
+        return 'secondary';
     }
 
     /**

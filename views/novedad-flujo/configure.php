@@ -41,7 +41,8 @@ $flujoEstados = NovedadFlujo::estadoLista();
                         <p class="text-muted mb-0 small"><?= Html::encode($flujo->descripcion ?: 'Sin descripción') ?></p>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-light text-dark"><?= Html::encode($flujoEstados[$flujo->estado] ?? $flujo->estado) ?></span>
+                        <?php $flujoEstadoCls = NovedadFlujo::estadoBadgeSoftClass($flujo->estado); ?>
+                        <span class="badge badge-soft-<?= Html::encode($flujoEstadoCls) ?>"><?= Html::encode($flujoEstados[$flujo->estado] ?? $flujo->estado) ?></span>
                     </div>
                 </div>
 

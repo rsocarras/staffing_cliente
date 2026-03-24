@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PlanillaTemplate;
@@ -52,15 +53,13 @@ class PlanillaTemplateSearch extends PlanillaTemplate
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'version' => $this->version,
             'activo' => $this->activo,
             'created_at' => $this->created_at,
@@ -69,6 +68,8 @@ class PlanillaTemplateSearch extends PlanillaTemplate
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'columnas_json', $this->columnas_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

@@ -43,7 +43,7 @@ $homeUrl = Yii::$app->homeUrl;
                         <li><a href="<?= Url::to(['/sistema/presupuesto/pending']) ?>" class="<?php echo ($path == 'sistema/presupuesto/pending') ? 'active' : ''; ?>">Pendientes por aprobar</a></li>
                     </ul>
                 </li>
-                <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo ($path == 'sistema/empleados') ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo (strpos($path, 'sistema/empleados') === 0) ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/contratos']) ?>" class="<?php echo ($path == 'sistema/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Contratos</span></a></li>
 
                 <li class="menu-title"><span>Mallas</span></li>

@@ -90,6 +90,22 @@ class MallaCargoAsignacion extends ActiveRecord
         return $items[$this->estado_aprobacion] ?? $this->estado_aprobacion;
     }
 
+    /**
+     * Clase Bootstrap (variante badge-soft-*) según estado de aprobación.
+     */
+    public static function estadoAprobacionBadgeSoftClass(string $estado): string
+    {
+        switch ($estado) {
+            case self::ESTADO_APROBADA:
+                return 'success';
+            case self::ESTADO_RECHAZADA:
+                return 'danger';
+            case self::ESTADO_PENDIENTE:
+            default:
+                return 'warning';
+        }
+    }
+
     public function getCargo()
     {
         return $this->hasOne(Cargos::class, ['id' => 'cargo_id']);

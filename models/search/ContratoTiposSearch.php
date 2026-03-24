@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ContratoTipos;
@@ -52,15 +53,13 @@ class ContratoTiposSearch extends ContratoTipos
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id', true);
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'requiere_fecha_fin' => $this->requiere_fecha_fin,
             'es_indefinido' => $this->es_indefinido,
             'duracion_dias_default' => $this->duracion_dias_default,
@@ -72,6 +71,8 @@ class ContratoTiposSearch extends ContratoTipos
         $query->andFilterWhere(['like', 'code', $this->code])
             ->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'descripcion', $this->descripcion]);
+
+        TenantContext::applyFilter($query, 'empresa_id', true);
 
         return $dataProvider;
     }

@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\EmpresaWebhook;
@@ -52,15 +53,13 @@ class EmpresaWebhookSearch extends EmpresaWebhook
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
             'created_at' => $this->created_at,
         ]);
@@ -69,6 +68,8 @@ class EmpresaWebhookSearch extends EmpresaWebhook
             ->andFilterWhere(['like', 'url', $this->url])
             ->andFilterWhere(['like', 'secret', $this->secret])
             ->andFilterWhere(['like', 'headers_json', $this->headers_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

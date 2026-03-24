@@ -33,6 +33,12 @@ if (!Yii::$app->user->isGuest) {
             }
         }
     }
+    if ($displayName === 'Usuario' && Yii::$app->user->identity !== null) {
+        $identity = Yii::$app->user->identity;
+        if (!empty($identity->username)) {
+            $displayName = (string) $identity->username;
+        }
+    }
 }
 ?>
 
@@ -270,15 +276,15 @@ if (!Yii::$app->user->isGuest) {
             <!-- User Dropdown -->
             <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
                 <a class="topbar-link dropdown-toggle drop-arrow-none" href="#" data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
-                    <img src="/assets/img/profiles/avatar-01.jpg" width="24" class="rounded-circle d-flex" alt="user-image">
+                    <img src="<?= Html::encode($profilePhoto) ?>" width="24" class="rounded-circle d-flex" alt="<?= Html::encode($displayName) ?>">
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg p-3">
                     <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
                         <div class="d-flex align-items-center">
-                            <img src="/assets/img/profiles/avatar-01.jpg" class="rounded-circle" width="42" height="42" alt="">
+                            <img src="<?= Html::encode($profilePhoto) ?>" class="rounded-circle" width="42" height="42" alt="<?= Html::encode($displayName) ?>">
                             <div class="ms-2">
-                                <h5 class="mb-1 fs-14">Shaun Farley</h5>
-                                <span class="d-block fs-13">Manager</span>
+                                <h5 class="mb-1 fs-14"><?= Html::encode($displayName) ?></h5>
+                                <span class="d-block fs-13"><?= Html::encode($displayCargo) ?></span>
                             </div>
                         </div>
                     </div>

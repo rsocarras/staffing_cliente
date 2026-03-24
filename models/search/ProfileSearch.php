@@ -43,7 +43,6 @@ class ProfileSearch extends Profile
     public function search($params, $formName = null)
     {
         $query = Profile::find()->with(['empresas', 'sede', 'cargo', 'area']);
-        TenantContext::applyFilter($query, 'empresas_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -60,8 +59,7 @@ class ProfileSearch extends Profile
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresas_id');
             return $dataProvider;
         }
 
@@ -98,6 +96,8 @@ class ProfileSearch extends Profile
             ->andFilterWhere(['like', 'address', $this->address])
             ->andFilterWhere(['like', 'data_json', $this->data_json])
             ->andFilterWhere(['like', 'city', $this->city]);
+
+        TenantContext::applyFilter($query, 'empresas_id');
 
         return $dataProvider;
     }

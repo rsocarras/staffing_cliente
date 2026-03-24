@@ -11,6 +11,7 @@ use app\models\EmpresaNovedadConcepto;
 use app\models\Empresas;
 use app\models\forms\NovedadSolicitudContextForm;
 use app\models\LocationSedes;
+use app\components\TenantContext;
 use app\models\Novedad;
 use app\models\NovedadConcepto;
 use app\models\NovedadConceptoCargo;
@@ -93,7 +94,7 @@ class NovedadController extends Controller
         $tipos = $tiposQuery->orderBy(['orden' => SORT_ASC, 'id' => SORT_ASC])->all();
         $tipos = array_values(array_filter(
             $tipos,
-            fn (NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
+            fn(NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
         ));
 
         $conceptosFiltro = NovedadConcepto::find()
@@ -114,11 +115,24 @@ class NovedadController extends Controller
                 ->all();
         }
 
+        $summaryCounts = ['total' => 0, 'en_curso' => 0, 'resueltas' => 0];
+        if ($empresaId !== null) {
+            $q = Novedad::find()->alias('n')->where(['n.empresa_id' => $empresaId]);
+            $summaryCounts['total'] = (int) (clone $q)->count();
+            $summaryCounts['en_curso'] = (int) (clone $q)->andWhere([
+                'n.estado' => [Novedad::ESTADO_BORRADOR, Novedad::ESTADO_PENDIENTE],
+            ])->count();
+            $summaryCounts['resueltas'] = (int) (clone $q)->andWhere([
+                'n.estado' => [Novedad::ESTADO_APROBADA, Novedad::ESTADO_RECHAZADA],
+            ])->count();
+        }
+
         return $this->render('index', [
             'tipos' => $tipos,
             'flujos' => $flujos,
             'profiles' => $profiles,
             'conceptosFiltro' => $conceptosFiltro,
+            'summaryCounts' => $summaryCounts,
         ]);
     }
 
@@ -1174,9 +1188,11 @@ class NovedadController extends Controller
         }
 
         $empleado = Profile::findOne(['user_id' => $model->profile_id]);
-        if ($empleado === null
+        if (
+            $empleado === null
             || (int) $empleado->empresas_id !== $tenantId
-            || $empleado->estado !== Profile::ESTADO_ACTIVO) {
+            || $empleado->estado !== Profile::ESTADO_ACTIVO
+        ) {
             $model->addError('profile_id', Yii::t('app', 'Seleccione un empleado activo de la organización indicada.'));
         }
 
@@ -1623,11 +1639,13 @@ class NovedadController extends Controller
                 }
             }
 
-            if ($solicitarAuxilioMovilizacion
+            if (
+                $solicitarAuxilioMovilizacion
                 && $cargoAplicaClases
                 && $importeAuxilioMovilizacion !== null
                 && $importeAuxilioMovilizacion >= 0.01
-                && $primeraId !== null) {
+                && $primeraId !== null
+            ) {
                 $concAux = NovedadConcepto::find()
                     ->where(['codigo' => NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION, 'activo' => 1])
                     ->one();
@@ -1916,8 +1934,10 @@ class NovedadController extends Controller
         }
         $tenantId = $this->currentEmpresaId();
         $fecha = (string) ($model->fecha_novedad ?? '');
-        if ($tenantId !== null && $model->profile_id !== null
-            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+        if (
+            $tenantId !== null && $model->profile_id !== null
+            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)
+        ) {
             $ctr = Contrato::findOccupyingAt($fecha)
                 ->andWhere([
                     'contrato.profile_id' => (int) $model->profile_id,
@@ -2044,7 +2064,7 @@ class NovedadController extends Controller
         $tipos = $tq->orderBy(['orden' => SORT_ASC, 'nombre' => SORT_ASC])->all();
         $tipos = array_values(array_filter(
             $tipos,
-            fn (NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
+            fn(NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
         ));
 
         return array_map(static function (NovedadTipo $t) {
@@ -2266,17 +2286,9 @@ class NovedadController extends Controller
     private function estadoBadgeHtml(Novedad $model): string
     {
         $label = Html::encode((string) $model->displayEstado());
-        $cls = 'bg-secondary';
-        if ($model->estado === Novedad::ESTADO_PENDIENTE) {
-            $cls = 'bg-warning text-dark';
-        } elseif ($model->estado === Novedad::ESTADO_APROBADA) {
-            $cls = 'bg-success';
-        } elseif ($model->estado === Novedad::ESTADO_RECHAZADA) {
-            $cls = 'bg-danger';
-        } elseif ($model->estado === Novedad::ESTADO_BORRADOR) {
-            $cls = 'bg-light text-dark border';
-        }
-        return '<span class="badge ' . $cls . '">' . $label . '</span>';
+        $cls = Novedad::estadoBadgeSoftClass($model->estado);
+
+        return '<span class="badge badge-soft-' . $cls . '">' . $label . '</span>';
     }
 
     /**
@@ -2330,18 +2342,7 @@ class NovedadController extends Controller
 
     private function currentEmpresaId(): ?int
     {
-        $empresaId = Yii::$app->user->empresas_id ?? null;
-        if ($empresaId !== null && is_numeric($empresaId) && (int) $empresaId > 0) {
-            return (int) $empresaId;
-        }
-        $uid = Yii::$app->user->id ?? null;
-        if ($uid !== null) {
-            $profile = Profile::findOne(['user_id' => (int) $uid]);
-            if ($profile !== null && (int) $profile->empresas_id > 0) {
-                return (int) $profile->empresas_id;
-            }
-        }
-        return null;
+        return TenantContext::currentEmpresaId();
     }
 
     /**

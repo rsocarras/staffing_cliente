@@ -82,6 +82,23 @@ class NovedadFlujo extends ActiveRecord
         ];
     }
 
+    /**
+     * Clase Bootstrap (variante badge-soft-*) según estado del flujo.
+     */
+    public static function estadoBadgeSoftClass(string $estado): string
+    {
+        switch ($estado) {
+            case self::ESTADO_ACTIVO:
+                return 'success';
+            case self::ESTADO_INACTIVO:
+                return 'danger';
+            case self::ESTADO_BORRADOR:
+                return 'warning';
+            default:
+                return 'secondary';
+        }
+    }
+
     public function getNovedadSteps()
     {
         return $this->hasMany(NovedadStep::class, ['novedad_flujo_id' => 'id'])->orderBy(['orden' => SORT_ASC, 'id' => SORT_ASC]);

@@ -82,7 +82,7 @@ class ContratoController extends Controller
         $modelForForm->empresa_id = $this->scopeService->getCurrentEmpresaId();
         $modelForForm->estado = Contrato::ESTADO_ACTIVO;
         $modelForForm->fecha_inicio = date('Y-m-d');
-        $formOptions = $this->buildFormOptions($modelForForm);
+        $formOptions = $this->buildFormOptions($modelForForm, $searchModel);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -273,32 +273,42 @@ class ContratoController extends Controller
         return ['success' => false, 'errors' => $model->getErrors()];
     }
 
-    public function actionSubAreas($area_id)
+    public function actionSubAreas()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $rows = $this->scopeService->getSubAreaOptions((int) $area_id, $this->scopeService->getCurrentEmpresaId());
+        $raw = Yii::$app->request->get('area_id');
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+
+        $rows = $this->scopeService->getSubAreaOptions((int) $raw, $this->scopeService->getCurrentEmpresaId());
 
         return array_map(function ($row) {
             return [
-                'id' => $row->id,
-                'nombre' => $row->nombre,
+                'id' => (int) $row->id,
+                'nombre' => (string) ($row->nombre ?? ''),
             ];
         }, $rows);
     }
 
-    public function actionCargosPorEstructura($area_id = null, $sub_area_id = null)
+    public function actionCargosPorEstructura()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
+        $areaRaw = Yii::$app->request->get('area_id');
+        $subRaw = Yii::$app->request->get('sub_area_id');
+        $areaId = ($areaRaw !== null && $areaRaw !== '') ? (int) $areaRaw : null;
+        $subAreaId = ($subRaw !== null && $subRaw !== '') ? (int) $subRaw : null;
+
         $rows = $this->scopeService->getCargoOptions(
             $this->scopeService->getCurrentEmpresaId(),
-            $area_id ? (int) $area_id : null,
-            $sub_area_id ? (int) $sub_area_id : null
+            $areaId,
+            $subAreaId
         );
 
         return array_map(function ($row) {
             return [
-                'id' => $row->id,
-                'nombre' => $row->nombre,
+                'id' => (int) $row->id,
+                'nombre' => (string) ($row->nombre ?? ''),
             ];
         }, $rows);
     }
@@ -497,9 +507,9 @@ class ContratoController extends Controller
         ]);
     }
 
-    private function buildFormOptions(Contrato $model)
+    private function buildFormOptions(Contrato $model, ?ContratoSearch $searchModel = null)
     {
-        $baseOptions = $this->buildFilterOptions();
+        $baseOptions = $this->buildFilterOptions($searchModel);
 
         return [
             'profiles' => $baseOptions['profiles'],
@@ -507,7 +517,9 @@ class ContratoController extends Controller
             'sedes' => $baseOptions['sedes'],
             'areas' => $baseOptions['areas'],
             'subAreas' => $model->area_id ? $this->scopeService->getSubAreaOptions($model->area_id, $model->empresa_id) : [],
-            'cargos' => $this->scopeService->getCargoOptions($model->empresa_id, $model->area_id, $model->sub_area_id),
+            'cargos' => $model->sub_area_id
+                ? $this->scopeService->getCargoOptions($model->empresa_id, $model->area_id, $model->sub_area_id)
+                : [],
             'estados' => Contrato::optsEstado(),
         ];
     }

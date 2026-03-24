@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\NovedadFlujo;
 use app\models\NovedadStep;
 use app\models\NovedadStepHistoryLog;
@@ -92,19 +93,12 @@ class NovedadFlujoController extends Controller
         foreach ($models as $model) {
             $estado = $model->estado;
             $estadoTexto = $estadoLabels[$estado] ?? $estado;
-            $badgeClass = 'bg-secondary';
-            if ($estado === NovedadFlujo::ESTADO_ACTIVO) {
-                $badgeClass = 'bg-success';
-            } elseif ($estado === NovedadFlujo::ESTADO_INACTIVO) {
-                $badgeClass = 'bg-dark';
-            } elseif ($estado === NovedadFlujo::ESTADO_BORRADOR) {
-                $badgeClass = 'bg-warning text-dark';
-            }
+            $badgeSoft = NovedadFlujo::estadoBadgeSoftClass($estado);
             $data[] = [
                 $model->id,
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
                 \yii\helpers\Html::encode($model->descripcion ?? '-'),
-                '<span class="badge ' . $badgeClass . '">' . \yii\helpers\Html::encode($estadoTexto) . '</span>',
+                '<span class="badge badge-soft-' . $badgeSoft . '">' . \yii\helpers\Html::encode($estadoTexto) . '</span>',
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }
@@ -119,8 +113,21 @@ class NovedadFlujoController extends Controller
 
     public function actionViewAjax($id)
     {
+        $model = NovedadFlujo::find()
+            ->where(['id' => $id])
+            ->with([
+                'novedadSteps' => function ($q) {
+                    $q->orderBy(['orden' => SORT_ASC, 'id' => SORT_ASC]);
+                },
+                'novedadSteps.profile',
+            ])
+            ->one();
+        if ($model === null) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+
         return $this->renderPartial('_view_modal', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -361,8 +368,7 @@ class NovedadFlujoController extends Controller
 
     protected function resolveEmpresaIdForProfiles(): ?int
     {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        return $profile ? (int) $profile->empresas_id : null;
+        return TenantContext::currentEmpresaId();
     }
 
     protected function findModel($id): NovedadFlujo

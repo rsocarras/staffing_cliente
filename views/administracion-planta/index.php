@@ -101,7 +101,7 @@ $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.boot
                                 <td><?= Html::encode($model->subArea ? $model->subArea->nombre : '-') ?></td>
                                 <td><?= Html::encode($model->cargo ? $model->cargo->nombre : '-') ?></td>
                                 <td class="text-end"><?= Yii::$app->formatter->asDecimal($model->cantidad_autorizada, 2) ?></td>
-                                <td><?= (int) $model->activo === 1 ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-secondary">No</span>' ?></td>
+                                <td><?= (int) $model->activo === 1 ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>' ?></td>
                                 <td><?= Yii::$app->formatter->asDatetime($model->updated_at) ?></td>
                                 <td class="text-end">
                                     <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16']) ?>

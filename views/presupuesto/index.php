@@ -109,17 +109,11 @@ $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
                             'attribute' => 'estado',
                             'format' => 'raw',
                             'value' => function ($m) {
-                                $cls = 'bg-secondary';
-                                if ($m->estado === Presupuesto::ESTADO_APROBADO) {
-                                    $cls = 'bg-success';
-                                } elseif ($m->estado === Presupuesto::ESTADO_PENDIENTE_APROBACION) {
-                                    $cls = 'bg-warning text-dark';
-                                } elseif ($m->estado === Presupuesto::ESTADO_RECHAZADO) {
-                                    $cls = 'bg-danger';
-                                } elseif ($m->estado === Presupuesto::ESTADO_BORRADOR) {
-                                    $cls = 'bg-info text-dark';
-                                }
-                                return Html::tag('span', Html::encode($m->getEstadoLabel()), ['class' => 'badge ' . $cls]);
+                                return Html::tag(
+                                    'span',
+                                    Html::encode($m->getEstadoLabel()),
+                                    ['class' => 'badge badge-soft-' . $m->getEstadoBadgeSoftClass()]
+                                );
                             },
                         ],
                         'version',

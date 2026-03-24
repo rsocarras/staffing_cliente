@@ -8,7 +8,10 @@ use yii\helpers\Html;
 
 <?php
 $estado = $model->displayEstadoAprobacion();
-$actualLabel = (int) $model->es_actual === 1 ? 'Sí' : 'No';
+$estadoBadgeCls = MallaProfileAsignacion::estadoAprobacionBadgeSoftClass($model->estado_aprobacion);
+$actualBadge = (int) $model->es_actual === 1
+    ? '<span class="badge badge-soft-success">Sí</span>'
+    : '<span class="badge badge-soft-danger">No</span>';
 $empleado = $model->profile ? ($model->profile->name ?: '-') : ($model->profile_id ?? '-');
 $malla = $model->malla ? ($model->malla->nombre ?: '-') : ($model->malla_id ?? '-');
 ?>
@@ -37,7 +40,7 @@ $malla = $model->malla ? ($model->malla->nombre ?: '-') : ($model->malla_id ?? '
                     <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-status-question small"></i></span>
                     <div>
                         <small class="text-muted d-block">Estado</small>
-                        <span class="fw-medium"><?= Html::encode((string) $estado) ?></span>
+                        <span class="badge badge-soft-<?= Html::encode($estadoBadgeCls) ?>"><?= Html::encode((string) $estado) ?></span>
                     </div>
                 </div>
             </div>
@@ -67,7 +70,7 @@ $malla = $model->malla ? ($model->malla->nombre ?: '-') : ($model->malla_id ?? '
                     <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-circle-check small"></i></span>
                     <div>
                         <small class="text-muted d-block">Actual</small>
-                        <span class="fw-medium"><?= Html::encode((string) $actualLabel) ?></span>
+                        <?= $actualBadge ?>
                     </div>
                 </div>
             </div>

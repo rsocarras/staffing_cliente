@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Cargos;
@@ -52,15 +53,13 @@ class CargosSearch extends Cargos
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
@@ -69,6 +68,8 @@ class CargosSearch extends Cargos
         $query->andFilterWhere(['like', 'codigo', $this->codigo])
             ->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'descripcion', $this->descripcion]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

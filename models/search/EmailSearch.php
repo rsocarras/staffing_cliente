@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Email;
@@ -52,15 +53,13 @@ class EmailSearch extends Email
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'created_at' => $this->created_at,
             'sent_at' => $this->sent_at,
         ]);
@@ -74,6 +73,8 @@ class EmailSearch extends Email
             ->andFilterWhere(['like', 'provider', $this->provider])
             ->andFilterWhere(['like', 'external_id', $this->external_id])
             ->andFilterWhere(['like', 'error_message', $this->error_message]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

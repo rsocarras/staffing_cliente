@@ -2,9 +2,9 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use app\models\Presupuesto;
 use app\services\AdministracionPlantaService;
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -76,21 +76,13 @@ class PresupuestoSearch extends Presupuesto
         $this->load($params);
 
         if (!$this->validate()) {
+            if ($forceEmpresaId !== null) {
+                $query->andWhere(['p.empresa_id' => (int) $forceEmpresaId]);
+            } else {
+                TenantContext::applyFilter($query, 'p.empresa_id');
+            }
             return $dataProvider;
         }
-
-        $empresaId = $forceEmpresaId;
-        if ($empresaId === null) {
-            $raw = Yii::$app->user->empresas_id ?? null;
-            $empresaId = (is_numeric($raw) && (int) $raw > 0) ? (int) $raw : null;
-        }
-
-        if ($empresaId === null) {
-            $query->where('0=1');
-            return $dataProvider;
-        }
-
-        $query->andWhere(['p.empresa_id' => $empresaId]);
 
         try {
             $scopeService = new AdministracionPlantaService();
@@ -115,6 +107,12 @@ class PresupuestoSearch extends Presupuesto
         }
         if (!empty($this->vigencia_hasta)) {
             $query->andWhere(['<=', 'p.fecha_inicio_vigencia', $this->vigencia_hasta]);
+        }
+
+        if ($forceEmpresaId !== null) {
+            $query->andWhere(['p.empresa_id' => (int) $forceEmpresaId]);
+        } else {
+            TenantContext::applyFilter($query, 'p.empresa_id');
         }
 
         return $dataProvider;

@@ -12,8 +12,12 @@ use yii\helpers\Url;
 /** @var NovedadFlujo[] $flujos */
 /** @var app\models\Profile[] $profiles */
 /** @var NovedadConcepto[] $conceptosFiltro */
+
 $hasFlujoCol = Novedad::hasNovedadFlujoIdColumn();
 $conceptosFiltro = $conceptosFiltro ?? [];
+/** @var array $summaryCounts */
+
+$canAddNovedad = $tipos !== [] && $flujos !== [] && $profiles !== [];
 
 $this->title = 'Novedades';
 $this->params['breadcrumbs'][] = $this->title;
@@ -68,9 +72,10 @@ $this->registerCss('
 
 <div class="page-wrapper">
     <div class="content">
-        <div class="card mb-0">
-            <div class="card-body">
-                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
+        <!-- 1. Encabezado -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
                         <p class="text-muted small mb-0 mt-1">
@@ -89,7 +94,59 @@ $this->registerCss('
                         </ol>
                     </div>
                 </div>
+            </div>
+        </div>
 
+        <!-- 2. Cards resumen -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="row row-gap-4">
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-dark flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-building fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Total novedades</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['total'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-info flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-clock fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">En curso</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['en_curso'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-success flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-circle-check fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Resueltas</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['resueltas'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Contenido: alertas, acciones y tabla -->
+        <div class="card mb-0">
+            <div class="card-body py-3">
                 <?php if ($tipos === []): ?>
                     <div class="alert alert-info mb-4">
                         No hay tipos de novedad para su empresa. Definí tipos en <strong>Sistema → Tipo de Novedad</strong> antes de crear novedades.

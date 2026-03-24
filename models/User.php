@@ -24,6 +24,12 @@ class User extends BaseUser
     public static $skipProfileCreation = false;
 
     /**
+     * Roles RBAC asignados (formularios; no es columna de BD).
+     * @var string[]
+     */
+    public $roleNames = [];
+
+    /**
      * Datos del perfil a crear (empresas_id, num_doc, name, etc.).
      * Se establece desde el controlador antes de guardar.
      * @var array|null
@@ -32,12 +38,31 @@ class User extends BaseUser
 
     /**
      * {@inheritdoc}
+     * Incluye atributos de formulario usados en UserManagementController (modal Ajax).
+     */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        foreach (['create', 'update'] as $scenario) {
+            if (isset($scenarios[$scenario])) {
+                $scenarios[$scenario] = array_values(array_unique(array_merge(
+                    $scenarios[$scenario],
+                    ['new_password', 'roleNames']
+                )));
+            }
+        }
+
+        return $scenarios;
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['new_password'], 'string', 'min' => 6, 'max' => 72],
-            [['new_password'], 'safe'],
+            [['new_password'], 'string', 'min' => 6, 'max' => 72, 'skipOnEmpty' => true],
+            [['new_password', 'roleNames'], 'safe'],
         ]);
     }
 

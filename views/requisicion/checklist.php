@@ -38,9 +38,9 @@ $this->params['breadcrumbs'][] = 'Checklist';
                             <td><?= $status->checklistItem->es_obligatorio ? 'Sí' : 'No' ?></td>
                             <td>
                                 <?php if ($status->completado): ?>
-                                    <span class="badge bg-success">Completado</span>
+                                    <span class="badge badge-soft-success">Completado</span>
                                 <?php else: ?>
-                                    <span class="badge bg-secondary">Pendiente</span>
+                                    <span class="badge badge-soft-warning">Pendiente</span>
                                 <?php endif; ?>
                             </td>
                             <td><?= $status->completado_at ? Yii::$app->formatter->asDatetime($status->completado_at) : '-' ?></td>

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\NominaItem;
 use app\models\search\NominaItemSearch;
 use yii\web\Controller;
@@ -71,11 +72,15 @@ class NominaItemController extends Controller
         $model = new NominaItem();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+            if ($model->load($this->request->post())) {
+                $model->empresa_id = TenantContext::requireEmpresaId();
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
             }
         } else {
             $model->loadDefaultValues();
+            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -94,8 +99,11 @@ class NominaItemController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->empresa_id = TenantContext::requireEmpresaId();
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('update', [
@@ -126,7 +134,7 @@ class NominaItemController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = NominaItem::findOne(['id' => $id])) !== null) {
+        if (($model = NominaItem::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 
