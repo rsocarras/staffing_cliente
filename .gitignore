@@ -49,6 +49,8 @@ tests/_support/_generated
 *.sqlite3
 *.db
 
+/web/uploads/profile/*
+
 /web/assets/*
 !/web/assets/css/
 !/web/assets/scss/
