@@ -444,6 +444,7 @@ class Novedad extends ActiveRecord
             'importe' => Yii::t('app', 'Importe'),
             'novedad_centro_costo_id' => Yii::t('app', 'Centro de costo'),
             'novedad_centro_utilidad_id' => Yii::t('app', 'Centro de utilidad'),
+            'novedad_origen_id' => Yii::t('app', 'Novedad de origen'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
@@ -602,6 +603,14 @@ class Novedad extends ActiveRecord
     public function getNovedadHorasDetalles(): \yii\db\ActiveQuery
     {
         return $this->hasMany(NovedadHorasDetalle::class, ['novedad_id' => 'id']);
+    }
+
+    /**
+     * Edición y eliminación desde administración / listado solo si la carga sigue en borrador.
+     */
+    public function isEstadoCargaBorrador(): bool
+    {
+        return (string) ($this->estado_carga ?? '') === self::ESTADO_CARGA_BORRADOR;
     }
 
     public static function optsEstado(): array

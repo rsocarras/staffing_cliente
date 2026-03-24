@@ -1,5 +1,7 @@
 <?php
 
+use app\models\Novedad;
+use app\models\NovedadConcepto;
 use app\models\NovedadFlujo;
 use app\models\NovedadTipo;
 use yii\helpers\Html;
@@ -9,7 +11,9 @@ use yii\helpers\Url;
 /** @var NovedadTipo[] $tipos */
 /** @var NovedadFlujo[] $flujos */
 /** @var app\models\Profile[] $profiles */
-$hasFlujoCol = \app\models\Novedad::hasNovedadFlujoIdColumn();
+/** @var NovedadConcepto[] $conceptosFiltro */
+$hasFlujoCol = Novedad::hasNovedadFlujoIdColumn();
+$conceptosFiltro = $conceptosFiltro ?? [];
 
 $this->title = 'Novedades';
 $this->params['breadcrumbs'][] = $this->title;
@@ -102,10 +106,10 @@ $this->registerCss('
                     </div>
                 <?php endif; ?>
 
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-                    <div class="input-group w-auto input-group-flat">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+                    <div class="input-group w-auto input-group-flat" style="min-width: 220px;">
                         <span class="input-group-text border-end-0"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control form-control-sm" id="novedad-search" placeholder="Buscar...">
+                        <input type="text" class="form-control form-control-sm" id="novedad-search" placeholder="<?= Html::encode(Yii::t('app', 'Buscar en tabla…')) ?>">
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
                         <a href="<?= Html::encode($solicitudWebUrl) ?>" class="btn btn-outline-primary">
@@ -114,21 +118,81 @@ $this->registerCss('
                     </div>
                 </div>
 
+                <div class="card border rounded-3 mb-4 bg-light bg-opacity-25">
+                    <div class="card-body py-3">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-estado"><?= Html::encode(Yii::t('app', 'Estado')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-estado">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_BORRADOR) ?>"><?= Html::encode(Yii::t('app', 'Borrador')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_PENDIENTE) ?>"><?= Html::encode(Yii::t('app', 'Pendiente')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_APROBADA) ?>"><?= Html::encode(Yii::t('app', 'Aprobada')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_RECHAZADA) ?>"><?= Html::encode(Yii::t('app', 'Rechazada')) ?></option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-tipo"><?= Html::encode(Yii::t('app', 'Tipo')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-tipo">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <?php foreach ($tipos as $t): ?>
+                                        <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-concepto"><?= Html::encode(Yii::t('app', 'Concepto')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-concepto">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <?php foreach ($conceptosFiltro as $conc): ?>
+                                        <option value="<?= (int) $conc->id ?>"><?= Html::encode($conc->nombre) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-profile"><?= Html::encode(Yii::t('app', 'Persona')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-profile">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todas')) ?></option>
+                                    <?php foreach ($profiles as $pf): ?>
+                                        <option value="<?= (int) $pf->user_id ?>"><?= Html::encode(trim((string) ($pf->name ?: $pf->num_doc ?: '#' . $pf->user_id))) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-desde"><?= Html::encode(Yii::t('app', 'Fecha desde')) ?></label>
+                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-desde">
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-hasta"><?= Html::encode(Yii::t('app', 'Fecha hasta')) ?></label>
+                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-hasta">
+                            </div>
+                            <div class="col-12 col-lg-auto ms-lg-auto">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="novedad-filter-clear">
+                                    <i class="ti ti-filter-off me-1"></i><?= Html::encode(Yii::t('app', 'Limpiar filtros')) ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-nowrap bg-white border mb-0" id="novedad-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Concepto</th>
-                                <th>Tipo</th>
+                                <th><?= Html::encode(Yii::t('app', 'ID')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Organización')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Persona')) ?></th>
+                                <th class="text-end"><?= Html::encode(Yii::t('app', 'Importe')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Concepto')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Tipo')) ?></th>
                                 <?php if ($hasFlujoCol): ?>
-                                    <th>Flujo</th>
+                                    <th><?= Html::encode(Yii::t('app', 'Flujo')) ?></th>
                                 <?php endif; ?>
-                                <th>Estado</th>
+                                <th><?= Html::encode(Yii::t('app', 'Estado')) ?></th>
                                 <?php if ($hasFlujoCol): ?>
-                                    <th>Paso actual</th>
+                                    <th><?= Html::encode(Yii::t('app', 'Paso actual')) ?></th>
                                 <?php endif; ?>
-                                <th class="text-end">Acciones</th>
+                                <th class="text-end"><?= Html::encode(Yii::t('app', 'Acciones')) ?></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -223,18 +287,24 @@ if ($hasFlujoCol) {
             { data: 0 },
             { data: 1, render: function(d) { return d || ''; } },
             { data: 2, render: function(d) { return d || ''; } },
-            { data: 3, render: function(d) { return d || ''; } },
+            { data: 3, className: 'text-end', render: function(d) { return d || ''; } },
             { data: 4, render: function(d) { return d || ''; } },
             { data: 5, render: function(d) { return d || ''; } },
-            { data: 6, class: 'text-end', orderable: false, render: function(d) { return d || ''; } }
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, render: function(d) { return d || ''; } },
+            { data: 8, render: function(d) { return d || ''; } },
+            { data: 9, className: 'text-end', orderable: false, render: function(d) { return d || ''; } }
 COLS;
 } else {
     $columnsJs = <<<'COLS'
             { data: 0 },
             { data: 1, render: function(d) { return d || ''; } },
             { data: 2, render: function(d) { return d || ''; } },
-            { data: 3, render: function(d) { return d || ''; } },
-            { data: 4, class: 'text-end', orderable: false, render: function(d) { return d || ''; } }
+            { data: 3, className: 'text-end', render: function(d) { return d || ''; } },
+            { data: 4, render: function(d) { return d || ''; } },
+            { data: 5, render: function(d) { return d || ''; } },
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, className: 'text-end', orderable: false, render: function(d) { return d || ''; } }
 COLS;
 }
 
@@ -245,7 +315,17 @@ $(document).ready(function() {
     var table = $('#novedad-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{$dataUrl}',
+        ajax: {
+            url: '{$dataUrl}',
+            data: function (d) {
+                d.filter_estado = $('#novedad-filter-estado').val() || '';
+                d.filter_novedad_tipo_id = $('#novedad-filter-tipo').val() || '';
+                d.filter_concepto_id = $('#novedad-filter-concepto').val() || '';
+                d.filter_profile_id = $('#novedad-filter-profile').val() || '';
+                d.filter_fecha_desde = $('#novedad-filter-fecha-desde').val() || '';
+                d.filter_fecha_hasta = $('#novedad-filter-fecha-hasta').val() || '';
+            }
+        },
         columns: [
 {$columnsJs}
         ],
@@ -261,6 +341,15 @@ $(document).ready(function() {
             zeroRecords: "No se encontraron registros",
             processing: "Procesando..."
         }
+    });
+
+    $(document).on('change', '.novedad-list-filter', function () {
+        table.draw();
+    });
+    $('#novedad-filter-clear').on('click', function () {
+        $('#novedad-filter-estado, #novedad-filter-tipo, #novedad-filter-concepto, #novedad-filter-profile').val('');
+        $('#novedad-filter-fecha-desde, #novedad-filter-fecha-hasta').val('');
+        table.draw();
     });
 
     $('#novedad-search').on('keyup', function() {
@@ -290,11 +379,22 @@ $(document).ready(function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-edit-novedad'));
         $('#modal-edit-novedad-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
-        $('#btn-save-edit-novedad').data('id', id);
+        $('#btn-save-edit-novedad').data('id', id).removeClass('d-none');
         modal.show();
-        $.get('{$formAjaxUrl}', { id: id }, function(html) {
+        $.ajax({
+            url: '{$formAjaxUrl}',
+            data: { id: id },
+            type: 'GET',
+            dataType: 'html'
+        }).done(function(html) {
             $('#modal-edit-novedad-body').html(html);
-        }).fail(function() {
+            $('#btn-save-edit-novedad').removeClass('d-none');
+        }).fail(function(xhr) {
+            if (xhr.status === 403 && xhr.responseText) {
+                $('#modal-edit-novedad-body').html(xhr.responseText);
+                $('#btn-save-edit-novedad').addClass('d-none');
+                return;
+            }
             $('#modal-edit-novedad-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
         });
     });
@@ -627,17 +727,30 @@ $(document).ready(function() {
             type: 'POST',
             data: { id: id, '{$csrfParam}': '{$csrfToken}' },
             dataType: 'json',
-            success: function() {
+            success: function(res) {
+                if (res && res.success === false) {
+                    var m = (res.message) ? res.message : 'No se pudo eliminar.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ title: 'No permitido', text: m, icon: 'warning' });
+                    } else {
+                        alert(m);
+                    }
+                    return;
+                }
                 table.ajax.reload(null, false);
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({ title: 'Eliminado', text: 'El registro ha sido eliminado.', icon: 'success', timer: 1500, showConfirmButton: false });
                 }
             },
-            error: function() {
+            error: function(xhr) {
+                var m = 'No se pudo eliminar.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    m = xhr.responseJSON.message;
+                }
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ title: 'Error', text: 'No se pudo eliminar.', icon: 'error' });
+                    Swal.fire({ title: xhr.status === 403 ? 'No permitido' : 'Error', text: m, icon: xhr.status === 403 ? 'warning' : 'error' });
                 } else {
-                    alert('Error al eliminar.');
+                    alert(m);
                 }
             }
         });

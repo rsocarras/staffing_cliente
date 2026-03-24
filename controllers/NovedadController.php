@@ -96,6 +96,11 @@ class NovedadController extends Controller
             fn (NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
         ));
 
+        $conceptosFiltro = NovedadConcepto::find()
+            ->where(['activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
+
         $flujos = NovedadFlujo::find()
             ->where(['estado' => NovedadFlujo::ESTADO_ACTIVO])
             ->orderBy(['nombre' => SORT_ASC])
@@ -113,6 +118,7 @@ class NovedadController extends Controller
             'tipos' => $tipos,
             'flujos' => $flujos,
             'profiles' => $profiles,
+            'conceptosFiltro' => $conceptosFiltro,
         ]);
     }
 
@@ -145,17 +151,45 @@ class NovedadController extends Controller
 
         $query = Novedad::find()
             ->alias('n')
+            ->select(['n.*'])
             ->leftJoin(['c' => 'novedad_concepto'], 'c.id = n.concepto_id')
             ->leftJoin(['nt' => 'novedad_tipo'], 'nt.id = n.novedad_tipo_id')
             ->leftJoin(['ns' => 'novedad_step'], 'ns.id = n.paso_actual_id')
-            ->with(['concepto', 'novedadTipo', 'novedadFlujo', 'pasoActual'])
+            ->leftJoin(['e' => 'empresas'], 'e.id = n.empresa_id')
+            ->leftJoin(['p' => 'profile'], 'p.user_id = n.profile_id')
+            ->with(['concepto', 'novedadTipo', 'novedadFlujo', 'pasoActual', 'profile', 'empresa'])
             ->where(['n.empresa_id' => $empresaId]);
 
         if ($hasFlujo) {
             $query->leftJoin(['nf' => 'novedad_flujo'], 'nf.id = n.novedad_flujo_id');
         }
 
-        $totalCount = (int) $query->count();
+        $filterEstado = trim((string) $request->get('filter_estado', ''));
+        if ($filterEstado !== '') {
+            $query->andWhere(['n.estado' => $filterEstado]);
+        }
+        $filterTipo = (int) $request->get('filter_novedad_tipo_id', 0);
+        if ($filterTipo > 0) {
+            $query->andWhere(['n.novedad_tipo_id' => $filterTipo]);
+        }
+        $filterConcepto = (int) $request->get('filter_concepto_id', 0);
+        if ($filterConcepto > 0) {
+            $query->andWhere(['n.concepto_id' => $filterConcepto]);
+        }
+        $filterProfile = (int) $request->get('filter_profile_id', 0);
+        if ($filterProfile > 0) {
+            $query->andWhere(['n.profile_id' => $filterProfile]);
+        }
+        $filterFechaDesde = trim((string) $request->get('filter_fecha_desde', ''));
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $filterFechaDesde)) {
+            $query->andWhere(['>=', 'n.fecha_novedad', $filterFechaDesde]);
+        }
+        $filterFechaHasta = trim((string) $request->get('filter_fecha_hasta', ''));
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $filterFechaHasta)) {
+            $query->andWhere(['<=', 'n.fecha_novedad', $filterFechaHasta]);
+        }
+
+        $totalCount = (int) Novedad::find()->where(['empresa_id' => $empresaId])->count();
 
         if ($searchValue !== '') {
             $or = [
@@ -164,6 +198,10 @@ class NovedadController extends Controller
                 ['like', 'n.estado', $searchValue],
                 ['like', 'ns.nombre', $searchValue],
                 ['like', 'ns.codigo', $searchValue],
+                ['like', 'p.name', $searchValue],
+                ['like', 'p.num_doc', $searchValue],
+                ['like', 'e.name', $searchValue],
+                ['like', 'e.social_name', $searchValue],
             ];
             if ($hasFlujo) {
                 $or[] = ['like', 'nf.nombre', $searchValue];
@@ -177,9 +215,29 @@ class NovedadController extends Controller
         $filteredCount = (int) $query->count();
 
         if ($hasFlujo) {
-            $orderColumns = ['n.id', 'c.nombre', 'nt.nombre', 'nf.nombre', 'n.estado', 'ns.nombre', null];
+            $orderColumns = [
+                'n.id',
+                'e.name',
+                'p.name',
+                'n.importe',
+                'c.nombre',
+                'nt.nombre',
+                'nf.nombre',
+                'n.estado',
+                'ns.nombre',
+                null,
+            ];
         } else {
-            $orderColumns = ['n.id', 'c.nombre', 'nt.nombre', 'n.estado', null];
+            $orderColumns = [
+                'n.id',
+                'e.name',
+                'p.name',
+                'n.importe',
+                'c.nombre',
+                'nt.nombre',
+                'n.estado',
+                null,
+            ];
         }
         $orderBy = $orderColumns[$orderCol] ?? 'n.id';
         if ($orderBy !== null) {
@@ -191,13 +249,39 @@ class NovedadController extends Controller
         /** @var Novedad[] $models */
         $models = $query->offset($start)->limit($length)->all();
 
+        $fmt = Yii::$app->formatter;
         $data = [];
         foreach ($models as $model) {
+            $emp = $model->empresa;
+            $empresaNombre = $emp !== null
+                ? (trim((string) ($emp->name ?: '')) !== '' ? (string) $emp->name : (string) ($emp->social_name ?: '—'))
+                : '—';
+            $prof = $model->profile;
+            $personaNombre = '—';
+            if ($prof !== null) {
+                $nm = trim((string) ($prof->name ?? ''));
+                $doc = trim((string) ($prof->num_doc ?? ''));
+                if ($nm !== '' && $doc !== '') {
+                    $personaNombre = $nm . ' · ' . $doc;
+                } elseif ($nm !== '') {
+                    $personaNombre = $nm;
+                } elseif ($doc !== '') {
+                    $personaNombre = $doc;
+                }
+            }
+            $impRaw = $model->importe;
+            $importeTxt = ($impRaw !== null && (string) $impRaw !== '')
+                ? $fmt->asCurrency((float) $impRaw)
+                : '—';
+
             $conceptoNombre = $model->concepto ? $model->concepto->nombre : ('#' . $model->concepto_id);
             $tipoNombre = $model->novedadTipo ? $model->novedadTipo->nombre : ('#' . $model->novedad_tipo_id);
             $estadoBadge = $this->estadoBadgeHtml($model);
             $row = [
                 $model->id,
+                Html::encode($empresaNombre),
+                '<span class="text-dark">' . Html::encode($personaNombre) . '</span>',
+                '<span class="text-end d-block fw-medium">' . Html::encode($importeTxt) . '</span>',
                 '<span class="fw-medium text-dark">' . Html::encode($conceptoNombre) . '</span>',
                 Html::encode($tipoNombre),
             ];
@@ -236,8 +320,34 @@ class NovedadController extends Controller
      */
     public function actionViewAjax($id)
     {
+        $empresaId = $this->currentEmpresaId();
+        if ($empresaId === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'La página solicitada no existe.'));
+        }
+        $model = Novedad::find()
+            ->where(['id' => (int) $id, 'empresa_id' => $empresaId])
+            ->with([
+                'concepto',
+                'novedadTipo',
+                'novedadFlujo',
+                'pasoActual',
+                'empresa',
+                'profile',
+                'creador',
+                'novedadCentroCosto',
+                'novedadCentroUtilidad',
+                'novedadOrigen',
+                'novedadHorasDetalles' => static function ($q) {
+                    $q->orderBy(['fecha_acusacion' => SORT_ASC, 'id' => SORT_ASC]);
+                },
+            ])
+            ->one();
+        if ($model === null) {
+            throw new NotFoundHttpException(Yii::t('app', 'La página solicitada no existe.'));
+        }
+
         return $this->renderPartial('_view_modal', [
-            'model' => $this->findModel($id),
+            'model' => $model,
         ]);
     }
 
@@ -250,6 +360,11 @@ class NovedadController extends Controller
     public function actionFormAjax($id)
     {
         $model = $this->findModel($id);
+        if (!$model->isEstadoCargaBorrador()) {
+            Yii::$app->response->statusCode = 403;
+
+            return $this->renderPartial('_modal_novedad_no_editable', ['model' => $model]);
+        }
         $conceptos = $this->conceptosForTipo((int) $model->novedad_tipo_id);
 
         $empresaId = $this->currentEmpresaId();
@@ -598,6 +713,16 @@ class NovedadController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $model = $this->findModel($id);
+        if (!$model->isEstadoCargaBorrador()) {
+            return [
+                'success' => false,
+                'errors' => [
+                    'general' => [
+                        Yii::t('app', 'Solo se pueden guardar cambios en novedades con carga en borrador.'),
+                    ],
+                ],
+            ];
+        }
 
         $post = Yii::$app->request->post('Novedad', []);
         if ($post === []) {
@@ -1810,6 +1935,14 @@ class NovedadController extends Controller
     public function actionUpdate($id): Response|string
     {
         $model = $this->findModel($id);
+        if (!$model->isEstadoCargaBorrador()) {
+            Yii::$app->session->setFlash(
+                'warning',
+                Yii::t('app', 'Solo se pueden editar novedades con carga en borrador.')
+            );
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
         $oldFlujoId = Novedad::hasNovedadFlujoIdColumn() ? (int) ($model->getAttribute('novedad_flujo_id') ?: 0) : 0;
         $oldPasoId = Novedad::hasNovedadFlujoIdColumn() && $model->paso_actual_id !== null ? (int) $model->paso_actual_id : null;
 
@@ -1841,7 +1974,20 @@ class NovedadController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        if (!$model->isEstadoCargaBorrador()) {
+            $msg = Yii::t('app', 'Solo se pueden eliminar novedades con carga en borrador.');
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                Yii::$app->response->statusCode = 403;
+
+                return ['success' => false, 'message' => $msg];
+            }
+            Yii::$app->session->setFlash('warning', $msg);
+
+            return $this->redirect(['index']);
+        }
+        $model->delete();
 
         if (Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
