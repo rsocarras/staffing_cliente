@@ -33,11 +33,14 @@ use Yii;
  * @property string|null $address
  * @property string|null $data_json
  * @property int|null $sede_id
+ * @property int|null $location_sede_id FK {@see LocationSedes} para reglas de novedad / gerente de sede
  * @property int|null $cargo_id
  * @property int|null $centro_costo_id
  * @property int|null $centro_utilidad_id
  * @property string|null $city
  * @property int|null $area_id
+ *
+ * @property-write \yii\web\UploadedFile|null $photoFile solo para formulario de perfil
  *
  * @property Area $area
  * @property Cargos $cargo
@@ -45,7 +48,7 @@ use Yii;
  * @property ContabilidadCentroUtilidad $centroUtilidad
  * @property EmpleadoVenueHistory[] $empleadoVenueHistories
  * @property Empresas $empresas
- * @property MallaProfileAsignacion[] $mallaProfileAsignacions
+ * @property LocationSedes|null $locationSede
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property NominaItem[] $nominaItems
  * @property ProfileEventosLog[] $profileEventosLogs
@@ -55,6 +58,8 @@ use Yii;
  */
 class Profile extends \yii\db\ActiveRecord
 {
+    /** @var \yii\web\UploadedFile|null Foto de perfil en formulario (no se persiste en BD) */
+    public $photoFile;
 
     /**
      * ENUM field values
@@ -82,16 +87,67 @@ class Profile extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public function init()
+    {
+        parent::init();
+        $this->on(self::EVENT_BEFORE_VALIDATE, [$this, 'ensureUser']);
+    }
+
+    /**
+     * Si es registro nuevo y no hay user_id (o el User no existe), crea el User y asigna user_id.
+     */
+    public function ensureUser(): void
+    {
+        if (!$this->getIsNewRecord()) {
+            return;
+        }
+        $needUser = empty($this->user_id) || User::findOne($this->user_id) === null;
+        if (!$needUser) {
+            return;
+        }
+        $baseUsername = !empty($this->num_doc) ? preg_replace('/[^a-zA-Z0-9._-]/', '_', $this->num_doc) : ('profile_' . uniqid());
+        $username = $baseUsername;
+        $n = 0;
+        while (User::find()->andWhere(['username' => $username])->exists()) {
+            $username = $baseUsername . '_' . (++$n);
+        }
+        $email = !empty($this->public_email) ? $this->public_email : ($username . '@profile.local');
+        if (User::find()->andWhere(['email' => $email])->exists()) {
+            $email = $username . '+' . uniqid() . '@profile.local';
+        }
+        $user = new User();
+        $user->username = $username;
+        $user->email = $email;
+        $user->password_hash = Yii::$app->security->generatePasswordHash(Yii::$app->security->generateRandomString(12));
+        // empresas_id no se asigna al User; debe setearse manualmente
+        if ($user->auth_key === null || $user->auth_key === '') {
+            $user->auth_key = Yii::$app->security->generateRandomString(32);
+        }
+        User::$skipProfileCreation = true;
+        try {
+            if (!$user->save(false)) {
+                return;
+            }
+            $this->user_id = $user->id;
+        } finally {
+            User::$skipProfileCreation = false;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
-            [['name', 'public_email', 'gravatar_email', 'gravatar_id', 'location', 'timezone', 'bio', 'sexo', 'about', 'telefono', 'birthday', 'position', 'photo_', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'address', 'data_json', 'sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'city', 'area_id'], 'default', 'value' => null],
+            [['name', 'public_email', 'gravatar_email', 'gravatar_id', 'location', 'timezone', 'bio', 'sexo', 'about', 'telefono', 'birthday', 'position', 'photo_', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'address', 'data_json', 'sede_id', 'location_sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'city', 'area_id'], 'default', 'value' => null],
             [['tipo_doc'], 'default', 'value' => 'CC'],
             [['estado'], 'default', 'value' => 'activo'],
-            [['user_id', 'num_doc', 'empresas_id'], 'required'],
-            [['user_id', 'empresas_id', 'sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'area_id'], 'integer'],
+            [['user_id', 'num_doc'], 'required'],
+            [['user_id', 'empresas_id', 'sede_id', 'location_sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'area_id'], 'integer'],
             [['tipo_doc', 'bio', 'sexo', 'about', 'estado'], 'string'],
-            [['birthday', 'data_json'], 'safe'],
+            [['birthday', 'data_json', 'photoFile'], 'safe'],
+            [['photoFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['jpg', 'jpeg', 'png', 'gif', 'webp'], 'maxSize' => 2 * 1024 * 1024],
             [['num_doc', 'timezone'], 'string', 'max' => 40],
             [['name', 'public_email', 'gravatar_email', 'location'], 'string', 'max' => 255],
             [['gravatar_id'], 'string', 'max' => 32],
@@ -107,6 +163,7 @@ class Profile extends \yii\db\ActiveRecord
             [['centro_utilidad_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContabilidadCentroUtilidad::class, 'targetAttribute' => ['centro_utilidad_id' => 'id']],
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['area_id' => 'id']],
             [['empresas_id'], 'exist', 'skipOnError' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresas_id' => 'id']],
+            [['location_sede_id'], 'exist', 'skipOnError' => true, 'targetClass' => LocationSedes::class, 'targetAttribute' => ['location_sede_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
@@ -117,37 +174,37 @@ class Profile extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'user_id' => 'User ID',
-            'tipo_doc' => 'Tipo Doc',
-            'num_doc' => 'Num Doc',
-            'name' => 'Name',
-            'public_email' => 'Public Email',
-            'gravatar_email' => 'Gravatar Email',
-            'gravatar_id' => 'Gravatar ID',
-            'location' => 'Location',
-            'timezone' => 'Timezone',
-            'bio' => 'Bio',
-            'sexo' => 'Sexo',
-            'empresas_id' => 'Empresas ID',
-            'about' => 'About',
-            'estado' => 'Estado',
-            'telefono' => 'Telefono',
-            'birthday' => 'Birthday',
-            'position' => 'Position',
-            'photo_' => 'Photo',
-            'instagram' => 'Instagram',
-            'tiktok' => 'Tiktok',
-            'linkedin' => 'Linkedin',
-            'youtube' => 'Youtube',
-            'website' => 'Website',
-            'address' => 'Address',
-            'data_json' => 'Data Json',
-            'sede_id' => 'Sede ID',
-            'cargo_id' => 'Cargo ID',
-            'centro_costo_id' => 'Centro Costo ID',
-            'centro_utilidad_id' => 'Centro Utilidad ID',
-            'city' => 'City',
-            'area_id' => 'Area ID',
+            'user_id' => Yii::t('app', 'User ID'),
+            'tipo_doc' => Yii::t('app', 'Tipo Doc'),
+            'num_doc' => Yii::t('app', 'Num Doc'),
+            'name' => Yii::t('app', 'Name'),
+            'public_email' => Yii::t('app', 'Public Email'),
+            'gravatar_email' => Yii::t('app', 'Gravatar Email'),
+            'gravatar_id' => Yii::t('app', 'Gravatar ID'),
+            'location' => Yii::t('app', 'Location'),
+            'timezone' => Yii::t('app', 'Timezone'),
+            'bio' => Yii::t('app', 'Bio'),
+            'sexo' => Yii::t('app', 'Sexo'),
+            'empresas_id' => Yii::t('app', 'Empresas ID'),
+            'about' => Yii::t('app', 'About'),
+            'estado' => Yii::t('app', 'Estado'),
+            'telefono' => Yii::t('app', 'Telefono'),
+            'birthday' => Yii::t('app', 'Birthday'),
+            'position' => Yii::t('app', 'Position'),
+            'photo_' => Yii::t('app', 'Photo'),
+            'instagram' => Yii::t('app', 'Instagram'),
+            'tiktok' => Yii::t('app', 'Tiktok'),
+            'linkedin' => Yii::t('app', 'Linkedin'),
+            'youtube' => Yii::t('app', 'Youtube'),
+            'website' => Yii::t('app', 'Website'),
+            'address' => Yii::t('app', 'Address'),
+            'data_json' => Yii::t('app', 'Data Json'),
+            'sede_id' => Yii::t('app', 'Sede ID'),
+            'cargo_id' => Yii::t('app', 'Cargo ID'),
+            'centro_costo_id' => Yii::t('app', 'Centro Costo ID'),
+            'centro_utilidad_id' => Yii::t('app', 'Centro Utilidad ID'),
+            'city' => Yii::t('app', 'City'),
+            'area_id' => Yii::t('app', 'Area ID'),
         ];
     }
 
@@ -219,6 +276,11 @@ class Profile extends \yii\db\ActiveRecord
     public function getEmpresas()
     {
         return $this->hasOne(Empresas::class, ['id' => 'empresas_id']);
+    }
+
+    public function getLocationSede()
+    {
+        return $this->hasOne(LocationSedes::class, ['id' => 'location_sede_id']);
     }
 
     /**
@@ -294,12 +356,12 @@ class Profile extends \yii\db\ActiveRecord
     public static function optsTipoDoc()
     {
         return [
-            self::TIPO_DOC_CC => 'CC',
-            self::TIPO_DOC_CE => 'CE',
-            self::TIPO_DOC_NIT => 'NIT',
-            self::TIPO_DOC_PAS => 'PAS',
-            self::TIPO_DOC_TI => 'TI',
-            self::TIPO_DOC_OTRO => 'OTRO',
+            self::TIPO_DOC_CC => Yii::t('app', 'CC'),
+            self::TIPO_DOC_CE => Yii::t('app', 'CE'),
+            self::TIPO_DOC_NIT => Yii::t('app', 'NIT'),
+            self::TIPO_DOC_PAS => Yii::t('app', 'PAS'),
+            self::TIPO_DOC_TI => Yii::t('app', 'TI'),
+            self::TIPO_DOC_OTRO => Yii::t('app', 'OTRO'),
         ];
     }
 
@@ -310,9 +372,9 @@ class Profile extends \yii\db\ActiveRecord
     public static function optsSexo()
     {
         return [
-            self::SEXO_M => 'M',
-            self::SEXO_F => 'F',
-            self::SEXO_X => 'X',
+            self::SEXO_M => Yii::t('app', 'M'),
+            self::SEXO_F => Yii::t('app', 'F'),
+            self::SEXO_X => Yii::t('app', 'X'),
         ];
     }
 
@@ -323,8 +385,8 @@ class Profile extends \yii\db\ActiveRecord
     public static function optsEstado()
     {
         return [
-            self::ESTADO_ACTIVO => 'activo',
-            self::ESTADO_INACTIVO => 'inactivo',
+            self::ESTADO_ACTIVO => Yii::t('app', 'activo'),
+            self::ESTADO_INACTIVO => Yii::t('app', 'inactivo'),
         ];
     }
 

@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int|null $novedad_tipo_id
+ * @property int|null $novedad_concepto_form_id
  * @property string $nombre
  * @property string|null $descripcion
  * @property string|null $icono
@@ -21,10 +22,13 @@ use Yii;
  * @property string|null $correo_notif
  * @property int $tiene_handler
  * @property int $activo
- * @property int $created_at
- * @property int $updated_at
+ * @property string $created_at
+ * @property string $updated_at
  *
  * @property NovedadTipo $novedadTipo
+ * @property NovedadConceptoForm|null $novedadConceptoForm
+ * @property NovedadConceptoRol[] $novedadConceptoRols
+ * @property NovedadConceptoCargo[] $novedadConceptoCargos
  * @property Novedad[] $novedads
  */
 class NovedadConcepto extends \yii\db\ActiveRecord
@@ -45,11 +49,11 @@ class NovedadConcepto extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['novedad_tipo_id', 'descripcion', 'icono', 'codigo', 'categoria', 'correo_notif'], 'default', 'value' => null],
-            [['updated_at'], 'default', 'value' => 0],
+            [['novedad_tipo_id', 'novedad_concepto_form_id', 'descripcion', 'icono', 'codigo', 'categoria', 'correo_notif'], 'default', 'value' => null],
             [['modo_masivo_ext'], 'default', 'value' => 'xlsx'],
             [['activo'], 'default', 'value' => 1],
-            [['novedad_tipo_id', 'permite_masivo', 'sync_temporapp', 'va_a_nomina', 'tiene_handler', 'activo', 'created_at', 'updated_at'], 'integer'],
+            [['novedad_tipo_id', 'novedad_concepto_form_id', 'permite_masivo', 'sync_temporapp', 'va_a_nomina', 'tiene_handler', 'activo'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
             [['nombre'], 'required'],
             [['descripcion'], 'string'],
             [['nombre'], 'string', 'max' => 100],
@@ -58,6 +62,7 @@ class NovedadConcepto extends \yii\db\ActiveRecord
             [['correo_notif'], 'string', 'max' => 200],
             [['codigo'], 'unique'],
             [['novedad_tipo_id'], 'exist', 'skipOnError' => true, 'targetClass' => NovedadTipo::class, 'targetAttribute' => ['novedad_tipo_id' => 'id']],
+            [['novedad_concepto_form_id'], 'exist', 'skipOnError' => true, 'targetClass' => NovedadConceptoForm::class, 'targetAttribute' => ['novedad_concepto_form_id' => 'id']],
         ];
     }
 
@@ -67,22 +72,23 @@ class NovedadConcepto extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'novedad_tipo_id' => 'Novedad Tipo ID',
-            'nombre' => 'Nombre',
-            'descripcion' => 'Descripcion',
-            'icono' => 'Icono',
-            'codigo' => 'Codigo',
-            'categoria' => 'Categoria',
-            'permite_masivo' => 'Permite Masivo',
-            'modo_masivo_ext' => 'Modo Masivo Ext',
-            'sync_temporapp' => 'Sync Temporapp',
-            'va_a_nomina' => 'Va A Nomina',
-            'correo_notif' => 'Correo Notif',
-            'tiene_handler' => 'Tiene Handler',
-            'activo' => 'Activo',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'id' => Yii::t('app', 'ID'),
+            'novedad_tipo_id' => Yii::t('app', 'Novedad Tipo ID'),
+            'novedad_concepto_form_id' => Yii::t('app', 'Formulario'),
+            'nombre' => Yii::t('app', 'Nombre'),
+            'descripcion' => Yii::t('app', 'Descripcion'),
+            'icono' => Yii::t('app', 'Icono'),
+            'codigo' => Yii::t('app', 'Codigo'),
+            'categoria' => Yii::t('app', 'Categoria'),
+            'permite_masivo' => Yii::t('app', 'Permite Masivo'),
+            'modo_masivo_ext' => Yii::t('app', 'Modo Masivo Ext'),
+            'sync_temporapp' => Yii::t('app', 'Sync Temporapp'),
+            'va_a_nomina' => Yii::t('app', 'Va A Nomina'),
+            'correo_notif' => Yii::t('app', 'Correo Notif'),
+            'tiene_handler' => Yii::t('app', 'Tiene Handler'),
+            'activo' => Yii::t('app', 'Activo'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
 
@@ -106,4 +112,25 @@ class NovedadConcepto extends \yii\db\ActiveRecord
         return $this->hasMany(Novedad::class, ['concepto_id' => 'id']);
     }
 
+    public function getNovedadConceptoForm(): \yii\db\ActiveQuery
+    {
+        return $this->hasOne(NovedadConceptoForm::class, ['id' => 'novedad_concepto_form_id']);
+    }
+
+    public function getNovedadConceptoRols(): \yii\db\ActiveQuery
+    {
+        return $this->hasMany(NovedadConceptoRol::class, ['novedad_concepto_id' => 'id']);
+    }
+
+    public function getNovedadConceptoCargos(): \yii\db\ActiveQuery
+    {
+        return $this->hasMany(NovedadConceptoCargo::class, ['novedad_concepto_id' => 'id']);
+    }
+
+    public static function findIdByCodigo(string $codigo): ?int
+    {
+        $id = static::find()->select('id')->where(['codigo' => $codigo, 'activo' => 1])->scalar();
+
+        return $id !== false && $id !== null ? (int) $id : null;
+    }
 }

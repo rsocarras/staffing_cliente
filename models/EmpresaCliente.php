@@ -13,6 +13,7 @@ use yii\db\ActiveRecord;
  * @property int $is_active
  * @property string $created_at
  * @property string $updated_at
+ * @property int|null $empresas_id Tenant al que pertenece el cliente
  *
  * @property Requisicion[] $requisiciones
  */
@@ -27,10 +28,12 @@ class EmpresaCliente extends ActiveRecord
     {
         return [
             [['nit', 'nombre'], 'required'],
+            [['empresas_id'], 'default', 'value' => null],
             [['nit'], 'unique'],
             [['nit'], 'string', 'max' => 20],
             [['nombre'], 'string', 'max' => 190],
-            [['is_active'], 'integer'],
+            [['is_active', 'empresas_id'], 'integer'],
+            [['empresas_id'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => Empresas::class, 'targetAttribute' => ['empresas_id' => 'id']],
         ];
     }
 

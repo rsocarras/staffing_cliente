@@ -9,8 +9,7 @@ use yii\helpers\Url;
 /** @var NovedadTipo[] $tipos */
 /** @var NovedadFlujo[] $flujos */
 /** @var app\models\Profile[] $profiles */
-
-$canAddNovedad = $tipos !== [] && $flujos !== [] && $profiles !== [];
+$hasFlujoCol = \app\models\Novedad::hasNovedadFlujoIdColumn();
 
 $this->title = 'Novedades';
 $this->params['breadcrumbs'][] = $this->title;
@@ -27,15 +26,13 @@ $formAjaxUrl = Url::to(['/novedad/form-ajax']);
 $updateAjaxUrl = Url::to(['/novedad/update-ajax']);
 $flujoAjaxUrl = Url::to(['/novedad/flujo-ajax']);
 $deleteUrl = Url::to(['/novedad/delete']);
-$createAjaxUrl = Url::to(['/novedad/create-ajax']);
 $conceptosUrl = Url::to(['/novedad/conceptos-por-tipo']);
 $kanbanDataNovedadUrl = Url::to(['/novedad/kanban-data-novedad']);
 $moveStepUrl = Url::to(['/novedad/move-step']);
+$solicitudWebUrl = Url::to(['/novedad/create']);
 
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfParam = Yii::$app->request->csrfParam;
-
-$hasFlujoCol = \app\models\Novedad::hasNovedadFlujoIdColumn();
 
 $this->registerCss('
 #modal-flujo-novedad.modal { overflow: visible !important; }
@@ -72,7 +69,13 @@ $this->registerCss('
                 <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
-                        <p class="text-muted small mb-0 mt-1">Alta, edición y seguimiento del flujo de cada novedad.</p>
+                        <p class="text-muted small mb-0 mt-1">
+                            <?= Html::encode(Yii::t('app', 'Alta, edición y seguimiento del flujo de cada novedad.')) ?>
+                            <a href="<?= Html::encode($solicitudWebUrl) ?>" class="text-primary text-decoration-none fw-medium ms-1">
+                                <i class="ti ti-file-plus fs-14 align-middle"></i>
+                                <?= Html::encode(Yii::t('app', 'Nueva solicitud (formulario web)')) ?>
+                            </a>
+                        </p>
                     </div>
                     <div class="text-end">
                         <ol class="breadcrumb m-0 py-0">
@@ -93,6 +96,11 @@ $this->registerCss('
                         No hay colaboradores activos en su empresa para asociar a la novedad. Verificá empleados / perfiles.
                     </div>
                 <?php endif; ?>
+                <?php if ($hasFlujoCol && $tipos !== [] && $flujos === []): ?>
+                    <div class="alert alert-warning mb-4">
+                        No hay <strong>flujos de novedad activos</strong> en el sistema. Algunas columnas y el tablero Kanban pueden no estar disponibles. Contactá al administrador.
+                    </div>
+                <?php endif; ?>
 
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
                     <div class="input-group w-auto input-group-flat">
@@ -100,7 +108,9 @@ $this->registerCss('
                         <input type="text" class="form-control form-control-sm" id="novedad-search" placeholder="Buscar...">
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <a href="javascript:void(0);" class="btn btn-primary <?= $canAddNovedad ? '' : 'disabled' ?>" data-bs-toggle="modal" data-bs-target="#add_novedad"><i class="ti ti-plus me-1"></i>Agregar</a>
+                        <a href="<?= Html::encode($solicitudWebUrl) ?>" class="btn btn-outline-primary">
+                            <i class="ti ti-file-plus me-1"></i><?= Html::encode(Yii::t('app', 'Nueva solicitud')) ?>
+                        </a>
                     </div>
                 </div>
 
@@ -202,81 +212,6 @@ $this->registerCss('
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-primary" id="btn-motivo-retro-kanban-confirm">Confirmar movimiento</button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Agregar -->
-<div class="modal fade" id="add_novedad">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header border-0 pb-0 align-items-start">
-                <div class="me-3">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
-                            <i class="ti ti-plus fs-16"></i>
-                        </span>
-                        <h5 class="modal-title fw-bold mb-0">Nueva novedad</h5>
-                    </div>
-                    <p class="text-muted small mb-0 ps-1">Elegí colaborador, tipo, concepto y flujo. Los datos van en JSON.</p>
-                </div>
-                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="form-add-novedad">
-                <?= Html::hiddenInput($csrfParam, $csrfToken) ?>
-                <div class="modal-body pt-3 px-4 pb-2">
-                    <div id="novedad-add-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label">Colaborador</label>
-                            <select name="profile_id" id="novedad-add-profile" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($profiles as $p): ?>
-                                    <option value="<?= (int) $p->user_id ?>"><?= Html::encode(trim(($p->name ?: 'Sin nombre') . ' — ' . ($p->num_doc ?? ''))) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="form-text">Persona a la que aplica la novedad (no tiene que ser tu usuario).</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tipo de novedad</label>
-                            <select name="novedad_tipo_id" id="novedad-add-tipo" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($tipos as $t): ?>
-                                    <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Concepto</label>
-                            <select name="concepto_id" id="novedad-add-concepto" class="form-select" required>
-                                <option value="">Primero elija tipo</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Flujo de novedad</label>
-                            <select name="novedad_flujo_id" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($flujos as $f): ?>
-                                    <option value="<?= (int) $f->id ?>"><?= Html::encode($f->nombre) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Datos (JSON)</label>
-                            <textarea name="datos" class="form-control font-monospace small" rows="4" placeholder="{}"><?= Html::encode('{}') ?></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="ti ti-x me-1"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-add-novedad">
-                        <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar</span>
-                        <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
@@ -708,68 +643,6 @@ $(document).ready(function() {
         });
     }
 
-    $('#form-add-novedad').on('submit', function(e) {
-        e.preventDefault();
-        var \$form = $(this);
-        var \$btn = $('#btn-save-add-novedad');
-        var \$errors = $('#novedad-add-form-errors');
-
-        \$errors.addClass('d-none').empty();
-        \$btn.prop('disabled', true);
-        \$btn.find('.btn-text').addClass('d-none');
-        \$btn.find('.btn-loading').removeClass('d-none');
-
-        $.ajax({
-            url: '{$createAjaxUrl}',
-            type: 'POST',
-            data: \$form.serialize(),
-            dataType: 'json',
-            success: function(res) {
-                if (res.success) {
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('add_novedad'));
-                    modal.hide();
-                    \$form[0].reset();
-                    $('#novedad-add-concepto').empty().append('<option value=\"\">Primero elija tipo</option>');
-                    table.ajax.reload(null, false);
-                } else {
-                    \$errors.html(res.message || 'No se pudo guardar.').removeClass('d-none');
-                }
-            },
-            error: function(xhr) {
-                var msg = 'Error al guardar.';
-                if (xhr.responseJSON && xhr.responseJSON.message) { msg = xhr.responseJSON.message; }
-                \$errors.html(msg).removeClass('d-none');
-            },
-            complete: function() {
-                \$btn.prop('disabled', false);
-                \$btn.find('.btn-text').removeClass('d-none');
-                \$btn.find('.btn-loading').addClass('d-none');
-            }
-        });
-    });
-
-    $('#novedad-add-tipo').on('change', function() {
-        var tid = $(this).val();
-        var \$c = $('#novedad-add-concepto');
-        \$c.empty().append('<option value=\"\">Cargando…</option>');
-        if (!tid) {
-            \$c.empty().append('<option value=\"\">Primero elija tipo</option>');
-            return;
-        }
-        $.getJSON('{$conceptosUrl}', { novedad_tipo_id: tid })
-            .done(function (res) {
-                \$c.empty();
-                if (!res.success || !res.items || !res.items.length) {
-                    \$c.append('<option value=\"\">Sin conceptos</option>');
-                    return;
-                }
-                \$c.append('<option value=\"\">Seleccione concepto</option>');
-                res.items.forEach(function (it) {
-                    \$c.append('<option value=\"' + it.id + '\">' + escapeHtml(it.nombre) + '</option>');
-                });
-            });
-    });
-
     $(document).on('change', '#novedad-edit-tipo', function() {
         var tid = $(this).val();
         var \$c = $('#novedad-edit-concepto');
@@ -789,11 +662,6 @@ $(document).ready(function() {
             });
     });
 
-    $('#add_novedad').on('hidden.bs.modal', function() {
-        $('#form-add-novedad')[0].reset();
-        $('#novedad-add-concepto').empty().append('<option value=\"\">Primero elija tipo</option>');
-        $('#novedad-add-form-errors').addClass('d-none').empty();
-    });
 });
 JS;
 $this->registerJs($js, \yii\web\View::POS_READY);

@@ -18,6 +18,12 @@ class User extends BaseUser
     public $new_password = '';
 
     /**
+     * Si true, afterInsert no crea Profile (evita doble creación cuando el User lo crea Profile).
+     * @var bool
+     */
+    public static $skipProfileCreation = false;
+
+    /**
      * Datos del perfil a crear (empresas_id, num_doc, name, etc.).
      * Se establece desde el controlador antes de guardar.
      * @var array|null

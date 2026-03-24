@@ -135,3 +135,19 @@
     color: inherit;
     line-height: 1;
 }
+
+/*
+ * Theme Dreams: select.form-control tenía height fijo 2.375rem; con padding del .form-control
+ * el texto del option seleccionado queda recortado (especialmente en macOS/WebKit).
+ */
+select.form-control:not([size]):not([multiple]) {
+    min-height: 2.5rem;
+    height: auto;
+    line-height: 1.5;
+}
+
+/* Documento empleado: refuerzo de línea y altura mínima junto al botón Buscar */
+.novedad-solicitud-form .input-group > .form-control {
+    min-height: 2.5rem;
+    line-height: 1.5;
+}

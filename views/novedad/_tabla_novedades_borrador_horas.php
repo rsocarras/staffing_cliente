@@ -1,0 +1,59 @@
+<?php
+
+use app\models\Novedad;
+use yii\helpers\Html;
+
+/** @var Novedad[] $novedades */
+/** @var string|null $tableClass clases de la tabla (ej. table-sm para modales) */
+/** @var bool $compact tabla más compacta (modales) */
+
+$tableClass = trim((string) ($tableClass ?? 'table table-hover mb-0 align-middle'));
+$compact = (bool) ($compact ?? false);
+$cellPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
+$thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
+
+?>
+<div class="table-responsive">
+    <table class="<?= Html::encode($tableClass) ?>">
+        <thead class="thead-light">
+        <tr>
+            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'ID')) ?></th>
+            <th class="<?= Html::encode($thPad) ?>"><?= Html::encode(Yii::t('app', 'Concepto')) ?></th>
+            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Fecha')) ?></th>
+            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Desde')) ?></th>
+            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Hasta')) ?></th>
+            <th class="<?= Html::encode($thPad) ?> text-end text-nowrap"><?= Html::encode(Yii::t('app', 'Horas')) ?></th>
+            <th class="<?= Html::encode($thPad) ?> text-end text-nowrap"><?= Html::encode(Yii::t('app', 'Importe')) ?></th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php foreach ($novedades as $n): ?>
+            <?php
+            /** @var Novedad $n */
+            $conc = $n->concepto;
+            $nombreConcepto = $conc && trim((string) $conc->nombre) !== ''
+                ? (string) $conc->nombre
+                : ($conc ? Yii::t('app', 'Concepto #{id}', ['id' => $n->concepto_id]) : '—');
+            $hIni = $n->hora_inicio ? substr((string) $n->hora_inicio, 0, 5) : '—';
+            $hFin = $n->hora_fin ? substr((string) $n->hora_fin, 0, 5) : '—';
+            $fechaFmt = $n->fecha_novedad
+                ? Yii::$app->formatter->asDate($n->fecha_novedad)
+                : '—';
+            $impF = ($n->importe !== null && (string) $n->importe !== '') ? (float) $n->importe : null;
+            $importeFmt = ($impF !== null && abs($impF) >= 0.005)
+                ? Yii::$app->formatter->asCurrency($impF)
+                : '—';
+            ?>
+            <tr>
+                <td class="<?= Html::encode($cellPad) ?> text-muted text-nowrap"><?= (int) $n->id ?></td>
+                <td class="<?= Html::encode($cellPad) ?> fw-medium"><?= Html::encode($nombreConcepto) ?></td>
+                <td class="<?= Html::encode($cellPad) ?> text-nowrap"><?= Html::encode($fechaFmt) ?></td>
+                <td class="<?= Html::encode($cellPad) ?> text-nowrap font-monospace"><?= Html::encode($hIni) ?></td>
+                <td class="<?= Html::encode($cellPad) ?> text-nowrap font-monospace"><?= Html::encode($hFin) ?></td>
+                <td class="<?= Html::encode($cellPad) ?> text-end text-nowrap fw-semibold"><?= $n->horas_calculadas !== null ? Html::encode(Yii::$app->formatter->asDecimal((float) $n->horas_calculadas, 2)) : '—' ?></td>
+                <td class="<?= Html::encode($cellPad) ?> text-end text-nowrap"><?= Html::encode($importeFmt) ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>

@@ -6925,7 +6925,9 @@ input[type=range]::-moz-range-thumb {
 }
 
 select.form-control:not([size]):not([multiple]) {
-  height: 2.375rem;
+  min-height: 2.5rem;
+  height: auto;
+  line-height: 1.5;
 }
 
 select.form-control-sm:not([size]):not([multiple]) {
