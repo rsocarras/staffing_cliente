@@ -29,6 +29,19 @@ $homeUrl = Yii::$app->homeUrl;
             <ul>
                 <li class="menu-title"><span>Sistema</span></li>
                 <li><a href="<?= Url::to(['/']) ?>" class="<?php echo ($path == '/') ? 'active' : ''; ?>"><i class="ti ti-layout-grid-add"></i><span>Dashboard</span></a></li>
+                <li class="submenu">
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-building-community"></i><span>Administración de Planta</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul>
+                        <li><a href="<?= Url::to(['/administracion-planta/dashboard']) ?>" class="<?php echo ($path == 'administracion-planta/dashboard') ? 'active' : ''; ?>">Dashboard</a></li>
+                        <li><a href="<?= Url::to(['/administracion-planta/resumen-sede']) ?>" class="<?php echo ($path == 'administracion-planta/resumen-sede') ? 'active' : ''; ?>">Resumen por sede</a></li>
+                        <li><a href="<?= Url::to(['/administracion-planta/resumen-area']) ?>" class="<?php echo ($path == 'administracion-planta/resumen-area') ? 'active' : ''; ?>">Resumen por área</a></li>
+                        <li><a href="<?= Url::to(['/administracion-planta/index']) ?>" class="<?php echo ($path == 'administracion-planta/index') ? 'active' : ''; ?>">Planta autorizada</a></li>
+                        <li><a href="<?= Url::to(['/administracion-planta/historial']) ?>" class="<?php echo ($path == 'administracion-planta/historial') ? 'active' : ''; ?>">Historial</a></li>
+                    </ul>
+                </li>
                 <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0) ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Novedades</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
