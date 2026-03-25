@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.gimnasios.com)",
+      "WebSearch",
+      "Bash(mysql:*)"
+    ]
+  }
+}
