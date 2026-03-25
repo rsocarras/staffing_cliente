@@ -13,7 +13,6 @@ use yii\helpers\Url;
 $this->title = 'Administración de planta';
 $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile(Url::to('@web/assets/plugins/apexchart/apexcharts.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['app\assets\AppAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 ?>
