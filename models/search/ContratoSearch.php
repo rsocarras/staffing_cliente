@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use app\models\Contrato;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -77,12 +78,12 @@ class ContratoSearch extends Contrato
         $this->load($params);
 
         if (!$this->validate()) {
+            TenantContext::applyFilter($query, 'contrato.empresa_id');
             return $dataProvider;
         }
 
         $query->andFilterWhere([
             'contrato.id' => $this->id,
-            'contrato.empresa_id' => $this->empresa_id,
             'contrato.profile_id' => $this->profile_id,
             'contrato.contrato_tipo_id' => $this->contrato_tipo_id,
             'contrato.area_id' => $this->area_id,
@@ -124,6 +125,8 @@ class ContratoSearch extends Contrato
                 ['like', 'tipo.nombre', $this->texto],
             ]);
         }
+
+        TenantContext::applyFilter($query, 'contrato.empresa_id');
 
         return $dataProvider;
     }

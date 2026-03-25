@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\EmpleadoVenueHistory;
@@ -52,15 +53,13 @@ class EmpleadoVenueHistorySearch extends EmpleadoVenueHistory
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'profile_id' => $this->profile_id,
             'fecha_efectiva' => $this->fecha_efectiva,
             'sede_id' => $this->sede_id,
@@ -71,6 +70,8 @@ class EmpleadoVenueHistorySearch extends EmpleadoVenueHistory
         ]);
 
         $query->andFilterWhere(['like', 'motivo', $this->motivo]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

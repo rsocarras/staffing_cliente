@@ -125,6 +125,14 @@ class Candidato extends \yii\db\ActiveRecord
     }
 
     /**
+     * Clase Bootstrap (variante badge-soft-*) según estado del candidato.
+     */
+    public static function estadoBadgeSoftClass(string $estado): string
+    {
+        return $estado === self::ESTADO_ACTIVO ? 'success' : 'danger';
+    }
+
+    /**
      * Opciones para sexo.
      */
     public static function optsSexo()

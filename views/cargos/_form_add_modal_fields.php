@@ -12,9 +12,7 @@ if (isset($areasForSelect)) {
     $areasList = $areasForSelect;
 } else {
     $empresaId = $model->empresa_id;
-    $areasQuery = Area::find()
-        ->where(['or', ['area_padre' => null], ['area_padre' => 0]])
-        ->orderBy('nombre');
+    $areasQuery = Area::find()->orderBy(['nombre' => SORT_ASC]);
     if ($empresaId) {
         $areasQuery->andWhere(['empresas_id' => $empresaId]);
     }

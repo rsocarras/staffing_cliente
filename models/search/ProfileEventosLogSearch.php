@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ProfileEventosLog;
@@ -52,15 +53,13 @@ class ProfileEventosLogSearch extends ProfileEventosLog
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'profile_id' => $this->profile_id,
             'entity_id' => $this->entity_id,
             'actor_user_id' => $this->actor_user_id,
@@ -72,6 +71,8 @@ class ProfileEventosLogSearch extends ProfileEventosLog
             ->andFilterWhere(['like', 'before_json', $this->before_json])
             ->andFilterWhere(['like', 'after_json', $this->after_json])
             ->andFilterWhere(['like', 'contexto_json', $this->contexto_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

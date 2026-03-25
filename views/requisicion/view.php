@@ -132,8 +132,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php foreach ($logs as $i => $log): ?>
                         <tr>
                             <td><?= Yii::$app->formatter->asDatetime($log->created_at) ?></td>
-                            <td><span class="badge bg-secondary"><?= Html::encode($log->estadoAnteriorLabel) ?></span></td>
-                            <td><span class="badge bg-<?= \app\models\Requisicion::estadoBadgeClass($log->estado_nuevo) ?>"><?= Html::encode($log->estadoNuevoLabel) ?></span></td>
+                            <td><span class="badge badge-soft-secondary"><?= Html::encode($log->estadoAnteriorLabel) ?></span></td>
+                            <td><span class="badge badge-soft-<?= \app\models\Requisicion::estadoBadgeClass($log->estado_nuevo) ?>"><?= Html::encode($log->estadoNuevoLabel) ?></span></td>
                             <td><?= Html::encode($log->duracionFormateada) ?></td>
                             <td><?= Html::encode($log->comentario ?? '-') ?></td>
                             <td><?= Html::encode($log->usuario && $log->usuario->profile ? $log->usuario->profile->name : ($log->usuario ? $log->usuario->username : '-')) ?></td>

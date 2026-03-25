@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\EmpresaIntegration;
@@ -52,15 +53,13 @@ class EmpresaIntegrationSearch extends EmpresaIntegration
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'activo' => $this->activo,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
@@ -72,6 +71,8 @@ class EmpresaIntegrationSearch extends EmpresaIntegration
             ->andFilterWhere(['like', 'password_enc', $this->password_enc])
             ->andFilterWhere(['like', 'token', $this->token])
             ->andFilterWhere(['like', 'config_json', $this->config_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

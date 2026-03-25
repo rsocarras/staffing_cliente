@@ -212,7 +212,7 @@ class Contrato extends ActiveRecord
             case self::ESTADO_INCAPACIDAD:
                 return 'primary';
             case self::ESTADO_INACTIVO:
-                return 'secondary';
+                return 'danger';
             case self::ESTADO_LIQUIDADO:
             case self::ESTADO_CANCELADO:
                 return 'danger';

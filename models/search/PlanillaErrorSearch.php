@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PlanillaError;
@@ -52,15 +53,13 @@ class PlanillaErrorSearch extends PlanillaError
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'import_id' => $this->import_id,
             'row_number' => $this->row_number,
             'created_at' => $this->created_at,
@@ -70,6 +69,8 @@ class PlanillaErrorSearch extends PlanillaError
             ->andFilterWhere(['like', 'error_code', $this->error_code])
             ->andFilterWhere(['like', 'message', $this->message])
             ->andFilterWhere(['like', 'raw_value', $this->raw_value]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

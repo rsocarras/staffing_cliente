@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'empresa_id')->textInput() ?>
+    <?= $form->field($model, 'empresa_id')->hiddenInput()->label(false) ?>
 
     <?= $form->field($model, 'storage')->dropDownList([ 'local' => 'Local', 's3' => 'S3', ], ['prompt' => '']) ?>
 

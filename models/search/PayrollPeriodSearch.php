@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PayrollPeriod;
@@ -52,15 +53,13 @@ class PayrollPeriodSearch extends PayrollPeriod
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'year' => $this->year,
             'month' => $this->month,
             'start_date' => $this->start_date,
@@ -74,6 +73,8 @@ class PayrollPeriodSearch extends PayrollPeriod
         ]);
 
         $query->andFilterWhere(['like', 'status', $this->status]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

@@ -348,11 +348,7 @@ class MallasController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Mallas::findOne(['id' => $id])) !== null) {
-            $empresaId = $this->currentEmpresaId();
-            if ($empresaId !== null && (int) $model->empresa_id !== (int) $empresaId) {
-                throw new NotFoundHttpException('The requested page does not exist.');
-            }
+        if (($model = Mallas::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

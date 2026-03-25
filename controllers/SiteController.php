@@ -2,6 +2,8 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
+use app\services\HomeDashboardService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -60,7 +62,11 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $snapshot = HomeDashboardService::getSnapshot(TenantContext::currentEmpresaId());
+
+        return $this->render('index', [
+            'snapshot' => $snapshot,
+        ]);
     }
 
     /**

@@ -1,3 +1,11 @@
+body {
+    background-color: #eef2f6 !important;
+}
+
+html {
+    background-color: #eef2f6;
+}
+
 /* Color primario #0B315E */
 :root,
 :root[data-color=primary],
@@ -50,16 +58,16 @@
 }
 
 /* Refuerzo para estados active/hover (el theme base usa border-left azul) */
-.sidebar.bg-primary .sidebar-menu > ul > li > a.active,
-.sidebar.bg-primary .sidebar-menu > ul > li > a:hover {
+.sidebar.bg-primary .sidebar-menu>ul>li>a.active,
+.sidebar.bg-primary .sidebar-menu>ul>li>a:hover {
     background: rgba(255, 255, 255, 0.22) !important;
     border-left: 3px solid #FFFFFF !important;
     color: #FFFFFF !important;
 }
 
 /* Sub-items active/hover dentro de submenús */
-.sidebar.bg-primary .sidebar-menu > ul > li.submenu ul li a.active,
-.sidebar.bg-primary .sidebar-menu > ul > li.submenu ul li a:hover {
+.sidebar.bg-primary .sidebar-menu>ul>li.submenu ul li a.active,
+.sidebar.bg-primary .sidebar-menu>ul>li.submenu ul li a:hover {
     background: rgba(255, 255, 255, 0.18) !important;
     border-left: 3px solid #FFFFFF !important;
     color: #FFFFFF !important;
@@ -134,4 +142,20 @@
     letter-spacing: 0.02em;
     color: inherit;
     line-height: 1;
+}
+
+/*
+ * Theme Dreams: select.form-control tenía height fijo 2.375rem; con padding del .form-control
+ * el texto del option seleccionado queda recortado (especialmente en macOS/WebKit).
+ */
+select.form-control:not([size]):not([multiple]) {
+    min-height: 2.5rem;
+    height: auto;
+    line-height: 1.5;
+}
+
+/* Documento empleado: refuerzo de línea y altura mínima junto al botón Buscar */
+.novedad-solicitud-form .input-group > .form-control {
+    min-height: 2.5rem;
+    line-height: 1.5;
 }

@@ -41,10 +41,10 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 <div class="page-wrapper">
     <div class="content">
-        <div class="card mb-0">
-            <div class="card-body">
-                <!-- Page Header -->
-                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-2">
+        <!-- 1. Encabezado -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
                         <p class="mb-0 text-muted">Listado contractual por empleado, sede, área y cargo.</p>
@@ -57,23 +57,18 @@ $csrfParam = Yii::$app->request->csrfParam;
                         </ol>
                     </div>
                 </div>
-                <div class="d-flex gap-2 justify-content-end mb-4">
-                    <?php if (empty($scope['readonly'])): ?>
-                        <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_contrato">
-                            <i class="ti ti-plus me-1"></i>Nuevo contrato
-                        </a>
-                    <?php endif; ?>
-                    <?= Html::a('<i class="ti ti-settings me-1"></i>Tipos de contrato', ['/contrato-tipos/index'], ['class' => 'btn btn-outline-secondary']) ?>
-                </div>
-                <!-- End Page Header -->
+            </div>
+        </div>
 
-                <!-- Summary Cards -->
-                <div class="row row-gap-4 mb-4">
+        <!-- 2. Cards resumen -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="row row-gap-4">
                     <div class="col-xl-3 col-lg-6 col-md-6 d-flex">
                         <div class="card mb-0 flex-fill shadow-sm">
                             <div class="card-body d-flex align-items-center">
                                 <div class="avatar avatar-lg rounded-circle bg-dark flex-shrink-0 me-3">
-                                    <span class="avatar-title text-white"><i class="ti ti-file-text fs-22"></i></span>
+                                    <span class="avatar-title text-white"><i class="ti ti-building fs-22"></i></span>
                                 </div>
                                 <div>
                                     <p class="mb-0 text-muted fs-13">Total contratos</p>
@@ -98,7 +93,7 @@ $csrfParam = Yii::$app->request->csrfParam;
                     <div class="col-xl-3 col-lg-6 col-md-6 d-flex">
                         <div class="card mb-0 flex-fill shadow-sm">
                             <div class="card-body d-flex align-items-center">
-                                <div class="avatar avatar-lg rounded-circle bg-info flex-shrink-0 me-3">
+                                <div class="avatar avatar-lg rounded-circle bg-secondary flex-shrink-0 me-3">
                                     <span class="avatar-title text-white"><i class="ti ti-calendar-event fs-22"></i></span>
                                 </div>
                                 <div>
@@ -122,7 +117,20 @@ $csrfParam = Yii::$app->request->csrfParam;
                         </div>
                     </div>
                 </div>
-                <!-- End Summary Cards -->
+            </div>
+        </div>
+
+        <!-- 3. Contenido: acciones, filtros y tabla -->
+        <div class="card mb-0">
+            <div class="card-body py-3">
+                <div class="d-flex gap-2 justify-content-end mb-4">
+                    <?php if (empty($scope['readonly'])): ?>
+                        <a href="javascript:void(0);" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add_contrato">
+                            <i class="ti ti-plus me-1"></i>Nuevo contrato
+                        </a>
+                    <?php endif; ?>
+                    <?= Html::a('<i class="ti ti-settings me-1"></i>Tipos de contrato', ['/contrato-tipos/index'], ['class' => 'btn btn-outline-secondary']) ?>
+                </div>
 
                 <!-- Start Search and Filter -->
                 <div class="card mb-4">
@@ -202,7 +210,7 @@ $csrfParam = Yii::$app->request->csrfParam;
                                     <td><?= Html::encode($model->contratoTipo ? $model->contratoTipo->nombre : '-') ?></td>
                                     <td><span class="badge badge-soft-<?= Html::encode($model->getEstadoBadgeClass()) ?>"><?= Html::encode($model->getDisplayEstado()) ?></span></td>
                                     <td>
-                                        <span class="badge badge-soft-<?= $model->isCurrentByDate() ? 'success' : 'secondary' ?>">
+                                        <span class="badge badge-soft-<?= $model->isCurrentByDate() ? 'success' : 'danger' ?>">
                                             <?= Html::encode($model->getVigenciaLabel()) ?>
                                         </span>
                                     </td>
@@ -230,13 +238,12 @@ $csrfParam = Yii::$app->request->csrfParam;
 <!-- Modal Ver Contrato -->
 <div class="modal fade" id="modal-view-contrato">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Ver Contrato</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 py-2 px-3">
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body" id="modal-view-contrato-body">
-                <div class="text-center py-5">
+            <div class="modal-body p-0" id="modal-view-contrato-body">
+                <div class="text-center py-5 px-3">
                     <span class="spinner-border text-primary" role="status"></span>
                     <p class="text-muted mt-2 mb-0">Cargando...</p>
                 </div>
@@ -338,34 +345,60 @@ $(function() {
         }
     });
 
-    function rebuildSelect(selector, items, prompt) {
+    var evNsFilter = '.contratoSearchCascade';
+
+    function rebuildFilterSelect(selector, items, prompt, preferredValue) {
         var \$select = $(selector);
-        var currentValue = \$select.val();
-        \$select.html('<option value="">' + prompt + '</option>');
-        items.forEach(function(item) {
-            \$select.append('<option value="' + item.id + '">' + item.nombre + '</option>');
+        var prev = preferredValue !== undefined ? preferredValue : \$select.val();
+        \$select.empty().append($('<option>', { value: '', text: prompt }));
+        items.forEach(function (item) {
+            \$select.append($('<option>', { value: item.id, text: item.nombre || '' }));
         });
-        if (currentValue) \$select.val(currentValue);
+        if (prev !== undefined && prev !== null && prev !== '') {
+            var s = String(prev);
+            if (items.some(function (it) { return String(it.id) === s; })) {
+                \$select.val(s);
+            }
+        }
     }
 
-    $(document).on('change', '#contratosearch-area_id', function() {
+    $(document).off('change' + evNsFilter, '#contratosearch-area_id');
+    $(document).off('change' + evNsFilter, '#contratosearch-sub_area_id');
+
+    function loadContratoSearchCargos() {
+        var areaId = $('#contratosearch-area_id').val();
+        var subAreaId = $('#contratosearch-sub_area_id').val();
+        rebuildFilterSelect('#contratosearch-cargo_id', [], 'Cargo');
+        if (!areaId || !subAreaId) return;
+        $.getJSON('{$cargosUrl}', { area_id: areaId, sub_area_id: subAreaId })
+            .done(function (data) {
+                data = Array.isArray(data) ? data : [];
+                rebuildFilterSelect('#contratosearch-cargo_id', data, 'Cargo');
+                if (data.length === 1) {
+                    $('#contratosearch-cargo_id').val(String(data[0].id));
+                }
+            });
+    }
+
+    $(document).on('change' + evNsFilter, '#contratosearch-area_id', function () {
         var areaId = $(this).val();
-        rebuildSelect('#contratosearch-sub_area_id', [], 'Subárea');
-        rebuildSelect('#contratosearch-cargo_id', [], 'Cargo');
+        rebuildFilterSelect('#contratosearch-sub_area_id', [], 'Subárea');
+        rebuildFilterSelect('#contratosearch-cargo_id', [], 'Cargo');
         if (!areaId) return;
-        $.getJSON('{$subAreasUrl}', {area_id: areaId}, function(data) {
-            rebuildSelect('#contratosearch-sub_area_id', data, 'Subárea');
-        });
+        $.getJSON('{$subAreasUrl}', { area_id: areaId })
+            .done(function (data) {
+                data = Array.isArray(data) ? data : [];
+                rebuildFilterSelect('#contratosearch-sub_area_id', data, 'Subárea');
+                var \$sub = $('#contratosearch-sub_area_id');
+                if (data.length === 1) {
+                    \$sub.val(String(data[0].id));
+                    loadContratoSearchCargos();
+                }
+            });
     });
 
-    $(document).on('change', '#contratosearch-sub_area_id', function() {
-        var areaId = $('#contratosearch-area_id').val();
-        var subAreaId = $(this).val();
-        rebuildSelect('#contratosearch-cargo_id', [], 'Cargo');
-        if (!areaId) return;
-        $.getJSON('{$cargosUrl}', {area_id: areaId, sub_area_id: subAreaId}, function(data) {
-            rebuildSelect('#contratosearch-cargo_id', data, 'Cargo');
-        });
+    $(document).on('change' + evNsFilter, '#contratosearch-sub_area_id', function () {
+        loadContratoSearchCargos();
     });
 
     (function() {
@@ -439,12 +472,12 @@ $(function() {
     $(document).on('click', '.btn-contrato-view', function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-view-contrato'));
-        $('#modal-view-contrato-body').html('<div class="text-center py-5"><span class="spinner-border text-primary"></span><p class="text-muted mt-2 mb-0">Cargando...</p></div>');
+        $('#modal-view-contrato-body').html('<div class="text-center py-5 px-3"><span class="spinner-border text-primary"></span><p class="text-muted mt-2 mb-0">Cargando...</p></div>');
         modal.show();
         $.get('{$viewAjaxUrl}', { id: id }, function(html) {
             $('#modal-view-contrato-body').html(html);
         }).fail(function() {
-            $('#modal-view-contrato-body').html('<div class="alert alert-danger">Error al cargar los datos.</div>');
+            $('#modal-view-contrato-body').html('<div class="alert alert-danger border-0 m-3">Error al cargar los datos.</div>');
         });
     });
 
@@ -478,6 +511,7 @@ $(function() {
         \$btn.prop('disabled', true);
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
+        \$form.find('select').prop('disabled', false);
         var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
         $.ajax({
             url: '{$updateAjaxUrl}'.replace(/\/$/, '') + '?id=' + id,
@@ -565,6 +599,7 @@ $(function() {
         \$btn.prop('disabled', true);
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
+        \$form.find('select').prop('disabled', false);
 
         $.ajax({
             url: '{$createAjaxUrl}',

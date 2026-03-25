@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\NominaItem;
@@ -53,15 +54,13 @@ class NominaItemSearch extends NominaItem
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'nomina_run_id' => $this->nomina_run_id,
             'profile_id' => $this->profile_id,
             'concepto_id' => $this->concepto_id,
@@ -71,6 +70,8 @@ class NominaItemSearch extends NominaItem
         ]);
 
         $query->andFilterWhere(['like', 'detalle_json', $this->detalle_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

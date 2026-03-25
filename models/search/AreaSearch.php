@@ -43,7 +43,6 @@ class AreaSearch extends Area
     public function search($params, $formName = null)
     {
         $query = Area::find();
-        TenantContext::applyFilter($query, 'empresas_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,8 +51,7 @@ class AreaSearch extends Area
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresas_id');
             return $dataProvider;
         }
 
@@ -70,6 +68,8 @@ class AreaSearch extends Area
         $query->andFilterWhere(['like', 'uuid', $this->uuid])
             ->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'descripcion', $this->descripcion]);
+
+        TenantContext::applyFilter($query, 'empresas_id');
 
         return $dataProvider;
     }

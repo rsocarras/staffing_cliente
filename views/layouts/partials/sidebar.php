@@ -29,6 +29,7 @@ $homeUrl = Yii::$app->homeUrl;
             <ul>
                 <li class="menu-title"><span>Sistema</span></li>
                 <li><a href="<?= Url::to(['/']) ?>" class="<?php echo ($path == '/') ? 'active' : ''; ?>"><i class="ti ti-layout-grid-add"></i><span>Dashboard</span></a></li>
+<<<<<<< HEAD
                 <li class="submenu">
                     <a href="javascript:void(0);">
                         <i class="ti ti-building-community"></i><span>Administración de Planta</span>
@@ -43,6 +44,9 @@ $homeUrl = Yii::$app->homeUrl;
                     </ul>
                 </li>
                 <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0) ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Novedades</span></a></li>
+=======
+                <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0 || $path === 'sistema/novedad' || str_starts_with($path, 'sistema/novedad/')) ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Novedades</span></a></li>
+>>>>>>> ac4d779dc8d20512466fb3a9bd6da4801dc06934
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
                 <li class="submenu">
@@ -56,7 +60,7 @@ $homeUrl = Yii::$app->homeUrl;
                         <li><a href="<?= Url::to(['/sistema/presupuesto/pending']) ?>" class="<?php echo ($path == 'sistema/presupuesto/pending') ? 'active' : ''; ?>">Pendientes por aprobar</a></li>
                     </ul>
                 </li>
-                <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo ($path == 'sistema/empleados') ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
+                <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo (strpos($path, 'sistema/empleados') === 0) ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/contratos']) ?>" class="<?php echo ($path == 'sistema/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Contratos</span></a></li>
 
                 <li class="menu-title"><span>Mallas</span></li>

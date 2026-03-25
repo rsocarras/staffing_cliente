@@ -15,16 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $dias = PresupuestoConceptoDia::optsDiaSemana();
 
-$estadoCls = 'bg-secondary';
-if ($model->estado === Presupuesto::ESTADO_APROBADO) {
-    $estadoCls = 'bg-success';
-} elseif ($model->estado === Presupuesto::ESTADO_PENDIENTE_APROBACION) {
-    $estadoCls = 'bg-warning text-dark';
-} elseif ($model->estado === Presupuesto::ESTADO_RECHAZADO) {
-    $estadoCls = 'bg-danger';
-} elseif ($model->estado === Presupuesto::ESTADO_BORRADOR) {
-    $estadoCls = 'bg-info text-dark';
-}
+$estadoCls = 'badge-soft-' . $model->getEstadoBadgeSoftClass();
 ?>
 
 <div class="page-wrapper">
@@ -63,10 +54,10 @@ if ($model->estado === Presupuesto::ESTADO_APROBADO) {
                 <div class="row g-2">
                     <div class="col-md-4">
                         <div class="text-muted small">Estado</div>
-                        <div><span class="badge <?= $estadoCls ?>"><?= Html::encode($model->getEstadoLabel()) ?></span>
+                        <div><span class="badge <?= Html::encode($estadoCls) ?>"><?= Html::encode($model->getEstadoLabel()) ?></span>
                             v<?= (int) $model->version ?>
                             <?php if (!$model->activo): ?>
-                                <span class="badge bg-dark">Inactivo</span>
+                                <span class="badge badge-soft-danger">Inactivo</span>
                             <?php endif; ?>
                         </div>
                     </div>

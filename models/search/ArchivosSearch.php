@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Archivos;
@@ -52,15 +53,13 @@ class ArchivosSearch extends Archivos
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'size_bytes' => $this->size_bytes,
             'uploaded_by' => $this->uploaded_by,
             'created_at' => $this->created_at,
@@ -71,6 +70,8 @@ class ArchivosSearch extends Archivos
             ->andFilterWhere(['like', 'filename', $this->filename])
             ->andFilterWhere(['like', 'mime', $this->mime])
             ->andFilterWhere(['like', 'sha256', $this->sha256]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

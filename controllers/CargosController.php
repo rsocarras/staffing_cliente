@@ -6,7 +6,9 @@ use app\components\TenantContext;
 use app\models\Area;
 use app\models\Cargos;
 use app\models\search\CargosSearch;
+use app\services\AdministracionPlantaService;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -45,7 +47,15 @@ class CargosController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $baseQuery = Cargos::find()->alias('cargos');
+        TenantContext::applyFilter($baseQuery, 'cargos.empresa_id');
+        $summaryCounts = [
+            'total' => (int) (clone $baseQuery)->count(),
+            'activos' => (int) (clone $baseQuery)->andWhere(['cargos.activo' => 1])->count(),
+            'inactivos' => (int) (clone $baseQuery)->andWhere(['cargos.activo' => 0])->count(),
+        ];
+
+        return $this->render('index', ['summaryCounts' => $summaryCounts]);
     }
 
     /**
@@ -98,7 +108,7 @@ class CargosController extends Controller
                 \yii\helpers\Html::encode($model->codigo ?? '-'),
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
                 \yii\helpers\Html::encode($model->descripcion ?? '-'),
-                $model->activo ? '<span class="badge bg-success">Sí</span>' : '<span class="badge bg-secondary">No</span>',
+                $model->activo ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>',
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }
@@ -187,23 +197,24 @@ class CargosController extends Controller
     }
 
     /**
-     * Retorna sub-áreas por área (JSON). Para dropdown dependiente.
-     * @param int $area_id
-     * @return array
+     * Retorna sub-áreas por área (JSON). Misma lógica que contratos (getSubAreaOptions).
      */
-    public function actionGetSubAreas($area_id)
+    public function actionGetSubAreas()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $subAreas = Area::find()
-            ->where([
-                'area_padre' => (int) $area_id,
-                'empresas_id' => TenantContext::requireEmpresaId(),
-            ])
-            ->orderBy('nombre')
-            ->all();
+        $raw = Yii::$app->request->get('area_id');
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        $service = new AdministracionPlantaService();
+        $rows = $service->getSubAreaOptions((int) $raw, TenantContext::requireEmpresaId());
+
         return array_map(function ($a) {
-            return ['id' => $a->id, 'nombre' => $a->nombre];
-        }, $subAreas);
+            return [
+                'id' => (int) $a->id,
+                'nombre' => (string) ($a->nombre ?? ''),
+            ];
+        }, $rows);
     }
 
     /**
@@ -269,8 +280,29 @@ class CargosController extends Controller
      */
     public function actionFormAjax($id)
     {
+        $model = $this->findModel($id);
+        $empresaId = TenantContext::requireEmpresaId();
+        $service = new AdministracionPlantaService();
+        $areasList = ArrayHelper::map(
+            Area::find()
+                ->where(['empresas_id' => $empresaId])
+                ->orderBy(['nombre' => SORT_ASC])
+                ->all(),
+            'id',
+            'nombre'
+        );
+        $subAreasList = $model->area_id
+            ? ArrayHelper::map(
+                $service->getSubAreaOptions((int) $model->area_id, $empresaId),
+                'id',
+                'nombre'
+            )
+            : [];
+
         return $this->renderPartial('_form_modal', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'areasList' => $areasList,
+            'subAreasList' => $subAreasList,
         ]);
     }
 

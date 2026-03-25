@@ -1,5 +1,7 @@
 <?php
 
+use app\models\Novedad;
+use app\models\NovedadConcepto;
 use app\models\NovedadFlujo;
 use app\models\NovedadTipo;
 use yii\helpers\Html;
@@ -9,6 +11,11 @@ use yii\helpers\Url;
 /** @var NovedadTipo[] $tipos */
 /** @var NovedadFlujo[] $flujos */
 /** @var app\models\Profile[] $profiles */
+/** @var NovedadConcepto[] $conceptosFiltro */
+
+$hasFlujoCol = Novedad::hasNovedadFlujoIdColumn();
+$conceptosFiltro = $conceptosFiltro ?? [];
+/** @var array $summaryCounts */
 
 $canAddNovedad = $tipos !== [] && $flujos !== [] && $profiles !== [];
 
@@ -27,15 +34,13 @@ $formAjaxUrl = Url::to(['/novedad/form-ajax']);
 $updateAjaxUrl = Url::to(['/novedad/update-ajax']);
 $flujoAjaxUrl = Url::to(['/novedad/flujo-ajax']);
 $deleteUrl = Url::to(['/novedad/delete']);
-$createAjaxUrl = Url::to(['/novedad/create-ajax']);
 $conceptosUrl = Url::to(['/novedad/conceptos-por-tipo']);
 $kanbanDataNovedadUrl = Url::to(['/novedad/kanban-data-novedad']);
 $moveStepUrl = Url::to(['/novedad/move-step']);
+$solicitudWebUrl = Url::to(['/novedad/create']);
 
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfParam = Yii::$app->request->csrfParam;
-
-$hasFlujoCol = \app\models\Novedad::hasNovedadFlujoIdColumn();
 
 $this->registerCss('
 #modal-flujo-novedad.modal { overflow: visible !important; }
@@ -67,12 +72,19 @@ $this->registerCss('
 
 <div class="page-wrapper">
     <div class="content">
-        <div class="card mb-0">
-            <div class="card-body">
-                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
+        <!-- 1. Encabezado -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
-                        <p class="text-muted small mb-0 mt-1">Alta, edición y seguimiento del flujo de cada novedad.</p>
+                        <p class="text-muted small mb-0 mt-1">
+                            <?= Html::encode(Yii::t('app', 'Alta, edición y seguimiento del flujo de cada novedad.')) ?>
+                            <a href="<?= Html::encode($solicitudWebUrl) ?>" class="text-primary text-decoration-none fw-medium ms-1">
+                                <i class="ti ti-file-plus fs-14 align-middle"></i>
+                                <?= Html::encode(Yii::t('app', 'Nueva solicitud (formulario web)')) ?>
+                            </a>
+                        </p>
                     </div>
                     <div class="text-end">
                         <ol class="breadcrumb m-0 py-0">
@@ -82,7 +94,59 @@ $this->registerCss('
                         </ol>
                     </div>
                 </div>
+            </div>
+        </div>
 
+        <!-- 2. Cards resumen -->
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="row row-gap-4">
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-dark flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-building fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Total novedades</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['total'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-info flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-clock fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">En curso</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['en_curso'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
+                        <div class="card mb-0 flex-fill shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="avatar avatar-lg rounded-circle bg-success flex-shrink-0 me-3">
+                                    <span class="avatar-title text-white"><i class="ti ti-circle-check fs-22"></i></span>
+                                </div>
+                                <div>
+                                    <p class="mb-0 text-muted fs-13">Resueltas</p>
+                                    <h4 class="mb-0 fw-bold"><?= (int) ($summaryCounts['resueltas'] ?? 0) ?></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Contenido: alertas, acciones y tabla -->
+        <div class="card mb-0">
+            <div class="card-body py-3">
                 <?php if ($tipos === []): ?>
                     <div class="alert alert-info mb-4">
                         No hay tipos de novedad para su empresa. Definí tipos en <strong>Sistema → Tipo de Novedad</strong> antes de crear novedades.
@@ -93,14 +157,78 @@ $this->registerCss('
                         No hay colaboradores activos en su empresa para asociar a la novedad. Verificá empleados / perfiles.
                     </div>
                 <?php endif; ?>
+                <?php if ($hasFlujoCol && $tipos !== [] && $flujos === []): ?>
+                    <div class="alert alert-warning mb-4">
+                        No hay <strong>flujos de novedad activos</strong> en el sistema. Algunas columnas y el tablero Kanban pueden no estar disponibles. Contactá al administrador.
+                    </div>
+                <?php endif; ?>
 
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
-                    <div class="input-group w-auto input-group-flat">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+                    <div class="input-group w-auto input-group-flat" style="min-width: 220px;">
                         <span class="input-group-text border-end-0"><i class="ti ti-search"></i></span>
-                        <input type="text" class="form-control form-control-sm" id="novedad-search" placeholder="Buscar...">
+                        <input type="text" class="form-control form-control-sm" id="novedad-search" placeholder="<?= Html::encode(Yii::t('app', 'Buscar en tabla…')) ?>">
                     </div>
                     <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <a href="javascript:void(0);" class="btn btn-primary <?= $canAddNovedad ? '' : 'disabled' ?>" data-bs-toggle="modal" data-bs-target="#add_novedad"><i class="ti ti-plus me-1"></i>Agregar</a>
+                        <a href="<?= Html::encode($solicitudWebUrl) ?>" class="btn btn-outline-primary">
+                            <i class="ti ti-file-plus me-1"></i><?= Html::encode(Yii::t('app', 'Nueva solicitud')) ?>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card border rounded-3 mb-4 bg-light bg-opacity-25">
+                    <div class="card-body py-3">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-estado"><?= Html::encode(Yii::t('app', 'Estado')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-estado">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_BORRADOR) ?>"><?= Html::encode(Yii::t('app', 'Borrador')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_PENDIENTE) ?>"><?= Html::encode(Yii::t('app', 'Pendiente')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_APROBADA) ?>"><?= Html::encode(Yii::t('app', 'Aprobada')) ?></option>
+                                    <option value="<?= Html::encode(Novedad::ESTADO_RECHAZADA) ?>"><?= Html::encode(Yii::t('app', 'Rechazada')) ?></option>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-tipo"><?= Html::encode(Yii::t('app', 'Tipo')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-tipo">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <?php foreach ($tipos as $t): ?>
+                                        <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-concepto"><?= Html::encode(Yii::t('app', 'Concepto')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-concepto">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                    <?php foreach ($conceptosFiltro as $conc): ?>
+                                        <option value="<?= (int) $conc->id ?>"><?= Html::encode($conc->nombre) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-profile"><?= Html::encode(Yii::t('app', 'Persona')) ?></label>
+                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-profile">
+                                    <option value=""><?= Html::encode(Yii::t('app', 'Todas')) ?></option>
+                                    <?php foreach ($profiles as $pf): ?>
+                                        <option value="<?= (int) $pf->user_id ?>"><?= Html::encode(trim((string) ($pf->name ?: $pf->num_doc ?: '#' . $pf->user_id))) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-desde"><?= Html::encode(Yii::t('app', 'Fecha desde')) ?></label>
+                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-desde">
+                            </div>
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-hasta"><?= Html::encode(Yii::t('app', 'Fecha hasta')) ?></label>
+                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-hasta">
+                            </div>
+                            <div class="col-12 col-lg-auto ms-lg-auto">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="novedad-filter-clear">
+                                    <i class="ti ti-filter-off me-1"></i><?= Html::encode(Yii::t('app', 'Limpiar filtros')) ?>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -108,17 +236,20 @@ $this->registerCss('
                     <table class="table table-nowrap bg-white border mb-0" id="novedad-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Concepto</th>
-                                <th>Tipo</th>
+                                <th><?= Html::encode(Yii::t('app', 'ID')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Organización')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Persona')) ?></th>
+                                <th class="text-end"><?= Html::encode(Yii::t('app', 'Importe')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Concepto')) ?></th>
+                                <th><?= Html::encode(Yii::t('app', 'Tipo')) ?></th>
                                 <?php if ($hasFlujoCol): ?>
-                                    <th>Flujo</th>
+                                    <th><?= Html::encode(Yii::t('app', 'Flujo')) ?></th>
                                 <?php endif; ?>
-                                <th>Estado</th>
+                                <th><?= Html::encode(Yii::t('app', 'Estado')) ?></th>
                                 <?php if ($hasFlujoCol): ?>
-                                    <th>Paso actual</th>
+                                    <th><?= Html::encode(Yii::t('app', 'Paso actual')) ?></th>
                                 <?php endif; ?>
-                                <th class="text-end">Acciones</th>
+                                <th class="text-end"><?= Html::encode(Yii::t('app', 'Acciones')) ?></th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -206,81 +337,6 @@ $this->registerCss('
     </div>
 </div>
 
-<!-- Modal Agregar -->
-<div class="modal fade" id="add_novedad">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header border-0 pb-0 align-items-start">
-                <div class="me-3">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
-                            <i class="ti ti-plus fs-16"></i>
-                        </span>
-                        <h5 class="modal-title fw-bold mb-0">Nueva novedad</h5>
-                    </div>
-                    <p class="text-muted small mb-0 ps-1">Elegí colaborador, tipo, concepto y flujo. Los datos van en JSON.</p>
-                </div>
-                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="form-add-novedad">
-                <?= Html::hiddenInput($csrfParam, $csrfToken) ?>
-                <div class="modal-body pt-3 px-4 pb-2">
-                    <div id="novedad-add-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label">Colaborador</label>
-                            <select name="profile_id" id="novedad-add-profile" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($profiles as $p): ?>
-                                    <option value="<?= (int) $p->user_id ?>"><?= Html::encode(trim(($p->name ?: 'Sin nombre') . ' — ' . ($p->num_doc ?? ''))) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="form-text">Persona a la que aplica la novedad (no tiene que ser tu usuario).</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Tipo de novedad</label>
-                            <select name="novedad_tipo_id" id="novedad-add-tipo" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($tipos as $t): ?>
-                                    <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Concepto</label>
-                            <select name="concepto_id" id="novedad-add-concepto" class="form-select" required>
-                                <option value="">Primero elija tipo</option>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Flujo de novedad</label>
-                            <select name="novedad_flujo_id" class="form-select" required>
-                                <option value="">Seleccione…</option>
-                                <?php foreach ($flujos as $f): ?>
-                                    <option value="<?= (int) $f->id ?>"><?= Html::encode($f->nombre) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">Datos (JSON)</label>
-                            <textarea name="datos" class="form-control font-monospace small" rows="4" placeholder="{}"><?= Html::encode('{}') ?></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="ti ti-x me-1"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="btn-save-add-novedad">
-                        <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar</span>
-                        <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <?php
 $hasFlujoJs = $hasFlujoCol ? 'true' : 'false';
 if ($hasFlujoCol) {
@@ -288,18 +344,24 @@ if ($hasFlujoCol) {
             { data: 0 },
             { data: 1, render: function(d) { return d || ''; } },
             { data: 2, render: function(d) { return d || ''; } },
-            { data: 3, render: function(d) { return d || ''; } },
+            { data: 3, className: 'text-end', render: function(d) { return d || ''; } },
             { data: 4, render: function(d) { return d || ''; } },
             { data: 5, render: function(d) { return d || ''; } },
-            { data: 6, class: 'text-end', orderable: false, render: function(d) { return d || ''; } }
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, render: function(d) { return d || ''; } },
+            { data: 8, render: function(d) { return d || ''; } },
+            { data: 9, className: 'text-end', orderable: false, render: function(d) { return d || ''; } }
 COLS;
 } else {
     $columnsJs = <<<'COLS'
             { data: 0 },
             { data: 1, render: function(d) { return d || ''; } },
             { data: 2, render: function(d) { return d || ''; } },
-            { data: 3, render: function(d) { return d || ''; } },
-            { data: 4, class: 'text-end', orderable: false, render: function(d) { return d || ''; } }
+            { data: 3, className: 'text-end', render: function(d) { return d || ''; } },
+            { data: 4, render: function(d) { return d || ''; } },
+            { data: 5, render: function(d) { return d || ''; } },
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, className: 'text-end', orderable: false, render: function(d) { return d || ''; } }
 COLS;
 }
 
@@ -310,7 +372,17 @@ $(document).ready(function() {
     var table = $('#novedad-table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{$dataUrl}',
+        ajax: {
+            url: '{$dataUrl}',
+            data: function (d) {
+                d.filter_estado = $('#novedad-filter-estado').val() || '';
+                d.filter_novedad_tipo_id = $('#novedad-filter-tipo').val() || '';
+                d.filter_concepto_id = $('#novedad-filter-concepto').val() || '';
+                d.filter_profile_id = $('#novedad-filter-profile').val() || '';
+                d.filter_fecha_desde = $('#novedad-filter-fecha-desde').val() || '';
+                d.filter_fecha_hasta = $('#novedad-filter-fecha-hasta').val() || '';
+            }
+        },
         columns: [
 {$columnsJs}
         ],
@@ -326,6 +398,15 @@ $(document).ready(function() {
             zeroRecords: "No se encontraron registros",
             processing: "Procesando..."
         }
+    });
+
+    $(document).on('change', '.novedad-list-filter', function () {
+        table.draw();
+    });
+    $('#novedad-filter-clear').on('click', function () {
+        $('#novedad-filter-estado, #novedad-filter-tipo, #novedad-filter-concepto, #novedad-filter-profile').val('');
+        $('#novedad-filter-fecha-desde, #novedad-filter-fecha-hasta').val('');
+        table.draw();
     });
 
     $('#novedad-search').on('keyup', function() {
@@ -355,11 +436,22 @@ $(document).ready(function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-edit-novedad'));
         $('#modal-edit-novedad-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
-        $('#btn-save-edit-novedad').data('id', id);
+        $('#btn-save-edit-novedad').data('id', id).removeClass('d-none');
         modal.show();
-        $.get('{$formAjaxUrl}', { id: id }, function(html) {
+        $.ajax({
+            url: '{$formAjaxUrl}',
+            data: { id: id },
+            type: 'GET',
+            dataType: 'html'
+        }).done(function(html) {
             $('#modal-edit-novedad-body').html(html);
-        }).fail(function() {
+            $('#btn-save-edit-novedad').removeClass('d-none');
+        }).fail(function(xhr) {
+            if (xhr.status === 403 && xhr.responseText) {
+                $('#modal-edit-novedad-body').html(xhr.responseText);
+                $('#btn-save-edit-novedad').addClass('d-none');
+                return;
+            }
             $('#modal-edit-novedad-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
         });
     });
@@ -692,83 +784,34 @@ $(document).ready(function() {
             type: 'POST',
             data: { id: id, '{$csrfParam}': '{$csrfToken}' },
             dataType: 'json',
-            success: function() {
+            success: function(res) {
+                if (res && res.success === false) {
+                    var m = (res.message) ? res.message : 'No se pudo eliminar.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ title: 'No permitido', text: m, icon: 'warning' });
+                    } else {
+                        alert(m);
+                    }
+                    return;
+                }
                 table.ajax.reload(null, false);
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({ title: 'Eliminado', text: 'El registro ha sido eliminado.', icon: 'success', timer: 1500, showConfirmButton: false });
                 }
             },
-            error: function() {
+            error: function(xhr) {
+                var m = 'No se pudo eliminar.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    m = xhr.responseJSON.message;
+                }
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({ title: 'Error', text: 'No se pudo eliminar.', icon: 'error' });
+                    Swal.fire({ title: xhr.status === 403 ? 'No permitido' : 'Error', text: m, icon: xhr.status === 403 ? 'warning' : 'error' });
                 } else {
-                    alert('Error al eliminar.');
+                    alert(m);
                 }
             }
         });
     }
-
-    $('#form-add-novedad').on('submit', function(e) {
-        e.preventDefault();
-        var \$form = $(this);
-        var \$btn = $('#btn-save-add-novedad');
-        var \$errors = $('#novedad-add-form-errors');
-
-        \$errors.addClass('d-none').empty();
-        \$btn.prop('disabled', true);
-        \$btn.find('.btn-text').addClass('d-none');
-        \$btn.find('.btn-loading').removeClass('d-none');
-
-        $.ajax({
-            url: '{$createAjaxUrl}',
-            type: 'POST',
-            data: \$form.serialize(),
-            dataType: 'json',
-            success: function(res) {
-                if (res.success) {
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('add_novedad'));
-                    modal.hide();
-                    \$form[0].reset();
-                    $('#novedad-add-concepto').empty().append('<option value=\"\">Primero elija tipo</option>');
-                    table.ajax.reload(null, false);
-                } else {
-                    \$errors.html(res.message || 'No se pudo guardar.').removeClass('d-none');
-                }
-            },
-            error: function(xhr) {
-                var msg = 'Error al guardar.';
-                if (xhr.responseJSON && xhr.responseJSON.message) { msg = xhr.responseJSON.message; }
-                \$errors.html(msg).removeClass('d-none');
-            },
-            complete: function() {
-                \$btn.prop('disabled', false);
-                \$btn.find('.btn-text').removeClass('d-none');
-                \$btn.find('.btn-loading').addClass('d-none');
-            }
-        });
-    });
-
-    $('#novedad-add-tipo').on('change', function() {
-        var tid = $(this).val();
-        var \$c = $('#novedad-add-concepto');
-        \$c.empty().append('<option value=\"\">Cargando…</option>');
-        if (!tid) {
-            \$c.empty().append('<option value=\"\">Primero elija tipo</option>');
-            return;
-        }
-        $.getJSON('{$conceptosUrl}', { novedad_tipo_id: tid })
-            .done(function (res) {
-                \$c.empty();
-                if (!res.success || !res.items || !res.items.length) {
-                    \$c.append('<option value=\"\">Sin conceptos</option>');
-                    return;
-                }
-                \$c.append('<option value=\"\">Seleccione concepto</option>');
-                res.items.forEach(function (it) {
-                    \$c.append('<option value=\"' + it.id + '\">' + escapeHtml(it.nombre) + '</option>');
-                });
-            });
-    });
 
     $(document).on('change', '#novedad-edit-tipo', function() {
         var tid = $(this).val();
@@ -789,11 +832,6 @@ $(document).ready(function() {
             });
     });
 
-    $('#add_novedad').on('hidden.bs.modal', function() {
-        $('#form-add-novedad')[0].reset();
-        $('#novedad-add-concepto').empty().append('<option value=\"\">Primero elija tipo</option>');
-        $('#novedad-add-form-errors').addClass('d-none').empty();
-    });
 });
 JS;
 $this->registerJs($js, \yii\web\View::POS_READY);

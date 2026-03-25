@@ -2,6 +2,7 @@
 
 namespace app\services;
 
+use app\components\TenantContext;
 use app\models\Area;
 use app\models\Cargos;
 use app\models\CompanySetting;
@@ -41,13 +42,19 @@ class AdministracionPlantaService
 
     public function getCurrentEmpresaId()
     {
+        $tenantId = TenantContext::currentEmpresaId();
+        if ($tenantId !== null && $tenantId > 0) {
+            return $tenantId;
+        }
+
         return (int) $this->getCurrentProfile()->empresas_id;
     }
 
     public function getScopeContext()
     {
         $profile = $this->getCurrentProfile();
-        $empresaId = (int) $profile->empresas_id;
+        $tenantId = TenantContext::currentEmpresaId();
+        $empresaId = ($tenantId !== null && $tenantId > 0) ? $tenantId : (int) $profile->empresas_id;
         $fullAccess = $this->hasAnyRole(['admin_total', 'rrhh', 'admin', 'administrator', 'rrhh_interno', 'rrhh_cliente']);
         $readonly = $this->hasAnyRole(['gerente_sede']) && !$fullAccess;
         $allowedSedeIds = [];
@@ -291,9 +298,10 @@ class AdministracionPlantaService
             $sedesQuery->andWhere(['id' => $scope['allowedSedeIds']]);
         }
 
+        // Todas las áreas del tenant (tabla `area`); no filtrar solo por raíz
+        // porque muchos datos solo tienen jerarquía vía area_padre o el primer nivel no es null/0.
         $areasQuery = Area::find()
             ->where(['empresas_id' => $empresaId])
-            ->andWhere(['or', ['area_padre' => null], ['area_padre' => 0]])
             ->orderBy(['nombre' => SORT_ASC]);
         if (!empty($scope['allowedAreaIds'])) {
             $areasQuery->andWhere(['id' => $scope['allowedAreaIds']]);

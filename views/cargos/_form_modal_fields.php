@@ -47,6 +47,7 @@ $activoId = $isEdit ? 'cargos-edit-activo' : 'cargos-add-activo';
                     'prompt' => 'Seleccione sub-área',
                     'id' => $subAreaIdAttr,
                     'class' => 'form-select',
+                    'disabled' => !$model->area_id,
                 ]) ?>
             </div>
         </div>

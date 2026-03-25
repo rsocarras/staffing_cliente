@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\IntegrationLog;
@@ -52,15 +53,13 @@ class IntegrationLogSearch extends IntegrationLog
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'empresa_integration_id' => $this->empresa_integration_id,
             'status_code' => $this->status_code,
             'duration_ms' => $this->duration_ms,
@@ -72,6 +71,8 @@ class IntegrationLogSearch extends IntegrationLog
             ->andFilterWhere(['like', 'method', $this->method])
             ->andFilterWhere(['like', 'request_json', $this->request_json])
             ->andFilterWhere(['like', 'response_json', $this->response_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

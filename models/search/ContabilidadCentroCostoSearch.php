@@ -43,7 +43,6 @@ class ContabilidadCentroCostoSearch extends ContabilidadCentroCosto
     public function search($params, $formName = null)
     {
         $query = ContabilidadCentroCosto::find();
-        TenantContext::applyFilter($query, 'empresa_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,8 +51,7 @@ class ContabilidadCentroCostoSearch extends ContabilidadCentroCosto
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
@@ -67,6 +65,8 @@ class ContabilidadCentroCostoSearch extends ContabilidadCentroCosto
 
         $query->andFilterWhere(['like', 'codigo', $this->codigo])
             ->andFilterWhere(['like', 'nombre', $this->nombre]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }
