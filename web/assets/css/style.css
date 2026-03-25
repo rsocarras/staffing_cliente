@@ -11128,7 +11128,7 @@ html[data-bs-theme=dark] .auth-brand .logo-dark {
 }
 
 .login-item {
-  background-color: #fff;
+  background-color: var(--white);
   border: 1px solid var(--border-color);
   padding: 40px;
   border-radius: 5px;
