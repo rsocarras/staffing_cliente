@@ -2,8 +2,12 @@
 
 namespace app\controllers;
 
+use app\components\ContratoFormSupport;
+use app\components\ProfileFormOptionsProvider;
 use app\components\TenantContext;
+use app\models\Contrato;
 use app\models\Profile;
+use app\services\AdministracionPlantaService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -171,8 +175,33 @@ class EmpleadosController extends Controller
      */
     public function actionViewAjax($id): string
     {
+        $eid = TenantContext::requireEmpresaId();
+        $profile = $this->findProfileModel((int) $id);
+        $profileFormOptions = ProfileFormOptionsProvider::forEmpresaId($eid);
+        $profileFormOptions['empresaId'] = $eid;
+
+        $contratos = Contrato::find()
+            ->where(['empresa_id' => $eid, 'profile_id' => (int) $profile->user_id])
+            ->with(['contratoTipo', 'area', 'cargo'])
+            ->orderBy(['fecha_inicio' => SORT_DESC])
+            ->all();
+
+        $contratoNew = new Contrato();
+        $contratoNew->empresa_id = $eid;
+        $contratoNew->profile_id = (int) $profile->user_id;
+        $contratoNew->estado = Contrato::ESTADO_ACTIVO;
+        $contratoNew->fecha_inicio = date('Y-m-d');
+        $planta = new AdministracionPlantaService();
+        $contratoOptions = ContratoFormSupport::buildFormOptions($contratoNew, $planta);
+
         return $this->renderPartial('_view_modal', [
-            'model' => $this->findProfileModel((int) $id),
+            'model' => $profile,
+            'profileFormOptions' => $profileFormOptions,
+            'contratos' => $contratos,
+            'contratoNew' => $contratoNew,
+            'contratoOptions' => $contratoOptions,
+            'canManageContratos' => ContratoFormSupport::currentUserCanManageContratos(),
+            'userId' => (int) $profile->user_id,
         ]);
     }
 
@@ -182,7 +211,7 @@ class EmpleadosController extends Controller
     protected function findProfileModel(int $userId): Profile
     {
         $query = Profile::find()->alias('p')
-            ->with(['cargo', 'area', 'sede', 'empresas'])
+            ->with(['cargo', 'area', 'sede', 'empresas', 'locationSede', 'centroCosto', 'centroUtilidad'])
             ->where(['p.user_id' => $userId]);
         TenantContext::applyFilter($query, 'p.empresas_id');
         $model = $query->one();

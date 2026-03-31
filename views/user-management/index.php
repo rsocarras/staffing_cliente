@@ -8,6 +8,8 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var \yii\rbac\Role[] $allRoles */
 /** @var User $modelAdd */
+/** @var app\models\Profile $profileAdd */
+/** @var array $profileFormOptions */
 /** @var array $summaryCounts */
 
 $this->title = 'Usuarios';
@@ -126,7 +128,7 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 <!-- Modal Agregar Usuario -->
 <div class="modal fade" id="add_user">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-0 pb-0 align-items-start">
                 <div class="me-3">
@@ -140,85 +142,101 @@ $csrfParam = Yii::$app->request->csrfParam;
                 </div>
                 <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <?php $formAdd = ActiveForm::begin(['id' => 'form-add-user', 'action' => '#', 'method' => 'post']); ?>
-            <div class="modal-body pt-3 px-4 pb-2">
+            <?php $formAdd = ActiveForm::begin([
+                'id' => 'form-add-user',
+                'action' => '#',
+                'method' => 'post',
+                'options' => ['enctype' => 'multipart/form-data'],
+            ]); ?>
+            <div class="modal-body pt-3 px-4 pb-2 overflow-auto" style="max-height: min(75vh, calc(100vh - 11rem));">
                 <div id="user-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
-                <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <span class="avatar avatar-md bg-soft-primary text-primary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                            <i class="ti ti-user fs-20"></i>
-                        </span>
-                        <div>
-                            <h6 class="fw-semibold mb-1">Datos del usuario</h6>
-                            <p class="text-muted small mb-0">Usuario, correo, teléfono y contraseña.</p>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <?= $formAdd->field($modelAdd, 'username', [
-                                'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-at text-primary"></i></span>{input}</div>{error}{hint}',
-                                'options' => ['class' => 'mb-0'],
-                                'labelOptions' => ['class' => 'form-label fw-medium'],
-                            ])->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $formAdd->field($modelAdd, 'email', [
-                                'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-mail text-primary"></i></span>{input}</div>{error}{hint}',
-                                'options' => ['class' => 'mb-0'],
-                                'labelOptions' => ['class' => 'form-label fw-medium'],
-                            ])->textInput(['maxlength' => true, 'type' => 'email', 'class' => 'form-control']) ?>
-                        </div>
-                        <div class="col-12">
-                            <?= $formAdd->field($modelAdd, 'phone', [
-                                'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-phone text-primary"></i></span>{input}</div>{error}{hint}',
-                                'options' => ['class' => 'mb-0'],
-                                'labelOptions' => ['class' => 'form-label fw-medium'],
-                            ])->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
-                        </div>
-                        <div class="col-12">
-                            <?= $formAdd->field($modelAdd, 'isConfirmed', [
-                                'template' => '<div class="form-check form-switch">{input}{label}</div>{error}',
-                                'options' => ['class' => 'mb-0'],
-                            ])->checkbox(['class' => 'form-check-input', 'label' => 'Usuario confirmado (puede iniciar sesión)', 'labelOptions' => ['class' => 'form-check-label']]) ?>
-                        </div>
-                        <div class="col-12">
-                            <?= $formAdd->field($modelAdd, 'new_password', [
-                                'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-lock text-primary"></i></span>{input}</div>{error}{hint}',
-                                'options' => ['class' => 'mb-0'],
-                                'labelOptions' => ['class' => 'form-label fw-medium'],
-                            ])->passwordInput(['maxlength' => true, 'class' => 'form-control'])->hint('Mínimo 6 caracteres') ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <span class="avatar avatar-md bg-soft-info text-info rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                            <i class="ti ti-shield fs-20"></i>
-                        </span>
-                        <div>
-                            <h6 class="fw-semibold mb-1">Roles</h6>
-                            <p class="text-muted small mb-0">Asigne los roles de este usuario.</p>
-                        </div>
-                    </div>
-                    <div class="rounded-3 border bg-white p-3" style="max-height: 180px; overflow-y: auto;">
-                        <?php foreach ($allRoles as $name => $role): ?>
-                            <div class="form-check py-2 border-bottom border-opacity-25">
-                                <?= Html::checkbox('User[roleNames][]', false, [
-                                    'value' => $name,
-                                    'id' => 'user-add-role-' . preg_replace('/[^a-z0-9_]/', '_', $name),
-                                    'class' => 'form-check-input',
-                                ]) ?>
-                                <label class="form-check-label ms-2" for="user-add-role-<?= preg_replace('/[^a-z0-9_]/', '_', $name) ?>">
-                                    <?= Html::encode($name) ?>
-                                    <?php if (!empty($role->description)): ?>
-                                        <span class="text-muted small">— <?= Html::encode($role->description) ?></span>
-                                    <?php endif; ?>
-                                </label>
+                <ul class="nav nav-tabs nav-tabs-custom mb-3" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" type="button" data-bs-toggle="tab" data-bs-target="#add-tab-user" role="tab">Usuario</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" type="button" data-bs-toggle="tab" data-bs-target="#add-tab-profile" role="tab">Perfil</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="add-tab-user" role="tabpanel">
+                        <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
+                            <div class="d-flex align-items-start gap-3 mb-3">
+                                <span class="avatar avatar-md bg-soft-primary text-primary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                    <i class="ti ti-user fs-20"></i>
+                                </span>
+                                <div>
+                                    <h6 class="fw-semibold mb-1">Datos del usuario</h6>
+                                    <p class="text-muted small mb-0">Usuario, correo y contraseña.</p>
+                                </div>
                             </div>
-                        <?php endforeach; ?>
-                        <?php if (empty($allRoles)): ?>
-                            <p class="text-muted mb-0">No hay roles definidos.</p>
-                        <?php endif; ?>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <?= $formAdd->field($modelAdd, 'username', [
+                                        'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-at text-primary"></i></span>{input}</div>{error}{hint}',
+                                        'options' => ['class' => 'mb-0'],
+                                        'labelOptions' => ['class' => 'form-label fw-medium'],
+                                    ])->textInput(['maxlength' => true, 'class' => 'form-control']) ?>
+                                </div>
+                                <div class="col-md-6">
+                                    <?= $formAdd->field($modelAdd, 'email', [
+                                        'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-mail text-primary"></i></span>{input}</div>{error}{hint}',
+                                        'options' => ['class' => 'mb-0'],
+                                        'labelOptions' => ['class' => 'form-label fw-medium'],
+                                    ])->textInput(['maxlength' => true, 'type' => 'email', 'class' => 'form-control']) ?>
+                                </div>
+                                <div class="col-12">
+                                    <?= $formAdd->field($modelAdd, 'isConfirmed', [
+                                        'template' => '<div class="form-check form-switch">{input}{label}</div>{error}',
+                                        'options' => ['class' => 'mb-0'],
+                                    ])->checkbox(['class' => 'form-check-input', 'label' => 'Usuario confirmado (puede iniciar sesión)', 'labelOptions' => ['class' => 'form-check-label']]) ?>
+                                </div>
+                                <div class="col-12">
+                                    <?= $formAdd->field($modelAdd, 'new_password', [
+                                        'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-lock text-primary"></i></span>{input}</div>{error}{hint}',
+                                        'options' => ['class' => 'mb-0'],
+                                        'labelOptions' => ['class' => 'form-label fw-medium'],
+                                    ])->passwordInput(['maxlength' => true, 'class' => 'form-control'])->hint('Mínimo 6 caracteres') ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
+                            <div class="d-flex align-items-start gap-3 mb-3">
+                                <span class="avatar avatar-md bg-soft-info text-info rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                    <i class="ti ti-shield fs-20"></i>
+                                </span>
+                                <div>
+                                    <h6 class="fw-semibold mb-1">Roles</h6>
+                                    <p class="text-muted small mb-0">Asigne los roles de este usuario.</p>
+                                </div>
+                            </div>
+                            <div class="rounded-3 border bg-white p-3" style="max-height: 180px; overflow-y: auto;">
+                                <?php foreach ($allRoles as $name => $role): ?>
+                                    <div class="form-check py-2 border-bottom border-opacity-25">
+                                        <?= Html::checkbox('User[roleNames][]', false, [
+                                            'value' => $name,
+                                            'id' => 'user-add-role-' . preg_replace('/[^a-z0-9_]/', '_', $name),
+                                            'class' => 'form-check-input',
+                                        ]) ?>
+                                        <label class="form-check-label ms-2" for="user-add-role-<?= preg_replace('/[^a-z0-9_]/', '_', $name) ?>">
+                                            <?= Html::encode($name) ?>
+                                            <?php if (!empty($role->description)): ?>
+                                                <span class="text-muted small">— <?= Html::encode($role->description) ?></span>
+                                            <?php endif; ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($allRoles)): ?>
+                                    <p class="text-muted mb-0">No hay roles definidos.</p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="add-tab-profile" role="tabpanel">
+                        <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light">
+                            <h6 class="fw-semibold mb-3">Datos del perfil</h6>
+                            <?= $this->render('_profile_fields', ['profile' => $profileAdd, 'profileFormOptions' => $profileFormOptions]) ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,7 +254,7 @@ $csrfParam = Yii::$app->request->csrfParam;
 
 <!-- Modal Editar Usuario -->
 <div class="modal fade" id="modal-edit-user">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow">
             <div class="modal-header border-0 pb-0 align-items-start">
                 <div class="me-3">
@@ -250,7 +268,7 @@ $csrfParam = Yii::$app->request->csrfParam;
                 </div>
                 <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body pt-3 px-4 pb-2" id="modal-edit-user-body">
+            <div class="modal-body pt-3 px-4 pb-2 overflow-auto" id="modal-edit-user-body" style="max-height: min(75vh, calc(100vh - 11rem));">
                 <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
             </div>
             <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
@@ -311,6 +329,17 @@ $(document).ready(function() {
         modal.show();
         $.get(formAjaxUrl, { id: id }, function(html) {
             $('#modal-edit-user-body').html(html);
+            $('#modal-edit-user-body').find('[data-toggle="select2"]').each(function() {
+                var \$el = $(this);
+                if (\$el.data('select2')) {
+                    \$el.select2('destroy');
+                }
+                \$el.select2({
+                    width: '100%',
+                    placeholder: \$el.attr('data-placeholder') || '',
+                    allowClear: \$el.attr('data-allow-clear') === 'true'
+                });
+            });
         }).fail(function() {
             $('#modal-edit-user-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
         });
@@ -323,11 +352,14 @@ $(document).ready(function() {
         var \$errors = $('#user-edit-form-errors');
         \$errors.addClass('d-none').empty();
         \$btn.prop('disabled', true).find('.btn-text').addClass('d-none').end().find('.btn-loading').removeClass('d-none');
-        var formData = \$form.serialize() + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        var formEl = document.getElementById('form-edit-user-modal');
+        var fd = new FormData(formEl);
         $.ajax({
             url: updateAjaxUrl.replace(/\/$/, '') + (updateAjaxUrl.indexOf('?') >= 0 ? '&' : '?') + 'id=' + id,
             type: 'POST',
-            data: formData,
+            data: fd,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(res) {
                 if (res.success) {
@@ -357,11 +389,14 @@ $(document).ready(function() {
         var \$errors = $('#user-form-errors');
         \$errors.addClass('d-none').empty();
         \$btn.prop('disabled', true).find('.btn-text').addClass('d-none').end().find('.btn-loading').removeClass('d-none');
-        var formData = \$form.serialize() + '&' + csrfParam + '=' + encodeURIComponent(csrfToken);
+        var formEl = document.getElementById('form-add-user');
+        var fd = new FormData(formEl);
         $.ajax({
             url: createAjaxUrl,
             type: 'POST',
-            data: formData,
+            data: fd,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(res) {
                 if (res.success) {

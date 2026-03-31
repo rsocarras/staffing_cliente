@@ -47,10 +47,10 @@ class NovedadController extends Controller
     public function behaviors(): array
     {
         return array_merge(parent::behaviors(), [
-            'verbs' => [
+                'verbs' => [
                 'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
+                    'actions' => [
+                        'delete' => ['POST'],
                     'create-ajax' => ['POST'],
                     'update-ajax' => ['POST'],
                     'move-step' => ['POST'],
@@ -1152,7 +1152,7 @@ class NovedadController extends Controller
                     Novedad::deleteAll(['id' => $hijas]);
                 }
                 Novedad::deleteAll(['id' => $origenId]);
-            } else {
+        } else {
                 Novedad::deleteAll(['id' => $ids]);
             }
             $tx->commit();

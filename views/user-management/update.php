@@ -4,7 +4,9 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 
 /** @var app\models\User $model */
-/** @var array $allRoles */
+/** @var app\models\Profile $profile */
+/** @var array $profileFormOptions */
+/** @var \yii\rbac\Role[] $allRoles */
 
 $this->title = 'Editar usuario: ' . $model->username;
 ?>
@@ -29,6 +31,12 @@ $this->title = 'Editar usuario: ' . $model->username;
         <h5>Datos del usuario</h5>
     </div>
     <div class="card-body">
-        <?= $this->render('_form', ['model' => $model, 'allRoles' => $allRoles, 'isNew' => false]) ?>
+        <?= $this->render('_form', [
+            'model' => $model,
+            'profile' => $profile,
+            'profileFormOptions' => $profileFormOptions,
+            'allRoles' => $allRoles,
+            'isNew' => false,
+        ]) ?>
     </div>
 </div>

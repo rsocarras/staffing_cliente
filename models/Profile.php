@@ -58,6 +58,9 @@ use yii\helpers\Url;
  */
 class Profile extends \yii\db\ActiveRecord
 {
+    /** Creación/edición desde administración de usuarios (tenant); sin user_id hasta guardar el User. */
+    public const SCENARIO_USER_MANAGEMENT = 'user_management';
+
     /** @var \yii\web\UploadedFile|null Foto de perfil en formulario (no se persiste en BD) */
     public $photoFile;
 
@@ -137,13 +140,38 @@ class Profile extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $keys = array_keys($this->getAttributes());
+        $scenarios[self::SCENARIO_USER_MANAGEMENT] = array_values(array_unique(array_merge($keys, ['photoFile'])));
+
+        return $scenarios;
+    }
+
+    /**
+     * Atributos persistibles al crear el perfil vinculado a un User (excluye user_id).
+     * @return string[]
+     */
+    public static function persistableAttributeNames(): array
+    {
+        static $cached = null;
+        if ($cached === null) {
+            $p = new static();
+            $cached = array_values(array_diff(array_keys($p->getAttributes()), ['user_id']));
+        }
+
+        return $cached;
+    }
+
     public function rules()
     {
         return [
             [['name', 'public_email', 'gravatar_email', 'gravatar_id', 'location', 'timezone', 'bio', 'sexo', 'about', 'telefono', 'birthday', 'position', 'photo_', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'address', 'data_json', 'sede_id', 'location_sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'city', 'area_id'], 'default', 'value' => null],
             [['tipo_doc'], 'default', 'value' => 'CC'],
             [['estado'], 'default', 'value' => 'activo'],
-            [['user_id', 'num_doc'], 'required'],
+            [['user_id', 'num_doc'], 'required', 'except' => self::SCENARIO_USER_MANAGEMENT],
+            [['num_doc', 'name', 'tipo_doc', 'estado', 'empresas_id'], 'required', 'on' => self::SCENARIO_USER_MANAGEMENT],
             [['user_id', 'empresas_id', 'sede_id', 'location_sede_id', 'cargo_id', 'centro_costo_id', 'centro_utilidad_id', 'area_id'], 'integer'],
             [['tipo_doc', 'bio', 'sexo', 'about', 'estado'], 'string'],
             [['birthday', 'data_json', 'photoFile'], 'safe'],
@@ -208,11 +236,12 @@ class Profile extends \yii\db\ActiveRecord
             'website' => 'Website',
             'address' => 'Address',
             'data_json' => 'Data Json',
-            'sede_id' => 'Sede ID',
-            'cargo_id' => 'Cargo ID',
+            'sede_id' => 'Sede',
+            'location_sede_id' => 'Sede (ubicación)',
+            'cargo_id' => 'Cargo',
             'centro_costo_id' => 'Centro Costo ID',
             'centro_utilidad_id' => 'Centro Utilidad ID',
-            'city' => 'City',
+            'city' => Yii::t('app', 'Ciudad'),
             'area_id' => 'Area ID',
         ];
     }

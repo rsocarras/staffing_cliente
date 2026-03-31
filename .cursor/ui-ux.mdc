@@ -1,0 +1,18 @@
+---
+alwaysApply: false
+---
+las confirmaciones siempre son con modales nunca alerts de js.
+
+Los Label de los inputs deben estar en negrilla, ligeramente espaciados del input al que pertenecen y espaciados del elemento anterior.
+
+- Pon placeholders en español a los inputs.
+
+- Los estilos de los formularios deben ser como el formulario de actualizacion en views/user-management/index.php
+
+- Los inputs de moneda deben tener formato de moneda con separadores de mil.
+
+- Los inputs que pertenecen a una entidad, deben traer los elementos y no ser campo para poner id. 
+
+- Los campos requeridos de un formulario deben estar marcados con un * de color rojo ligeramente espaciado del label.
+
+- Los textos deben ser en español LatinoAmerica
