@@ -142,6 +142,15 @@ $sedesBase = Url::to(['/novedad/sedes-por-ciudad']) . '?ciudad_id=';
         </div>
     </div>
 
+    <?php if (!empty($horasTipoId)): ?>
+        <div class="alert alert-info small mb-3 py-2" role="status">
+            <?= Yii::t(
+                'app',
+                'Para solicitar horas (intervalo hora inicio y fin, con troceo en servidor), elija en «Tipo / agrupador» la opción de novedades de tipo horas. Luego complete fecha, empleado y las horas que se muestran debajo.'
+            ) ?>
+        </div>
+    <?php endif; ?>
+
     <div id="bloque-concepto" class="mb-3">
         <?= $form->field($model, 'concepto_id', ['enableClientValidation' => false])->dropDownList([], [
             'prompt' => Yii::t('app', 'Seleccione...'),
