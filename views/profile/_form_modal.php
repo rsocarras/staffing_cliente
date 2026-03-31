@@ -3,7 +3,6 @@
 use app\models\Profile;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 
 /** @var app\models\Profile $model */
@@ -12,6 +11,7 @@ $form = ActiveForm::begin([
     'id' => 'form-edit-profile-modal',
     'action' => '',
     'method' => 'post',
+    'options' => ['enctype' => 'multipart/form-data'],
     'enableClientValidation' => false,
 ]);
 
@@ -31,12 +31,20 @@ $cargos = $empresasId ? \app\models\Cargos::find()->where(['empresa_id' => $empr
         </div>
     </div>
     <div class="col-xl-8">
-        <div class="d-flex align-items-center mb-3">
+        <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
             <div class="avatar avatar-xxl rounded-circle me-3 flex-shrink-0">
-                <img class="rounded-circle" src="<?= $model->photo_ ? Html::encode(Url::to($model->photo_)) : Html::encode(Url::to('@web/assets/img/users/user-13.jpg')) ?>" alt="img">
+                <img id="profile-photo-preview" class="rounded-circle object-fit-cover" alt="" src="<?= Html::encode($model->getPhotoPublicUrl()) ?>">
             </div>
             <div class="d-inline-flex flex-column align-items-start">
-                <span class="fs-13 text-muted">Tamaño recomendado 80px x 80px</span>
+                <?= $form->field($model, 'photoFile', [
+                    'template' => "{label}\n{input}\n{hint}\n{error}",
+                    'options' => ['class' => 'mb-0'],
+                ])->fileInput([
+                    'id' => 'profile-photo-input',
+                    'accept' => 'image/png,image/jpeg,image/gif,image/webp',
+                    'class' => 'form-control form-control-sm',
+                ])->label('Cambiar foto', ['class' => 'form-label']) ?>
+                <span class="fs-13 text-muted">PNG, JPG, GIF o WebP. Máx. 2 MB. Recomendado 80×80 px.</span>
             </div>
         </div>
     </div>

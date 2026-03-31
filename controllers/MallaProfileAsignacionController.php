@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\MallaProfileAsignacion;
 use app\models\Mallas;
-use app\models\Profile;
 use app\models\search\MallaProfileAsignacionSearch;
 use Yii;
 use yii\filters\AccessControl;
@@ -71,10 +71,7 @@ class MallaProfileAsignacionController extends Controller
         $query = MallaProfileAsignacion::find()
             ->joinWith(['profile', 'malla']);
 
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $query->andWhere(['malla_profile_asignacion.empresa_id' => $empresaId]);
-        }
+        TenantContext::applyFilter($query, 'malla_profile_asignacion.empresa_id');
 
         $totalCount = (int) $query->count();
 
@@ -108,12 +105,17 @@ class MallaProfileAsignacionController extends Controller
 
         $data = [];
         foreach ($models as $model) {
+            $estadoCls = MallaProfileAsignacion::estadoAprobacionBadgeSoftClass($model->estado_aprobacion);
+            $estadoHtml = '<span class="badge badge-soft-' . $estadoCls . '">' . Html::encode($model->displayEstadoAprobacion()) . '</span>';
+            $actualHtml = (int) $model->es_actual === 1
+                ? '<span class="badge badge-soft-success">S?</span>'
+                : '<span class="badge badge-soft-danger">No</span>';
             $data[] = [
                 (int) $model->id,
                 '<span class="fw-medium text-dark">' . Html::encode($model->profile ? $model->profile->name : ($model->profile_id ?? '-')) . '</span>',
                 Html::encode($model->malla ? $model->malla->nombre : ($model->malla_id ?? '-')),
-                Html::encode($model->displayEstadoAprobacion()),
-                (int) $model->es_actual === 1 ? 'Sí' : 'No',
+                $estadoHtml,
+                $actualHtml,
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }
@@ -129,13 +131,10 @@ class MallaProfileAsignacionController extends Controller
     public function actionCreate()
     {
         $model = new MallaProfileAsignacion();
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $model->empresa_id = $empresaId;
-        }
+        $model->empresa_id = TenantContext::requireEmpresaId();
 
         if ($this->request->isPost && $model->load($this->request->post())) {
-            $model->empresa_id = $empresaId ?: $model->empresa_id;
+            $model->empresa_id = TenantContext::requireEmpresaId();
             $model->estado_aprobacion = MallaProfileAsignacion::ESTADO_PENDIENTE;
             $model->motivo_rechazo = null;
             $model->solicitado_por = Yii::$app->user->id;
@@ -150,7 +149,7 @@ class MallaProfileAsignacionController extends Controller
             }
 
             if (!$model->hasErrors() && $model->save()) {
-                Yii::$app->session->setFlash('success', 'Asignación enviada a aprobación RRHH.');
+                Yii::$app->session->setFlash('success', 'Asignaci?n enviada a aprobaci?n RRHH.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -167,16 +166,13 @@ class MallaProfileAsignacionController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $model = new MallaProfileAsignacion();
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null) {
-            $model->empresa_id = $empresaId;
-        }
+        $model->empresa_id = TenantContext::requireEmpresaId();
 
         if (!$this->request->isPost || !$model->load(Yii::$app->request->post())) {
-            return ['success' => false, 'errors' => ['general' => ['Datos inválidos.']]];
+            return ['success' => false, 'errors' => ['general' => ['Datos inv?lidos.']]];
         }
 
-        $model->empresa_id = $empresaId ?: $model->empresa_id;
+        $model->empresa_id = TenantContext::requireEmpresaId();
         $model->estado_aprobacion = MallaProfileAsignacion::ESTADO_PENDIENTE;
         $model->motivo_rechazo = null;
         $model->solicitado_por = Yii::$app->user->id;
@@ -193,7 +189,7 @@ class MallaProfileAsignacionController extends Controller
         if (!$model->hasErrors() && $model->save()) {
             return [
                 'success' => true,
-                'message' => 'Asignación creada. Enviada a aprobación RRHH.',
+                'message' => 'Asignaci?n creada. Enviada a aprobaci?n RRHH.',
             ];
         }
 
@@ -219,7 +215,7 @@ class MallaProfileAsignacionController extends Controller
             }
 
             if (!$model->hasErrors() && $model->save()) {
-                Yii::$app->session->setFlash('success', 'Asignación actualizada y enviada a aprobación RRHH.');
+                Yii::$app->session->setFlash('success', 'Asignaci?n actualizada y enviada a aprobaci?n RRHH.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -252,7 +248,7 @@ class MallaProfileAsignacionController extends Controller
         $model = $this->findModel($id);
 
         if (!$this->request->isPost || !$model->load(Yii::$app->request->post())) {
-            return ['success' => false, 'errors' => ['general' => ['Datos inválidos.']]];
+            return ['success' => false, 'errors' => ['general' => ['Datos inv?lidos.']]];
         }
 
         $model->estado_aprobacion = MallaProfileAsignacion::ESTADO_PENDIENTE;
@@ -271,7 +267,7 @@ class MallaProfileAsignacionController extends Controller
         if (!$model->hasErrors() && $model->save()) {
             return [
                 'success' => true,
-                'message' => 'Asignación actualizada y enviada a aprobación RRHH.',
+                'message' => 'Asignaci?n actualizada y enviada a aprobaci?n RRHH.',
             ];
         }
 
@@ -305,7 +301,7 @@ class MallaProfileAsignacionController extends Controller
     {
         $model = $this->findModel($id);
         $model->approve(Yii::$app->user->id);
-        Yii::$app->session->setFlash('success', 'Asignación a empleado aprobada.');
+        Yii::$app->session->setFlash('success', 'Asignaci?n a empleado aprobada.');
         return $this->redirect($this->request->referrer ?: ['view', 'id' => $id]);
     }
 
@@ -319,27 +315,17 @@ class MallaProfileAsignacionController extends Controller
         $model->es_actual = 0;
         $model->activo = 0;
         $model->save(false);
-        Yii::$app->session->setFlash('success', 'Asignación a empleado rechazada.');
+        Yii::$app->session->setFlash('success', 'Asignaci?n a empleado rechazada.');
         return $this->redirect($this->request->referrer ?: ['view', 'id' => $id]);
     }
 
     protected function findModel($id): MallaProfileAsignacion
     {
-        $model = MallaProfileAsignacion::findOne(['id' => $id]);
+        $model = MallaProfileAsignacion::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()]);
         if ($model === null) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $empresaId = $this->currentEmpresaId();
-        if ($empresaId !== null && (int) $model->empresa_id !== (int) $empresaId) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
         return $model;
-    }
-
-    private function currentEmpresaId(): ?int
-    {
-        $profile = Profile::findOne(['user_id' => Yii::$app->user->id]);
-        return $profile ? (int) $profile->empresas_id : null;
     }
 
     private function isMallaAprobada(int $mallaId): bool

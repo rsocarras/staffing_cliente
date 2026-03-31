@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\AuthAssignment;
+use app\models\User;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -54,6 +56,7 @@ class RbacController extends Controller
         $allPermissions = $auth->getPermissions();
         return $this->render('roles', [
             'allPermissions' => $allPermissions,
+            'summaryCounts' => $this->rbacSummaryCounts(),
         ]);
     }
 
@@ -307,7 +310,27 @@ class RbacController extends Controller
      */
     public function actionPermissions()
     {
-        return $this->render('permissions');
+        return $this->render('permissions', [
+            'summaryCounts' => $this->rbacSummaryCounts(),
+        ]);
+    }
+
+    /**
+     * Métricas para cards en vistas de roles / permisos.
+     *
+     * @return array{roles:int,permissions:int,users:int}
+     */
+    private function rbacSummaryCounts(): array
+    {
+        $auth = Yii::$app->authManager;
+        $q = User::find()->alias('u')->innerJoinWith(['profile p']);
+        TenantContext::applyFilter($q, 'p.empresas_id');
+
+        return [
+            'roles' => count($auth->getRoles()),
+            'permissions' => count($auth->getPermissions()),
+            'users' => (int) $q->count(),
+        ];
     }
 
     /**

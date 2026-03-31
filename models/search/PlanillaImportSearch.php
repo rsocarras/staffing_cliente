@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PlanillaImport;
@@ -52,15 +53,13 @@ class PlanillaImportSearch extends PlanillaImport
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'payroll_period_id' => $this->payroll_period_id,
             'template_id' => $this->template_id,
             'archivo_id' => $this->archivo_id,
@@ -71,6 +70,8 @@ class PlanillaImportSearch extends PlanillaImport
 
         $query->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'resumen_json', $this->resumen_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

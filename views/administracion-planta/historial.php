@@ -13,7 +13,6 @@ use yii\helpers\Url;
 $this->title = 'Historial de planta';
 $this->params['breadcrumbs'][] = ['label' => 'Administración de planta', 'url' => ['dashboard']];
 $this->params['breadcrumbs'][] = $this->title;
-$this->registerCssFile(Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css'), ['depends' => ['yii\bootstrap5\BootstrapAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 ?>

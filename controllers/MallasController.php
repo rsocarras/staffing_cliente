@@ -8,6 +8,7 @@ use app\models\MallaProfileAsignacion;
 use app\models\Mallas;
 use app\models\MallasHorarios;
 use app\models\search\MallasSearch;
+use app\services\MallaSpecialHoursSummaryService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Response;
@@ -83,10 +84,15 @@ class MallasController extends Controller
     {
         $model = $this->findModel($id);
         $readOnly = $this->isMallaAssigned((int) $model->id) || !$this->supportsKanbanEditor($model);
+        $weekContext = MallaSpecialHoursSummaryService::buildWeekContext(
+            $model,
+            (string) $this->request->get('week_start', '')
+        );
 
         return $this->render('create-kanban', [
             'model' => $model,
             'readOnly' => $readOnly,
+            'weekContext' => $weekContext,
         ]);
     }
 
@@ -167,9 +173,15 @@ class MallasController extends Controller
             $model->activo = 1;
         }
 
+        $weekContext = MallaSpecialHoursSummaryService::buildWeekContext(
+            $model,
+            (string) $this->request->get('week_start', '')
+        );
+
         return $this->render('create-kanban', [
             'model' => $model,
             'readOnly' => false,
+            'weekContext' => $weekContext,
         ]);
     }
 
@@ -348,11 +360,7 @@ class MallasController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Mallas::findOne(['id' => $id])) !== null) {
-            $empresaId = $this->currentEmpresaId();
-            if ($empresaId !== null && (int) $model->empresa_id !== (int) $empresaId) {
-                throw new NotFoundHttpException('The requested page does not exist.');
-            }
+        if (($model = Mallas::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

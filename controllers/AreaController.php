@@ -43,7 +43,15 @@ class AreaController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $baseQuery = Area::find()->alias('area');
+        TenantContext::applyFilter($baseQuery, 'area.empresas_id');
+        $summaryCounts = [
+            'total' => (int) (clone $baseQuery)->count(),
+            'raices' => (int) (clone $baseQuery)->andWhere(['area.area_padre' => null])->count(),
+            'subareas' => (int) (clone $baseQuery)->andWhere(['not', ['area.area_padre' => null]])->count(),
+        ];
+
+        return $this->render('index', ['summaryCounts' => $summaryCounts]);
     }
 
     /**

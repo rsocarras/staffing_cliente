@@ -10,6 +10,7 @@ use yii\helpers\Html;
 $cargo = $model->cargo ? $model->cargo->nombre : ($model->cargo_id ?? '-');
 $malla = $model->malla ? $model->malla->nombre : ($model->malla_id ?? '-');
 $estado = $model->displayEstadoAprobacion();
+$estadoBadgeCls = MallaCargoAsignacion::estadoAprobacionBadgeSoftClass($model->estado_aprobacion);
 ?>
 
 <div class="card border-0 shadow-sm mb-0">
@@ -36,7 +37,7 @@ $estado = $model->displayEstadoAprobacion();
                     <span class="badge bg-light text-dark me-2 px-2 py-1"><i class="ti ti-status-question small"></i></span>
                     <div>
                         <small class="text-muted d-block">Estado</small>
-                        <span class="fw-medium"><?= Html::encode((string) $estado) ?></span>
+                        <span class="badge badge-soft-<?= Html::encode($estadoBadgeCls) ?>"><?= Html::encode((string) $estado) ?></span>
                     </div>
                 </div>
             </div>

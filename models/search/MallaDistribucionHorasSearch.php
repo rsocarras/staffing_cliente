@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\MallaDistribucionHoras;
@@ -53,15 +54,13 @@ class MallaDistribucionHorasSearch extends MallaDistribucionHoras
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'payroll_period_id' => $this->payroll_period_id,
             'profile_id' => $this->profile_id,
             'sede_id' => $this->sede_id,
@@ -73,6 +72,8 @@ class MallaDistribucionHorasSearch extends MallaDistribucionHoras
             'created_by' => $this->created_by,
             'created_at' => $this->created_at,
         ]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

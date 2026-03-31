@@ -106,8 +106,8 @@ class LocationCountryController extends Controller
                 $model->iso_alpha3,
                 $model->region,
                 $model->is_active
-                    ? '<span class="badge bg-success">' . Yii::t('app', 'Yes') . '</span>'
-                    : '<span class="badge bg-secondary">' . Yii::t('app', 'No') . '</span>',
+                    ? '<span class="badge badge-soft-success">' . Yii::t('app', 'Yes') . '</span>'
+                    : '<span class="badge badge-soft-danger">' . Yii::t('app', 'No') . '</span>',
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];
         }

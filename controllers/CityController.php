@@ -92,7 +92,7 @@ class CityController extends Controller
                 $model->country ? \yii\helpers\Html::encode($model->country->name) : '-',
                 $model->region ? \yii\helpers\Html::encode($model->region->name) : '-',
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->name) . '</span>',
-                $model->is_capital ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-secondary">No</span>',
+                $model->is_capital ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>',
                 $model->is_active ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>',
                 $this->renderPartial('_actions_dropdown', ['model' => $model]),
             ];

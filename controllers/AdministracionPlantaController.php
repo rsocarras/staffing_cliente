@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\components\TenantContext;
 use app\models\StaffingPlanta;
 use app\models\search\AdministracionPlantaDashboardSearch;
 use app\models\search\StaffingPlantaSearch;
@@ -282,7 +283,7 @@ class AdministracionPlantaController extends Controller
 
     protected function findModel($id)
     {
-        if (($model = StaffingPlanta::findOne(['id' => $id])) !== null) {
+        if (($model = StaffingPlanta::findOne(['id' => $id, 'empresa_id' => TenantContext::requireEmpresaId()])) !== null) {
             return $model;
         }
 

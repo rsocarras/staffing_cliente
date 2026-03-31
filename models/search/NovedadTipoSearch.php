@@ -2,11 +2,9 @@
 
 namespace app\models\search;
 
-use app\components\TenantContext;
-use Yii;
+use app\models\NovedadTipo;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\NovedadTipo;
 
 /**
  * NovedadTipoSearch represents the model behind the search form of `app\models\NovedadTipo`.
@@ -44,20 +42,6 @@ class NovedadTipoSearch extends NovedadTipo
     public function search($params, $formName = null)
     {
         $query = NovedadTipo::find();
-        $empresaId = TenantContext::currentEmpresaId();
-        $empresaId = (is_numeric($empresaId) && (int) $empresaId > 0) ? (int) $empresaId : null;
-
-        $empresaColumn = $this->hasAttribute('empresa_id')
-            ? 'empresa_id'
-            : ($this->hasAttribute('empresas_id') ? 'empresas_id' : null);
-
-        if ($empresaId === null || $empresaColumn === null) {
-            $query->where('0=1');
-        } else {
-            $query->andWhere([$empresaColumn => $empresaId]);
-        }
-
-        // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -66,8 +50,6 @@ class NovedadTipoSearch extends NovedadTipo
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 

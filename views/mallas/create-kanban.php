@@ -10,8 +10,10 @@ use yii\web\View;
 /** @var yii\web\View $this */
 /** @var app\models\Mallas $model */
 /** @var bool $readOnly */
+/** @var array|null $weekContext */
 
 $readOnly = $readOnly ?? false;
+$weekContext = is_array($weekContext ?? null) ? $weekContext : [];
 
 $this->title = $model->isNewRecord ? 'Creador de Turno Semanal' : 'Editor de Turno Semanal';
 $this->params['breadcrumbs'][] = ['label' => 'Mallas', 'url' => ['index']];
@@ -27,6 +29,27 @@ $days = [
     ['id' => 7, 'label' => 'Sábado', 'short' => 'SAB'],
 ];
 
+$weekDays = [];
+foreach ((array) ($weekContext['days'] ?? []) as $item) {
+    $weekDays[(int) ($item['id'] ?? 0)] = $item;
+}
+
+$days = array_map(static function (array $day) use ($weekDays) {
+    $meta = $weekDays[(int) $day['id']] ?? [];
+
+    return array_merge($day, [
+        'date' => (string) ($meta['date'] ?? ''),
+        'dayNumber' => (string) ($meta['dayNumber'] ?? ''),
+        'monthShort' => (string) ($meta['monthShort'] ?? ''),
+        'weekdayIndex' => (int) ($meta['weekdayIndex'] ?? 0),
+        'isSunday' => (bool) ($meta['isSunday'] ?? false),
+        'isHoliday' => (bool) ($meta['isHoliday'] ?? false),
+        'isSpecial' => (bool) ($meta['isSpecial'] ?? false),
+        'holidayName' => (string) ($meta['holidayName'] ?? ''),
+        'specialLabel' => (string) ($meta['specialLabel'] ?? ''),
+    ]);
+}, $days);
+
 $initialBoard = [
     'id' => $model->isNewRecord ? null : (int) $model->id,
     'nombre' => (string) ($model->nombre ?? ''),
@@ -37,6 +60,10 @@ $initialBoard = [
     'estadoLabel' => (string) $model->displayEstadoAprobacion(),
     'persistUrl' => $model->isNewRecord ? null : Url::current(),
 ];
+
+$selectedWeekStart = (string) ($weekContext['weekStart'] ?? date('Y-m-d'));
+$selectedWeekEnd = (string) ($weekContext['weekEnd'] ?? $selectedWeekStart);
+$weekRangeLabel = (string) ($weekContext['weekRangeLabel'] ?? '');
 
 $initialBlocks = array_map(static function (MallasHorarios $row) {
     return [
@@ -79,47 +106,47 @@ $css = <<<'CSS'
     border: 1px solid #e5e9f2;
     border-radius: 16px;
     box-shadow: none;
-    padding: 18px;
+    padding: 14px;
 }
 
 .scheduler-hero {
     display: flex;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .scheduler-hero__eyebrow {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: #64748b;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .scheduler-hero h1 {
-    font-size: 2.35rem;
-    line-height: 1;
-    margin: 0 0 8px;
+    font-size: 1.9rem;
+    line-height: 1.02;
+    margin: 0 0 6px;
     color: #0f172a;
     letter-spacing: -0.04em;
 }
 
 .scheduler-hero p {
     margin: 0;
-    font-size: 0.96rem;
+    font-size: 0.88rem;
     color: #5b6b84;
-    max-width: 620px;
+    max-width: 700px;
 }
 
 .scheduler-statusline {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .scheduler-status-badge {
@@ -127,8 +154,8 @@ $css = <<<'CSS'
     align-items: center;
     gap: 8px;
     border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 0.82rem;
+    padding: 5px 10px;
+    font-size: 0.76rem;
     font-weight: 700;
     border: 1px solid transparent;
 }
@@ -159,7 +186,7 @@ $css = <<<'CSS'
 
 .scheduler-board-id {
     color: #64748b;
-    font-size: 0.84rem;
+    font-size: 0.78rem;
     font-weight: 600;
 }
 
@@ -172,11 +199,11 @@ $css = <<<'CSS'
 }
 
 .scheduler-actions .btn {
-    min-width: 142px;
-    min-height: 44px;
-    border-radius: 12px;
+    min-width: 128px;
+    min-height: 38px;
+    border-radius: 10px;
     font-weight: 700;
-    padding: 0.45rem 1rem;
+    padding: 0.38rem 0.9rem;
 }
 
 .scheduler-actions .btn-primary {
@@ -185,31 +212,31 @@ $css = <<<'CSS'
 
 .scheduler-banner {
     display: none;
-    margin-bottom: 12px;
-    border-radius: 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
     border: 1px solid rgba(148, 163, 184, 0.2);
-    padding: 0.7rem 0.9rem;
+    padding: 0.55rem 0.8rem;
 }
 
 .scheduler-meta-grid {
     display: grid;
     grid-template-columns: 2fr 2fr 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 16px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .scheduler-field {
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     border: 1px solid #d8e3f1;
-    border-radius: 16px;
-    padding: 14px;
+    border-radius: 14px;
+    padding: 10px 12px;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .scheduler-field label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 0.72rem;
+    margin-bottom: 6px;
+    font-size: 0.68rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -218,12 +245,12 @@ $css = <<<'CSS'
 
 .scheduler-field .form-control,
 .scheduler-field .form-select {
-    border-radius: 12px;
+    border-radius: 10px;
     border-color: #d6e2f1;
-    min-height: 42px;
+    min-height: 38px;
     box-shadow: none;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.38rem;
+    padding-bottom: 0.38rem;
 }
 
 .scheduler-shell--readonly .scheduler-field .form-control[readonly],
@@ -237,9 +264,102 @@ $css = <<<'CSS'
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 10px;
     flex-wrap: wrap;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fbff;
+}
+
+.scheduler-calendar__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.scheduler-week-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+}
+
+.scheduler-week-filter label {
+    margin: 0;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.scheduler-week-filter .form-control {
+    min-height: 34px;
+    border-radius: 8px;
+    border-color: #d6e2f1;
+    box-shadow: none;
+    min-width: 148px;
+}
+
+.scheduler-week-filter__range {
+    color: #475569;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.scheduler-special-summary {
     margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.scheduler-special-summary__card {
+    background: #f8fbff;
+    border: 1px solid #dbe4f0;
+    border-radius: 12px;
+    padding: 9px 11px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.scheduler-special-summary__card small {
+    display: block;
+    margin-bottom: 0;
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.scheduler-special-summary__card strong {
+    display: block;
+    min-width: 64px;
+    font-size: 1.05rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+}
+
+.scheduler-special-summary__card p {
+    margin: 2px 0 0;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+.scheduler-special-summary__body {
+    min-width: 0;
 }
 
 .scheduler-calendar__hint {
@@ -301,6 +421,27 @@ $css = <<<'CSS'
     color: #0f172a;
 }
 
+.scheduler-calendar__date {
+    display: inline-flex;
+    margin-top: 4px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.scheduler-calendar__day-badge {
+    display: inline-flex;
+    margin-top: 6px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fff4d6;
+    color: #b45309;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
 .scheduler-calendar__head-total {
     text-align: right;
     min-width: 62px;
@@ -318,6 +459,15 @@ $css = <<<'CSS'
 .scheduler-calendar__head-total strong {
     margin-top: 4px;
     font-size: 0.82rem;
+}
+
+.scheduler-calendar__head-total em {
+    display: block;
+    margin-top: 4px;
+    font-style: normal;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #b45309;
 }
 
 .scheduler-calendar__body {
@@ -462,26 +612,32 @@ $css = <<<'CSS'
 }
 
 .scheduler-summary {
-    margin-top: 16px;
+    margin-top: 10px;
     display: grid;
     grid-template-columns: 1.1fr 1fr 1fr 1.4fr;
-    gap: 12px;
+    gap: 8px;
 }
 
 .scheduler-summary__card,
 .scheduler-summary__alerts {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    background: #f8fbff;
     border: 1px solid #dbe4f0;
-    border-radius: 18px;
-    padding: 16px 18px;
-    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: none;
+}
+
+.scheduler-summary__card {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
 }
 
 .scheduler-summary__card small,
 .scheduler-summary__alerts small {
     display: block;
-    margin-bottom: 8px;
-    font-size: 0.72rem;
+    margin-bottom: 5px;
+    font-size: 0.64rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -490,37 +646,44 @@ $css = <<<'CSS'
 
 .scheduler-summary__card strong {
     display: block;
-    font-size: 2.2rem;
+    min-width: 64px;
+    font-size: 1.15rem;
     line-height: 1;
-    letter-spacing: -0.06em;
+    letter-spacing: -0.03em;
     color: #0f172a;
 }
 
 .scheduler-summary__card p {
-    margin: 6px 0 0;
+    margin: 3px 0 0;
     color: #8b9bb1;
     font-weight: 700;
-    font-size: 0.84rem;
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+.scheduler-summary__body {
+    min-width: 0;
 }
 
 .scheduler-summary__alerts {
     border-color: #fecaca;
-    background: linear-gradient(180deg, #fff9f8 0%, #fff1ef 100%);
+    background: #fff7f5;
 }
 
 .scheduler-summary__alerts ul {
     margin: 0;
-    padding-left: 18px;
+    padding-left: 16px;
     color: #b42318;
+    font-size: 0.74rem;
 }
 
 .scheduler-summary__alerts li + li {
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .scheduler-summary__alerts--empty {
     border-color: #dbe4f0;
-    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    background: #f8fbff;
 }
 
 .scheduler-summary__alerts--empty ul {
@@ -557,6 +720,10 @@ $css = <<<'CSS'
         grid-template-columns: 1fr 1fr;
     }
 
+    .scheduler-special-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .scheduler-summary {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -564,7 +731,7 @@ $css = <<<'CSS'
 
 @media (max-width: 991px) {
     .scheduler-shell {
-        padding: 16px;
+        padding: 12px;
         border-radius: 14px;
     }
 
@@ -573,7 +740,7 @@ $css = <<<'CSS'
     }
 
     .scheduler-hero h1 {
-        font-size: 2rem;
+        font-size: 1.7rem;
     }
 
     .scheduler-actions {
@@ -582,7 +749,7 @@ $css = <<<'CSS'
     }
 
     .scheduler-actions .btn {
-        flex: 1 1 150px;
+        flex: 1 1 140px;
     }
 
     .scheduler-calendar__body {
@@ -591,21 +758,28 @@ $css = <<<'CSS'
 }
 
 @media (max-width: 767px) {
+    .scheduler-special-summary,
     .scheduler-meta-grid,
     .scheduler-summary {
         grid-template-columns: 1fr;
     }
 
     .scheduler-shell {
-        padding: 14px;
+        padding: 10px;
     }
 
     .scheduler-hero h1 {
-        font-size: 1.75rem;
+        font-size: 1.45rem;
     }
 
     .scheduler-calendar__hintbar {
         align-items: flex-start;
+    }
+
+    .scheduler-week-filter {
+        width: 100%;
+        align-items: flex-start;
+        flex-direction: column;
     }
 }
 CSS;
@@ -617,6 +791,7 @@ $jsTemplate = <<<'JS'
     var blocksState = __INITIAL_BLOCKS__;
     var readOnly = __READ_ONLY__;
     var dayMeta = __DAY_META__;
+    var weekContext = __WEEK_CONTEXT__;
     var urls = __URLS__;
     var csrfParam = __CSRF_PARAM__;
     var csrfToken = __CSRF_TOKEN__;
@@ -640,6 +815,7 @@ $jsTemplate = <<<'JS'
     var saveDraftBtn = document.getElementById('kanban-save-draft');
     var publishBtn = document.getElementById('kanban-publish');
     var cancelBtn = document.getElementById('kanban-cancel');
+    var weekStartInput = document.getElementById('scheduler-week-start');
     var modalEl = document.getElementById('scheduler-block-modal');
     var blockModal = modalEl ? new bootstrap.Modal(modalEl) : null;
     var modalTitle = document.getElementById('scheduler-modal-title');
@@ -657,6 +833,12 @@ $jsTemplate = <<<'JS'
         blockId: null,
         seedStart: '08:00'
     };
+
+    weekContext.weekStart = weekContext.weekStart || '';
+    weekContext.weekEnd = weekContext.weekEnd || '';
+    weekContext.holidayDates = Array.isArray(weekContext.holidayDates) ? weekContext.holidayDates : [];
+    weekContext.nightStartMinutes = timeToMinutes(weekContext.nightStart || '21:00');
+    weekContext.nightEndMinutes = timeToMinutes(weekContext.nightEnd || '06:00');
 
     function showBanner(kind, messages) {
         var items = Array.isArray(messages) ? messages : [messages];
@@ -709,6 +891,18 @@ $jsTemplate = <<<'JS'
             tipo: typeInput.value,
             activo: activeInput.value
         };
+    }
+
+    function hasUnsavedHeaderChanges() {
+        var payload = boardPayload();
+        if (!boardState.id) {
+            return payload.nombre !== '' || payload.descripcion !== '' || blocksState.length > 0;
+        }
+
+        return payload.nombre !== String(boardState.nombre || '').trim()
+            || payload.descripcion !== String(boardState.descripcion || '').trim()
+            || payload.tipo !== String(boardState.tipo || '')
+            || String(payload.activo) !== String(boardState.activo);
     }
 
     function applyBoardState(partial) {
@@ -797,7 +991,89 @@ $jsTemplate = <<<'JS'
         return endMin > startMin ? (endMin - startMin) : ((1440 - startMin) + endMin);
     }
 
-    function expandSegments(block) {
+    function isProductiveBlock(block) {
+        return block && block.type !== 'BREAK' && block.type !== 'OFF';
+    }
+
+    function addDays(dateYmd, amount) {
+        var parts = String(dateYmd || '').split('-');
+        if (parts.length !== 3) {
+            return '';
+        }
+        var date = new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
+        if (Number.isNaN(date.getTime())) {
+            return '';
+        }
+        date.setUTCDate(date.getUTCDate() + Number(amount || 0));
+        return date.toISOString().slice(0, 10);
+    }
+
+    function isWithinSelectedWeek(dateYmd) {
+        return dateYmd >= weekContext.weekStart && dateYmd <= weekContext.weekEnd;
+    }
+
+    function isSpecialDate(dateYmd) {
+        if (!dateYmd) {
+            return false;
+        }
+        var dayInfo = dayMeta.find(function (item) {
+            return item.date === dateYmd;
+        });
+        if (dayInfo && dayInfo.isSpecial) {
+            return true;
+        }
+        return Array.isArray(weekContext.holidayDates) && weekContext.holidayDates.indexOf(dateYmd) !== -1;
+    }
+
+    function isNightMinute(minute) {
+        var start = Number(weekContext.nightStartMinutes);
+        var end = Number(weekContext.nightEndMinutes);
+
+        if (Number.isNaN(start) || Number.isNaN(end)) {
+            return false;
+        }
+
+        if (start === end) {
+            return true;
+        }
+
+        if (start < end) {
+            return minute >= start && minute < end;
+        }
+
+        return minute >= start || minute < end;
+    }
+
+    function splitSegmentByNight(segment) {
+        var points = [segment.start, segment.end];
+        [weekContext.nightStartMinutes, weekContext.nightEndMinutes].forEach(function (boundary) {
+            var numeric = Number(boundary);
+            if (!Number.isNaN(numeric) && numeric > segment.start && numeric < segment.end) {
+                points.push(numeric);
+            }
+        });
+
+        points.sort(function (a, b) {
+            return a - b;
+        });
+
+        var fragments = [];
+        for (var index = 0; index < points.length - 1; index += 1) {
+            if (points[index + 1] <= points[index]) {
+                continue;
+            }
+            fragments.push({
+                day: segment.day,
+                date: segment.date,
+                start: points[index],
+                end: points[index + 1]
+            });
+        }
+
+        return fragments;
+    }
+
+    function expandSegmentsForAlerts(block) {
         var startMin = timeToMinutes(block.start);
         var endMin = timeToMinutes(block.end);
         if (startMin === null || endMin === null || startMin === endMin) {
@@ -812,35 +1088,136 @@ $jsTemplate = <<<'JS'
         ];
     }
 
+    function expandSegmentsForWeek(block) {
+        var startMin = timeToMinutes(block.start);
+        var endMin = timeToMinutes(block.end);
+        var baseDay = Number(block.day);
+        var baseDate = (dayMeta.find(function (item) {
+            return Number(item.id) === baseDay;
+        }) || {}).date || '';
+
+        if (startMin === null || endMin === null || startMin === endMin || !baseDate) {
+            return [];
+        }
+
+        if (endMin > startMin) {
+            return [{
+                day: baseDay,
+                date: baseDate,
+                start: startMin,
+                end: endMin
+            }];
+        }
+
+        var segments = [{
+            day: baseDay,
+            date: baseDate,
+            start: startMin,
+            end: 1440
+        }];
+
+        if (baseDay === 7) {
+            segments.push({
+                day: 1,
+                date: weekContext.weekStart,
+                start: 0,
+                end: endMin
+            });
+            return segments;
+        }
+
+        segments.push({
+            day: baseDay + 1,
+            date: addDays(baseDate, 1),
+            start: 0,
+            end: endMin
+        });
+
+        return segments.filter(function (segment) {
+            return isWithinSelectedWeek(segment.date);
+        });
+    }
+
+    function classifyFragment(fragment) {
+        var minutes = fragment.end - fragment.start;
+        var midpoint = fragment.start + Math.floor(minutes / 2);
+        var night = isNightMinute(midpoint);
+        var special = isSpecialDate(fragment.date);
+
+        if (special && night) {
+            return 'specialNight';
+        }
+        if (special) {
+            return 'specialDay';
+        }
+        if (night) {
+            return 'ordinaryNight';
+        }
+
+        return 'ordinaryDay';
+    }
+
     function computeSummary(blocks) {
         var work = 0;
         var breaks = 0;
         var configured = {};
         var dayTotals = {};
         var alerts = [];
+        var categoryTotals = {
+            ordinaryDay: 0,
+            ordinaryNight: 0,
+            specialDay: 0,
+            specialNight: 0
+        };
 
         for (var day = 1; day <= 7; day += 1) {
-            dayTotals[day] = { minutes: 0, label: formatMinutes(0) };
+            dayTotals[day] = {
+                minutes: 0,
+                label: formatMinutes(0),
+                specialMinutes: 0,
+                specialLabel: formatMinutes(0)
+            };
         }
 
         blocks.forEach(function (block) {
-            var minutes = durationMinutes(block.start, block.end);
-            if (block.type === 'WORK') {
-                work += minutes;
-                dayTotals[block.day].minutes += minutes;
-                configured[block.day] = true;
-            } else if (block.type === 'BREAK') {
-                breaks += minutes;
+            if (block.type === 'BREAK') {
+                breaks += durationMinutes(block.start, block.end);
+                return;
             }
+
+            if (!isProductiveBlock(block)) {
+                return;
+            }
+
+            expandSegmentsForWeek(block).forEach(function (segment) {
+                var segmentMinutes = Math.max(0, segment.end - segment.start);
+                if (segmentMinutes <= 0) {
+                    return;
+                }
+
+                work += segmentMinutes;
+                dayTotals[segment.day].minutes += segmentMinutes;
+                configured[segment.day] = true;
+
+                splitSegmentByNight(segment).forEach(function (fragment) {
+                    var fragmentMinutes = Math.max(0, fragment.end - fragment.start);
+                    var bucket = classifyFragment(fragment);
+                    categoryTotals[bucket] += fragmentMinutes;
+                    if (bucket === 'specialDay' || bucket === 'specialNight') {
+                        dayTotals[segment.day].specialMinutes += fragmentMinutes;
+                    }
+                });
+            });
         });
 
         Object.keys(dayTotals).forEach(function (dayKey) {
             dayTotals[dayKey].label = formatMinutes(dayTotals[dayKey].minutes);
+            dayTotals[dayKey].specialLabel = formatMinutes(dayTotals[dayKey].specialMinutes);
         });
 
         var segmentsByDay = {};
         blocks.forEach(function (block) {
-            expandSegments(block).forEach(function (segment) {
+            expandSegmentsForAlerts(block).forEach(function (segment) {
                 segmentsByDay[segment.day] = segmentsByDay[segment.day] || [];
                 segmentsByDay[segment.day].push(segment);
             });
@@ -865,13 +1242,21 @@ $jsTemplate = <<<'JS'
             workLabel: formatMinutes(work),
             breakLabel: formatMinutes(breaks),
             configuredLabel: Object.keys(configured).length + '/7',
+            ordinaryDayLabel: formatMinutes(categoryTotals.ordinaryDay),
+            ordinaryNightLabel: formatMinutes(categoryTotals.ordinaryNight),
+            specialDayLabel: formatMinutes(categoryTotals.specialDay),
+            specialNightLabel: formatMinutes(categoryTotals.specialNight),
             dayTotals: dayTotals,
             alerts: alerts
         };
     }
 
     function renderSummary(summary) {
-        var resolved = summary || computeSummary(blocksState);
+        var resolved = computeSummary(blocksState);
+        document.getElementById('summary-ordinary-day').textContent = resolved.ordinaryDayLabel;
+        document.getElementById('summary-ordinary-night').textContent = resolved.ordinaryNightLabel;
+        document.getElementById('summary-special-day').textContent = resolved.specialDayLabel;
+        document.getElementById('summary-special-night').textContent = resolved.specialNightLabel;
         document.getElementById('summary-work').textContent = resolved.workLabel;
         document.getElementById('summary-breaks').textContent = resolved.breakLabel;
         document.getElementById('summary-days').textContent = resolved.configuredLabel;
@@ -889,8 +1274,12 @@ $jsTemplate = <<<'JS'
 
         dayMeta.forEach(function (day) {
             var totalNode = document.querySelector('.js-day-total-value[data-day="' + day.id + '"]');
+            var specialNode = document.querySelector('.js-day-special-value[data-day="' + day.id + '"]');
             if (totalNode) {
                 totalNode.textContent = (resolved.dayTotals[day.id] || { label: formatMinutes(0) }).label;
+            }
+            if (specialNode) {
+                specialNode.textContent = 'Esp. ' + (resolved.dayTotals[day.id] || { specialLabel: formatMinutes(0) }).specialLabel;
             }
         });
     }
@@ -1390,6 +1779,25 @@ $jsTemplate = <<<'JS'
         saveBoard('publish');
     });
 
+    if (weekStartInput) {
+        weekStartInput.addEventListener('change', function () {
+            if (!this.value) {
+                return;
+            }
+
+            if (!readOnly && hasUnsavedHeaderChanges()) {
+                if (!window.confirm('Cambiar la semana recargará el tablero y perderás cambios no guardados. ¿Continuar?')) {
+                    this.value = weekContext.weekStart || this.defaultValue || '';
+                    return;
+                }
+            }
+
+            var targetUrl = new URL(window.location.href);
+            targetUrl.searchParams.set('week_start', this.value);
+            window.location.href = targetUrl.toString();
+        });
+    }
+
     modalTypeInput.addEventListener('change', function () {
         syncModalTypeState(true);
     });
@@ -1452,6 +1860,7 @@ $js = strtr($jsTemplate, [
     '__INITIAL_BLOCKS__' => Json::htmlEncode($initialBlocks),
     '__READ_ONLY__' => $readOnly ? 'true' : 'false',
     '__DAY_META__' => Json::htmlEncode($days),
+    '__WEEK_CONTEXT__' => Json::htmlEncode($weekContext),
     '__URLS__' => Json::htmlEncode($urls),
     '__CSRF_PARAM__' => Json::htmlEncode($csrfParam),
     '__CSRF_TOKEN__' => Json::htmlEncode($csrfToken),
@@ -1478,8 +1887,8 @@ $this->registerJs($js, View::POS_READY);
                     <h1><?= Html::encode($this->title) ?></h1>
                     <p>
                         <?= $readOnly
-                            ? 'Consulta la malla en el mismo tablero semanal del editor kanban. Este registro está disponible en modo solo lectura.'
-                            : 'Configura los bloques por día y guarda todo por AJAX. Esta versión crea la malla en borrador y administra cada horario desde el tablero semanal.' ?>
+                            ? 'Consulta la malla en el tablero semanal en modo solo lectura.'
+                            : 'Configura bloques por día y guarda la malla por AJAX.' ?>
                     </p>
                 </div>
                 <div class="scheduler-actions">
@@ -1525,6 +1934,49 @@ $this->registerJs($js, View::POS_READY);
                         ? 'Vista de solo lectura. Esta malla se muestra con el mismo tablero kanban del editor.'
                         : 'Haz clic sobre una franja horaria para crear un bloque. Haz clic sobre un bloque existente para editarlo.' ?>
                 </div>
+                <div class="scheduler-calendar__toolbar">
+                    <div class="scheduler-week-filter">
+                        <label for="scheduler-week-start">Semana de</label>
+                        <input
+                            id="scheduler-week-start"
+                            type="date"
+                            class="form-control"
+                            value="<?= Html::encode($selectedWeekStart) ?>"
+                        >
+                        <span class="scheduler-week-filter__range"><?= Html::encode($weekRangeLabel ?: ($selectedWeekStart . ' - ' . $selectedWeekEnd)) ?></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scheduler-special-summary">
+                <div class="scheduler-special-summary__card">
+                    <strong id="summary-ordinary-day">00h 00m</strong>
+                    <div class="scheduler-special-summary__body">
+                        <small>Ordinaria diurna</small>
+                        <p>Trabajo diurno</p>
+                    </div>
+                </div>
+                <div class="scheduler-special-summary__card">
+                    <strong id="summary-ordinary-night">00h 00m</strong>
+                    <div class="scheduler-special-summary__body">
+                        <small>Ordinaria nocturna</small>
+                        <p>Trabajo nocturno</p>
+                    </div>
+                </div>
+                <div class="scheduler-special-summary__card">
+                    <strong id="summary-special-day">00h 00m</strong>
+                    <div class="scheduler-special-summary__body">
+                        <small>Dom/Fest diurna</small>
+                        <p>Especial diurna</p>
+                    </div>
+                </div>
+                <div class="scheduler-special-summary__card">
+                    <strong id="summary-special-night">00h 00m</strong>
+                    <div class="scheduler-special-summary__body">
+                        <small>Dom/Fest nocturna</small>
+                        <p>Especial nocturna</p>
+                    </div>
+                </div>
             </div>
 
             <div class="scheduler-calendar" id="scheduler-board">
@@ -1536,10 +1988,21 @@ $this->registerJs($js, View::POS_READY);
                                 <div>
                                     <small><?= Html::encode($day['label']) ?></small>
                                     <strong><?= Html::encode($day['short']) ?></strong>
+                                    <?php if (!empty($day['dayNumber'])): ?>
+                                        <span class="scheduler-calendar__date">
+                                            <?= Html::encode($day['dayNumber'] . ' ' . $day['monthShort']) ?>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($day['isSpecial'])): ?>
+                                        <span class="scheduler-calendar__day-badge" title="<?= Html::encode($day['holidayName'] ?: $day['specialLabel']) ?>">
+                                            <?= Html::encode($day['specialLabel'] ?: 'Especial') ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="scheduler-calendar__head-total">
                                     <span>Total</span>
                                     <strong class="js-day-total-value" data-day="<?= (int) $day['id'] ?>">00h 00m</strong>
+                                    <em class="js-day-special-value" data-day="<?= (int) $day['id'] ?>">Esp. 00h 00m</em>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -1577,19 +2040,25 @@ $this->registerJs($js, View::POS_READY);
 
             <div class="scheduler-summary">
                 <div class="scheduler-summary__card">
-                    <small>Resumen semanal</small>
                     <strong id="summary-work">00h 00m</strong>
-                    <p>Trabajo total</p>
+                    <div class="scheduler-summary__body">
+                        <small>Trabajo</small>
+                        <p>Total productivo</p>
+                    </div>
                 </div>
                 <div class="scheduler-summary__card">
-                    <small>Descansos</small>
                     <strong id="summary-breaks">00h 00m</strong>
-                    <p>Total acumulado de bloques BREAK</p>
+                    <div class="scheduler-summary__body">
+                        <small>Descansos</small>
+                        <p>Bloques BREAK</p>
+                    </div>
                 </div>
                 <div class="scheduler-summary__card">
-                    <small>Días configurados</small>
                     <strong id="summary-days">0/7</strong>
-                    <p>Días con bloques de trabajo</p>
+                    <div class="scheduler-summary__body">
+                        <small>Días activos</small>
+                        <p>Con trabajo</p>
+                    </div>
                 </div>
                 <div class="scheduler-summary__alerts scheduler-summary__alerts--empty" id="scheduler-alerts">
                     <small>Alertas de conflicto</small>

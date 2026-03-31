@@ -14,40 +14,28 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
 $viewAjaxUrl = Url::to(['profile/view-ajax']);
 $formAjaxUrl = Url::to(['profile/form-ajax']);
 $updateAjaxUrl = Url::to(['profile/update-ajax']);
-$csrfToken = Yii::$app->request->csrfToken;
-$csrfParam = Yii::$app->request->csrfParam;
 ?>
 
 <div class="page-wrapper">
-    <div class="card mb-0">
-        <div class="card-body">
-            <!-- start row -->
-            <div class="row">
-                <div class="col-xl-12">
-                    <!-- Page Header -->
-                    <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3">
-                        <div class="flex-grow-1">
-                            <h4 class="mb-0"><?= Html::encode($this->title) ?></h4>
-                        </div>
-                    </div>
-                    <!-- End Page Header -->
+    <div class="content">
+        <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-4">
+            <div class="flex-grow-1">
+                <h4 class="fs-20 fw-bold mb-1"><?= Html::encode($this->title) ?></h4>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="btn-edit-profile">
+                    <i class="ti ti-edit me-1"></i>Editar perfil
+                </button>
+            </div>
+        </div>
 
-                    <div class="card flex-fill mb-0 border shadow-none">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-end mb-3">
-                                <button type="button" class="btn btn-primary" id="btn-edit-profile">
-                                    <i class="ti ti-edit me-1"></i>Editar perfil
-                                </button>
-                            </div>
-
-                            <!-- Contenedor del perfil (cargado por AJAX) -->
-                            <div id="profile-content">
-                                <div class="text-center py-5">
-                                    <span class="spinner-border text-primary" role="status"></span>
-                                    <p class="mt-2 mb-0 text-muted">Cargando perfil...</p>
-                                </div>
-                            </div>
-                        </div>
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <!-- Contenedor del perfil (cargado por AJAX) -->
+                <div id="profile-content">
+                    <div class="text-center py-5">
+                        <span class="spinner-border text-primary" role="status"></span>
+                        <p class="mt-2 mb-0 text-muted">Cargando perfil...</p>
                     </div>
                 </div>
             </div>
@@ -91,6 +79,18 @@ $(document).ready(function() {
 
     loadProfile();
 
+    $(document).on('change', '#profile-photo-input', function() {
+        var f = this.files && this.files[0];
+        var img = document.getElementById('profile-photo-preview');
+        if (!f || !img) {
+            return;
+        }
+        if (!/^image\//.test(f.type)) {
+            return;
+        }
+        img.src = URL.createObjectURL(f);
+    });
+
     $('#btn-edit-profile').on('click', function() {
         var modal = new bootstrap.Modal(document.getElementById('modal-edit-profile'));
         $('#modal-edit-profile-body').html('<div class="text-center py-4"><span class="spinner-border text-primary"></span></div>');
@@ -111,11 +111,14 @@ $(document).ready(function() {
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
 
-        var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
+        var formEl = \$form[0];
+        var formData = new FormData(formEl);
         $.ajax({
             url: '{$updateAjaxUrl}',
             type: 'POST',
             data: formData,
+            processData: false,
+            contentType: false,
             dataType: 'json',
             success: function(res) {
                 if (res.success) {

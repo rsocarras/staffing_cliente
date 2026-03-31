@@ -148,6 +148,27 @@ class Presupuesto extends ActiveRecord
         return self::optsEstado()[$this->estado] ?? $this->estado;
     }
 
+    /**
+     * Clase Bootstrap (variante badge-soft-*) según estado del presupuesto.
+     */
+    public function getEstadoBadgeSoftClass(): string
+    {
+        switch ($this->estado) {
+            case self::ESTADO_APROBADO:
+                return 'success';
+            case self::ESTADO_RECHAZADO:
+                return 'danger';
+            case self::ESTADO_PENDIENTE_APROBACION:
+                return 'warning';
+            case self::ESTADO_BORRADOR:
+                return 'info';
+            case self::ESTADO_INACTIVO:
+                return 'dark';
+            default:
+                return 'secondary';
+        }
+    }
+
     public function isEditable(): bool
     {
         return $this->activo

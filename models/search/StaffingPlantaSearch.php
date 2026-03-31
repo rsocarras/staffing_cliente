@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use app\models\StaffingPlanta;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -77,12 +78,12 @@ class StaffingPlantaSearch extends StaffingPlanta
         $this->load($params);
 
         if (!$this->validate()) {
+            TenantContext::applyFilter($query, 'planta.empresa_id');
             return $dataProvider;
         }
 
         $query->andFilterWhere([
             'planta.id' => $this->id,
-            'planta.empresa_id' => $this->empresa_id,
             'planta.location_sede_id' => $this->location_sede_id,
             'planta.area_id' => $this->area_id,
             'planta.sub_area_id' => $this->sub_area_id,
@@ -103,6 +104,8 @@ class StaffingPlantaSearch extends StaffingPlanta
                 ['like', 'subArea.nombre', $this->texto],
             ]);
         }
+
+        TenantContext::applyFilter($query, 'planta.empresa_id');
 
         return $dataProvider;
     }

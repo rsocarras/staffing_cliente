@@ -13,7 +13,7 @@ $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
         <?= Html::a(Html::encode($shortUuid) . ' #' . (int) $model->vacante_index, ['view', 'id' => $model->id], ['title' => $model->group_uuid]) ?>
     </td>
     <td>
-        <span class="badge bg-<?= \app\models\Requisicion::estadoBadgeClass($model->estado) ?>">
+        <span class="badge badge-soft-<?= \app\models\Requisicion::estadoBadgeClass($model->estado) ?>">
             <?= Html::encode(\app\models\Requisicion::optsEstado()[$model->estado] ?? $model->estado) ?>
         </span>
     </td>

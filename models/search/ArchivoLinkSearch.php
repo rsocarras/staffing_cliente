@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ArchivoLink;
@@ -52,15 +53,13 @@ class ArchivoLinkSearch extends ArchivoLink
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'archivo_id' => $this->archivo_id,
             'entidad_id' => $this->entidad_id,
             'created_at' => $this->created_at,
@@ -68,6 +67,8 @@ class ArchivoLinkSearch extends ArchivoLink
 
         $query->andFilterWhere(['like', 'entidad_type', $this->entidad_type])
             ->andFilterWhere(['like', 'etiqueta', $this->etiqueta]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

@@ -90,7 +90,10 @@ $page = empty($path) ? 'index' : basename($path);
     <link rel="stylesheet" href="<?= Url::to('@web/assets/plugins/daterangepicker/daterangepicker.css') ?>">
 <?php } ?>
 
-<?php if ($page == 'data-tables' || $page == 'plugin' || in_array($path, ['location-country', 'location-country/index'])) {   ?>
+<?php
+$datatablePages = ['data-tables', 'plugin'];
+$datatablePaths = ['location-country', 'location-country/index', 'administracion-planta/dashboard', 'administracion-planta/index', 'administracion-planta/resumen-sede', 'administracion-planta/resumen-area', 'administracion-planta/historial'];
+if ($page == 'data-tables' || $page == 'plugin' || in_array($path, $datatablePaths)) {   ?>
     <!-- Datatable CSS -->
     <link rel="stylesheet" href="<?= Url::to('@web/assets/plugins/datatables/css/dataTables.bootstrap5.min.css') ?>">
 <?php } ?>

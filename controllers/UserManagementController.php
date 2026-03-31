@@ -61,9 +61,17 @@ class UserManagementController extends Controller
         $allRoles = $auth->getRoles();
         $modelAdd = new User();
         $modelAdd->setScenario('create');
+        $baseQuery = $this->tenantUsersQuery();
+        $summaryCounts = [
+            'total' => (int) (clone $baseQuery)->count(),
+            'activos' => (int) (clone $baseQuery)->andWhere(['u.blocked_at' => null])->count(),
+            'inactivos' => (int) (clone $baseQuery)->andWhere(['not', ['u.blocked_at' => null]])->count(),
+        ];
+
         return $this->render('index', [
             'allRoles' => $allRoles,
             'modelAdd' => $modelAdd,
+            'summaryCounts' => $summaryCounts,
         ]);
     }
 
@@ -120,11 +128,11 @@ class UserManagementController extends Controller
                 $u->created_at ? date('d M Y', $u->created_at) : '—',
                 $this->formatRolesColumn($roleNames),
                 $confirmed
-                    ? '<span class="badge badge-success badge-xs"><i class="ti ti-check me-1"></i>Sí</span>'
-                    : '<span class="badge badge-secondary badge-xs"><i class="ti ti-x me-1"></i>No</span>',
+                    ? '<span class="badge badge-soft-success badge-xs"><i class="ti ti-check me-1"></i>Sí</span>'
+                    : '<span class="badge badge-soft-danger badge-xs"><i class="ti ti-x me-1"></i>No</span>',
                 $active
-                    ? '<span class="badge badge-success badge-xs"><i class="ti ti-point-filled me-1"></i>Activo</span>'
-                    : '<span class="badge badge-danger badge-xs"><i class="ti ti-point-filled me-1"></i>Inactivo</span>',
+                    ? '<span class="badge badge-soft-success badge-xs"><i class="ti ti-point-filled me-1"></i>Activo</span>'
+                    : '<span class="badge badge-soft-danger badge-xs"><i class="ti ti-point-filled me-1"></i>Inactivo</span>',
                 $this->renderPartial('_user_actions_dropdown', [
                     'id' => $u->id,
                     'username' => $u->username,

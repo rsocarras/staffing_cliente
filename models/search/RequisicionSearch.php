@@ -44,14 +44,7 @@ class RequisicionSearch extends Requisicion
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            return $dataProvider;
-        }
-
-        $tenantEmpresaId = TenantContext::currentEmpresaId();
-        if (is_numeric($tenantEmpresaId) && (int) $tenantEmpresaId > 0) {
-            $query->andWhere(['requisicion.empresas_id' => (int) $tenantEmpresaId]);
-        } else {
-            $query->where('0=1');
+            TenantContext::applyFilter($query, 'requisicion.empresas_id');
             return $dataProvider;
         }
 
@@ -66,6 +59,8 @@ class RequisicionSearch extends Requisicion
             ->andFilterWhere(['<=', 'requisicion.fecha_ingreso', $this->fecha_ingreso_hasta])
             ->andFilterWhere(['like', 'empresa_cliente.nombre', $this->empresa_nombre])
             ->andFilterWhere(['like', 'city.name', $this->ciudad_nombre]);
+
+        TenantContext::applyFilter($query, 'requisicion.empresas_id');
 
         return $dataProvider;
     }

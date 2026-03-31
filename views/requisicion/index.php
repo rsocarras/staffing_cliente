@@ -103,13 +103,15 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
 <!-- Modal Ver Requisición -->
 <div class="modal fade" id="modal-view-requisicion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Requisición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 py-2 px-3">
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body" id="modal-view-requisicion-body">
-                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            <div class="modal-body p-0" id="modal-view-requisicion-body">
+                <div class="text-center py-5 px-3">
+                    <span class="spinner-border text-primary" role="status"></span>
+                    <p class="text-muted mt-2 mb-0">Cargando...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -136,13 +138,21 @@ $modelRequisicionModal->estado = \app\models\Requisicion::ESTADO_DRAFT;
 $modelRequisicionModal->numero_vacantes = 1;
 ?>
 
-<!-- Modal Agregar Requisición -->
+<!-- Modal Agregar Requisición (scroll en .requisicion-add-scroll; sin modal-dialog-centered para no romper max-height) -->
 <div class="modal fade" id="add_requisicion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Nueva Requisición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-xl requisicion-add-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start flex-shrink-0">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-file-plus fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Nueva requisición</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Complete los datos de la vacante y la cantidad de posiciones.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <?php $modalForm = ActiveForm::begin([
                 'id' => 'form-add-requisicion',
@@ -150,18 +160,21 @@ $modelRequisicionModal->numero_vacantes = 1;
                 'method' => 'post',
                 'enableClientValidation' => false,
             ]); ?>
-            <div class="modal-body requisicion-modal-body">
-                <div id="requisicion-form-errors" class="alert alert-danger d-none"></div>
-                <?= $this->render('_form_fields', [
-                    'model' => $modelRequisicionModal,
-                    'form' => $modalForm,
-                    'esCreacion' => true,
-                ]) ?>
+            <div class="modal-body p-0 d-flex flex-column requisicion-add-modal-body">
+                <div class="requisicion-add-scroll px-4 pt-3 pb-2">
+                    <div id="requisicion-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
+                    <?= $this->render('_form_add_modal_fields', [
+                        'model' => $modelRequisicionModal,
+                        'form' => $modalForm,
+                    ]) ?>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-light me-2" data-bs-dismiss="modal">Cancelar</button>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2 flex-shrink-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
                 <button type="submit" class="btn btn-primary" id="btn-save-requisicion">
-                    <span class="btn-text">Guardar</span>
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar requisición</span>
                     <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
                 </button>
             </div>
@@ -172,17 +185,53 @@ $modelRequisicionModal->numero_vacantes = 1;
 
 <?php
 $this->registerCss(<<<CSS
-#add_requisicion .modal-dialog {
+/**
+ * Scroll del modal de creación: altura máxima en vh sobre .requisicion-add-scroll
+ * (evita el problema de modal-dialog-centered que deja crecer el contenido sin tope).
+ */
+#add_requisicion .requisicion-add-dialog {
     max-width: min(1140px, 96vw);
+    margin: 1rem auto;
 }
-#add_requisicion .requisicion-modal-body {
-    max-height: calc(100vh - 210px);
-    overflow-y: auto;
+#add_requisicion .requisicion-add-dialog .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+}
+#add_requisicion .requisicion-add-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+}
+#add_requisicion .requisicion-add-scroll {
+    max-height: min(72vh, calc(100vh - 200px));
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    position: relative;
+    z-index: 0;
+}
+@media (max-height: 700px) {
+    #add_requisicion .requisicion-add-scroll {
+        max-height: calc(100vh - 180px);
+    }
 }
 CSS);
 
 $this->registerJs(<<<JS
 $(function() {
+    var addRequisicionModalEl = document.getElementById('add_requisicion');
+    if (addRequisicionModalEl) {
+        addRequisicionModalEl.addEventListener('show.bs.modal', function() {
+            if (this.parentElement !== document.body) {
+                document.body.appendChild(this);
+            }
+        });
+    }
+
     var table = $('#requisicion-table').DataTable({
         processing: true,
         serverSide: true,
@@ -226,8 +275,9 @@ $(function() {
         var form = $('#form-add-requisicion')[0];
         if (form) form.reset();
         $('#requisicion-form-errors').addClass('d-none').empty();
-        $('#requisicion-sede_id').html('<option value=\"\">Seleccione sede</option>');
-        $('#requisicion-sub_area_id').html('<option value=\"\">Seleccione sub-área</option>');
+        $('#requisicion-sede_id').html('<option value=\"\">Primero seleccione ciudad</option>').prop('disabled', true);
+        $('#requisicion-sub_area_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);
+        $('#requisicion-cargo_id').html('<option value=\"\">Primero seleccione subárea</option>').prop('disabled', true);
     }
 
     function hasActiveServerFilters() {
@@ -245,12 +295,12 @@ $(function() {
     $(document).on('click', '.btn-requisicion-view', function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-view-requisicion'));
-        $('#modal-view-requisicion-body').html('<div class=\"text-center py-4\"><span class=\"spinner-border text-primary\"></span></div>');
+        $('#modal-view-requisicion-body').html('<div class=\"text-center py-5 px-3\"><span class=\"spinner-border text-primary\"></span><p class=\"text-muted mt-2 mb-0\">Cargando...</p></div>');
         modal.show();
         $.get('{$viewAjaxUrl}', { id: id }, function(html) {
             $('#modal-view-requisicion-body').html(html);
         }).fail(function() {
-            $('#modal-view-requisicion-body').html('<div class=\"alert alert-danger\">Error al cargar los datos.</div>');
+            $('#modal-view-requisicion-body').html('<div class=\"alert alert-danger border-0 m-3\">Error al cargar los datos.</div>');
         });
     });
 
@@ -354,6 +404,9 @@ $(function() {
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
 
+        var \$disabled = \$form.find('select:disabled');
+        \$disabled.prop('disabled', false);
+
         $.ajax({
             url: '{$createAjaxUrl}',
             type: 'POST',
@@ -388,6 +441,13 @@ $(function() {
                 \$errors.html('Error al guardar. Intente nuevamente.').removeClass('d-none');
             },
             complete: function() {
+                var c = $('#requisicion-ciudad_id').val();
+                $('#requisicion-sede_id').prop('disabled', !c);
+                var a = $('#requisicion-area_id').val();
+                $('#requisicion-sub_area_id').prop('disabled', !a);
+                var s = $('#requisicion-sub_area_id').val();
+                var \$cargo = $('#requisicion-cargo_id');
+                \$cargo.prop('disabled', !s || \$cargo.find('option').length <= 1);
                 \$btn.prop('disabled', false);
                 \$btn.find('.btn-text').removeClass('d-none');
                 \$btn.find('.btn-loading').addClass('d-none');

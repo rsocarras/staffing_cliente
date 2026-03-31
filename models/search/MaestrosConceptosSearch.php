@@ -43,7 +43,6 @@ class MaestrosConceptosSearch extends MaestrosConceptos
     public function search($params, $formName = null)
     {
         $query = MaestrosConceptos::find();
-        TenantContext::applyFilter($query, 'empresa_id');
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,8 +51,7 @@ class MaestrosConceptosSearch extends MaestrosConceptos
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
@@ -69,6 +67,8 @@ class MaestrosConceptosSearch extends MaestrosConceptos
             ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'category', $this->category])
             ->andFilterWhere(['like', 'config_json', $this->config_json]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

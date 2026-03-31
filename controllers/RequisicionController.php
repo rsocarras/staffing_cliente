@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\TenantContext;
+use app\models\Cargos;
 use app\models\Requisicion;
 use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
@@ -28,6 +29,9 @@ class RequisicionController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'sedes-por-ciudad' => ['GET'],
+                    'sub-areas-por-area' => ['GET'],
+                    'cargos-por-sub-area' => ['GET'],
                     'create-ajax' => ['POST'],
                     'submit' => ['POST'],
                     'update-ajax' => ['POST'],
@@ -44,7 +48,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area'],
+                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area', 'cargos-por-sub-area'],
                     ],
                     [
                         'allow' => true,
@@ -171,7 +175,7 @@ class RequisicionController extends Controller
             $data[] = [
                 (string) $model->id,
                 Html::a(Html::encode($shortUuid) . ' #' . (int) $model->vacante_index, ['view', 'id' => $model->id], ['title' => $model->group_uuid]),
-                '<span class="badge bg-' . Requisicion::estadoBadgeClass($model->estado) . '">' . Html::encode(Requisicion::optsEstado()[$model->estado] ?? $model->estado) . '</span>',
+                '<span class="badge badge-soft-' . Requisicion::estadoBadgeClass($model->estado) . '">' . Html::encode(Requisicion::optsEstado()[$model->estado] ?? $model->estado) . '</span>',
                 Html::encode($model->tiempoTotalDesdeCreacion ?: '-'),
                 Html::encode($model->empresa->nombre ?? '-'),
                 Html::encode($model->ciudad->name ?? '-'),
@@ -559,6 +563,25 @@ class RequisicionController extends Controller
         return array_map(function ($a) {
             return ['id' => $a->id, 'nombre' => $a->nombre];
         }, $subAreas);
+    }
+
+    /**
+     * Cargos activos filtrados por subárea (AJAX).
+     */
+    public function actionCargosPorSubArea($sub_area_id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        if (!$sub_area_id) {
+            return [];
+        }
+        $query = Cargos::find()
+            ->where(['sub_area_id' => (int) $sub_area_id, 'activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC]);
+        TenantContext::applyFilter($query, 'empresa_id');
+        $rows = $query->all();
+        return array_map(static function (Cargos $c) {
+            return ['id' => $c->id, 'nombre' => $c->nombre];
+        }, $rows);
     }
 
     protected function findModel($id)

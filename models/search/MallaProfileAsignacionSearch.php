@@ -2,6 +2,7 @@
 
 namespace app\models\search;
 
+use app\components\TenantContext;
 use app\models\MallaProfileAsignacion;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -30,12 +31,12 @@ class MallaProfileAsignacionSearch extends MallaProfileAsignacion
 
         $this->load($params);
         if (!$this->validate()) {
+            TenantContext::applyFilter($query, 'empresa_id');
             return $dataProvider;
         }
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'empresa_id' => $this->empresa_id,
             'malla_id' => $this->malla_id,
             'profile_id' => $this->profile_id,
             'solicitado_por' => $this->solicitado_por,
@@ -46,6 +47,8 @@ class MallaProfileAsignacionSearch extends MallaProfileAsignacion
 
         $query->andFilterWhere(['like', 'estado_aprobacion', $this->estado_aprobacion])
             ->andFilterWhere(['like', 'motivo_rechazo', $this->motivo_rechazo]);
+
+        TenantContext::applyFilter($query, 'empresa_id');
 
         return $dataProvider;
     }

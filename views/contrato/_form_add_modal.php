@@ -2,7 +2,9 @@
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Json;
 use yii\helpers\Url;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /** @var app\models\Contrato $model */
@@ -26,8 +28,8 @@ $subAreaItems = ArrayHelper::map($options['subAreas'], 'id', 'nombre');
 $cargoItems = ArrayHelper::map($options['cargos'], 'id', 'nombre');
 $estadoItems = $options['estados'];
 
-$subAreasUrl = Url::to(['contrato/sub-areas']);
-$cargosUrl = Url::to(['contrato/cargos-por-estructura']);
+$subAreasUrlJson = Json::encode(Url::to(['contrato/sub-areas']));
+$cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
 ?>
 
 <?php $form = ActiveForm::begin([
@@ -137,14 +139,24 @@ $cargosUrl = Url::to(['contrato/cargos-por-estructura']);
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-hierarchy-2 text-warning"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($subAreaItems, ['prompt' => 'Seleccione subárea', 'id' => 'contrato-sub_area_id-' . $prefix, 'class' => 'form-select']) ?>
+            ])->dropDownList($subAreaItems, [
+                'prompt' => 'Seleccione subárea',
+                'id' => 'contrato-sub_area_id-' . $prefix,
+                'class' => 'form-select contrato-select-subarea',
+                'disabled' => true,
+            ]) ?>
         </div>
         <div class="col-lg-4">
             <?= $form->field($model, 'cargo_id', [
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-briefcase text-warning"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($cargoItems, ['prompt' => 'Seleccione cargo', 'id' => 'contrato-cargo_id-' . $prefix, 'class' => 'form-select']) ?>
+            ])->dropDownList($cargoItems, [
+                'prompt' => 'Seleccione cargo',
+                'id' => 'contrato-cargo_id-' . $prefix,
+                'class' => 'form-select contrato-select-cargo',
+                'disabled' => true,
+            ]) ?>
         </div>
     </div>
 </div>
@@ -206,40 +218,140 @@ $cargosUrl = Url::to(['contrato/cargos-por-estructura']);
 <?php ActiveForm::end(); ?>
 
 <?php
-$js = <<<JS
+$prefixJson = Json::encode($prefix);
+$this->registerJs(<<<JS
 (function() {
-    var prefix = '{$prefix}';
+    var prefix = {$prefixJson};
+    var subAreasUrl = {$subAreasUrlJson};
+    var cargosUrl = {$cargosUrlJson};
+    var evNs = '.contratoStructura_' + prefix;
 
-    function rebuildSelect(selector, items, prompt) {
-        var \$select = $(selector);
-        var currentValue = \$select.val();
-        \$select.html('<option value="">' + prompt + '</option>');
+    function rebuildSelect(selector, items, prompt, preferredValue) {
+        var \$select = \$(selector);
+        var prev = preferredValue !== undefined ? preferredValue : \$select.val();
+        \$select.empty().append(\$('<option>', {
+            value: '',
+            text: prompt
+        }));
         items.forEach(function(item) {
-            \$select.append('<option value="' + item.id + '">' + item.nombre + '</option>');
+            \$select.append(\$('<option>', {
+                value: item.id,
+                text: item.nombre || ''
+            }));
         });
-        if (currentValue) \$select.val(currentValue);
+        if (prev !== undefined && prev !== null && prev !== '') {
+            var s = String(prev);
+            if (items.some(function(it) {
+                    return String(it.id) === s;
+                })) {
+                \$select.val(s);
+            }
+        }
     }
 
-    $(document).on('change', '#contrato-area_id-' + prefix, function() {
-        var areaId = $(this).val();
+    function setSubAreaEnabled(on) {
+        var \$el = \$('#contrato-sub_area_id-' + prefix);
+        if (on) {
+            \$el.prop('disabled', false).removeAttr('disabled');
+        } else {
+            \$el.prop('disabled', true);
+        }
+    }
+
+    function setCargoEnabled(on) {
+        var \$el = \$('#contrato-cargo_id-' + prefix);
+        if (on) {
+            \$el.prop('disabled', false).removeAttr('disabled');
+        } else {
+            \$el.prop('disabled', true);
+        }
+    }
+
+    function syncDisabledWithLoadedOptions() {
+        var areaId = \$('#contrato-area_id-' + prefix).val();
+        var \$cargo = \$('#contrato-cargo_id-' + prefix);
+        var cargoHasRows = \$cargo.find('option').filter(function() {
+            return \$(this).val() !== '';
+        }).length > 0;
+        var subAreaId = \$('#contrato-sub_area_id-' + prefix).val();
+
+        if (!areaId) {
+            setSubAreaEnabled(false);
+            setCargoEnabled(false);
+            return;
+        }
+        setSubAreaEnabled(true);
+        setCargoEnabled(!!subAreaId && cargoHasRows);
+    }
+
+    function cascadeFromArea() {
+        var areaId = \$('#contrato-area_id-' + prefix).val();
         rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione subárea');
         rebuildSelect('#contrato-cargo_id-' + prefix, [], 'Seleccione cargo');
-        if (!areaId) return;
-        $.getJSON('{$subAreasUrl}', {area_id: areaId}, function(data) {
-            rebuildSelect('#contrato-sub_area_id-' + prefix, data, 'Seleccione subárea');
-        });
-    });
+        setCargoEnabled(false);
+        if (!areaId) {
+            setSubAreaEnabled(false);
+            return;
+        }
+        setSubAreaEnabled(true);
+        \$.getJSON(subAreasUrl, {
+                area_id: areaId
+            })
+            .done(function(data) {
+                data = Array.isArray(data) ? data : [];
+                rebuildSelect('#contrato-sub_area_id-' + prefix, data, 'Seleccione subárea');
+                setSubAreaEnabled(true);
+                setCargoEnabled(false);
+                var \$sub = \$('#contrato-sub_area_id-' + prefix);
+                if (data.length === 1) {
+                    \$sub.val(String(data[0].id));
+                    cascadeFromSubArea();
+                }
+            })
+            .fail(function() {
+                rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione subárea');
+                setSubAreaEnabled(true);
+                setCargoEnabled(false);
+            });
+    }
 
-    $(document).on('change', '#contrato-sub_area_id-' + prefix, function() {
-        var areaId = $('#contrato-area_id-' + prefix).val();
-        var subAreaId = $(this).val();
+    function cascadeFromSubArea() {
+        var areaId = \$('#contrato-area_id-' + prefix).val();
+        var subAreaId = \$('#contrato-sub_area_id-' + prefix).val();
         rebuildSelect('#contrato-cargo_id-' + prefix, [], 'Seleccione cargo');
-        if (!areaId) return;
-        $.getJSON('{$cargosUrl}', {area_id: areaId, sub_area_id: subAreaId}, function(data) {
-            rebuildSelect('#contrato-cargo_id-' + prefix, data, 'Seleccione cargo');
-        });
+        if (!areaId || !subAreaId) {
+            setCargoEnabled(false);
+            return;
+        }
+        setCargoEnabled(false);
+        \$.getJSON(cargosUrl, {
+                area_id: areaId,
+                sub_area_id: subAreaId
+            })
+            .done(function(data) {
+                data = Array.isArray(data) ? data : [];
+                rebuildSelect('#contrato-cargo_id-' + prefix, data, 'Seleccione cargo');
+                setCargoEnabled(data.length > 0);
+                if (data.length === 1) {
+                    \$('#contrato-cargo_id-' + prefix).val(String(data[0].id));
+                }
+            })
+            .fail(function() {
+                rebuildSelect('#contrato-cargo_id-' + prefix, [], 'Seleccione cargo');
+                setCargoEnabled(false);
+            });
+    }
+
+    \$(document).off('change' + evNs, '#contrato-area_id-' + prefix);
+    \$(document).off('change' + evNs, '#contrato-sub_area_id-' + prefix);
+    \$(document).on('change' + evNs, '#contrato-area_id-' + prefix, cascadeFromArea);
+    \$(document).on('change' + evNs, '#contrato-sub_area_id-' + prefix, cascadeFromSubArea);
+
+    syncDisabledWithLoadedOptions();
+    \$(document).on('shown.bs.modal', '#add_contrato', function() {
+        syncDisabledWithLoadedOptions();
     });
 })();
-JS;
-$this->registerJs($js, \yii\web\View::POS_READY);
+JS
+    , View::POS_READY);
 ?>
