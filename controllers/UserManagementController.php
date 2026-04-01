@@ -6,7 +6,9 @@ use app\components\ContratoFormSupport;
 use app\components\ProfileFormOptionsProvider;
 use app\components\TenantContext;
 use app\models\Contrato;
+use app\models\LocationSedes;
 use app\models\Profile;
+use app\models\ProfileSede;
 use app\models\User;
 use app\services\AdministracionPlantaService;
 use Yii;
@@ -284,14 +286,19 @@ class UserManagementController extends Controller
         if ($profile->empresas_id === null && ($eid = TenantContext::currentEmpresaId()) !== null) {
             $profile->empresas_id = $eid;
         }
-        $profileFormOptions = $this->getProfileFormOptions();
-        $profileFormOptions['empresaId'] = TenantContext::currentEmpresaId();
+        $empresaIdForForm = $this->resolveEmpresaIdForProfile($profile);
+        $profileFormOptions = ProfileFormOptionsProvider::forEmpresaId($empresaIdForForm);
+        $profileFormOptions['empresaId'] = $empresaIdForForm;
+        $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+        $sedesMap = $this->buildSedesMapForTenant($empresaIdForForm);
 
         return $this->renderPartial('_user_form_modal', [
             'model' => $model,
             'profile' => $profile,
             'profileFormOptions' => $profileFormOptions,
             'allRoles' => $allRoles,
+            'profileSedeIds' => $profileSedeIds,
+            'sedesMap' => $sedesMap,
         ]);
     }
 
@@ -411,12 +418,11 @@ class UserManagementController extends Controller
         $model = $this->findModel($id);
         $auth = Yii::$app->authManager;
         $allRoles = $auth->getRoles();
-        $empresaId = TenantContext::requireEmpresaId();
-
         $profile = $model->profile;
         if ($profile === null) {
             return ['success' => false, 'errors' => ['general' => ['El usuario no tiene perfil.']]];
         }
+        $empresaId = $this->resolveEmpresaIdForProfile($profile);
         $profile->setScenario(Profile::SCENARIO_USER_MANAGEMENT);
         $upload = UploadedFile::getInstanceByName('Profile[photoFile]');
         $profile->photoFile = $upload;
@@ -437,10 +443,26 @@ class UserManagementController extends Controller
         if (!$model->validate()) {
             return ['success' => false, 'errors' => $model->getErrors()];
         }
-        if (!$model->save(false)) {
-            return ['success' => false, 'errors' => ['general' => ['No se pudo guardar.']]];
+
+        $tx = Yii::$app->db->beginTransaction();
+        try {
+            if (!$model->save(false)) {
+                $tx->rollBack();
+                return ['success' => false, 'errors' => ['general' => ['No se pudo guardar.']]];
+            }
+            if (!$profile->save(false)) {
+                $tx->rollBack();
+                return ['success' => false, 'errors' => $profile->getErrors()];
+            }
+            $this->syncProfileSedes($profile, $this->resolveEmpresaIdForProfile($profile), Yii::$app->request->post('Profile', [])['profile_sede_ids'] ?? []);
+            $tx->commit();
+        } catch (\Throwable $e) {
+            $tx->rollBack();
+            Yii::error($e->getMessage(), __METHOD__);
+
+            return ['success' => false, 'errors' => ['general' => ['Error al guardar datos del perfil o sedes.']]];
         }
-        $profile->save(false);
+
         $this->handleProfileAvatarUpload((int) $model->id, UploadedFile::getInstanceByName('Profile[photoFile]'));
 
         $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
@@ -462,6 +484,18 @@ class UserManagementController extends Controller
     }
 
     /**
+     * Empresa para listas (sedes, cargos, …) y validación de sedes: prioriza {@see Profile::empresas_id}.
+     */
+    private function resolveEmpresaIdForProfile(Profile $profile): int
+    {
+        if ($profile->empresas_id !== null && (int) $profile->empresas_id > 0) {
+            return (int) $profile->empresas_id;
+        }
+
+        return TenantContext::requireEmpresaId();
+    }
+
+    /**
      * Editar usuario (página completa, se mantiene por compatibilidad).
      */
     public function actionUpdate($id)
@@ -479,7 +513,7 @@ class UserManagementController extends Controller
         $profile->setScenario(Profile::SCENARIO_USER_MANAGEMENT);
 
         if (Yii::$app->request->isPost) {
-            $empresaId = TenantContext::requireEmpresaId();
+            $empresaId = $this->resolveEmpresaIdForProfile($profile);
             $profile->photoFile = UploadedFile::getInstanceByName('Profile[photoFile]');
             $profile->load($this->normalizeProfilePost(Yii::$app->request->post('Profile', []), $empresaId), '');
 
@@ -493,38 +527,66 @@ class UserManagementController extends Controller
                 $model->password_hash = Yii::$app->security->generatePasswordHash($model->new_password);
             }
 
-            if ($profile->validate() && $model->validate() && $model->save(false)) {
-                $profile->save(false);
-                $this->handleProfileAvatarUpload((int) $model->id, UploadedFile::getInstanceByName('Profile[photoFile]'));
-                $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
-                foreach (array_keys($allRoles) as $name) {
-                    $role = $auth->getRole($name);
-                    if (!$role) {
-                        continue;
+            if ($profile->validate() && $model->validate()) {
+                $saved = false;
+                $tx = Yii::$app->db->beginTransaction();
+                try {
+                    if (!$model->save(false)) {
+                        $tx->rollBack();
+                        Yii::$app->session->setFlash('error', 'No se pudo guardar el usuario.');
+                    } elseif (!$profile->save(false)) {
+                        $tx->rollBack();
+                        Yii::$app->session->setFlash('error', 'No se pudo guardar el perfil.');
+                    } else {
+                        $this->syncProfileSedes($profile, $this->resolveEmpresaIdForProfile($profile), Yii::$app->request->post('Profile', [])['profile_sede_ids'] ?? []);
+                        $tx->commit();
+                        $saved = true;
                     }
-                    $has = in_array($name, $roleNames, true);
-                    $assigned = $auth->getAssignment($name, (string) $model->id);
-                    if ($has && !$assigned) {
-                        $auth->assign($role, (string) $model->id);
-                    } elseif (!$has && $assigned) {
-                        $auth->revoke($role, (string) $model->id);
+                } catch (\Throwable $e) {
+                    if ($tx->isActive) {
+                        $tx->rollBack();
                     }
+                    Yii::error($e->getMessage(), __METHOD__);
+                    Yii::$app->session->setFlash('error', 'Error al guardar.');
+                    return $this->redirect(['update', 'id' => $model->id]);
                 }
-                Yii::$app->session->setFlash('success', 'Usuario actualizado correctamente.');
-                return $this->redirect(['index']);
+                if ($saved) {
+                    $this->handleProfileAvatarUpload((int) $model->id, UploadedFile::getInstanceByName('Profile[photoFile]'));
+                    $roleNames = is_array($model->roleNames) ? $model->roleNames : [];
+                    foreach (array_keys($allRoles) as $name) {
+                        $role = $auth->getRole($name);
+                        if (!$role) {
+                            continue;
+                        }
+                        $has = in_array($name, $roleNames, true);
+                        $assigned = $auth->getAssignment($name, (string) $model->id);
+                        if ($has && !$assigned) {
+                            $auth->assign($role, (string) $model->id);
+                        } elseif (!$has && $assigned) {
+                            $auth->revoke($role, (string) $model->id);
+                        }
+                    }
+                    Yii::$app->session->setFlash('success', 'Usuario actualizado correctamente.');
+                    return $this->redirect(['index']);
+                }
             }
         } else {
             $model->roleNames = $assignedNames;
         }
 
-        $profileOpts = $this->getProfileFormOptions();
-        $profileOpts['empresaId'] = TenantContext::currentEmpresaId();
+        $empresaIdForForm = $this->resolveEmpresaIdForProfile($profile);
+        $profileOpts = ProfileFormOptionsProvider::forEmpresaId($empresaIdForForm);
+        $profileOpts['empresaId'] = $empresaIdForForm;
+        $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+        $sedesMap = $this->buildSedesMapForTenant($empresaIdForForm);
 
         return $this->render('update', [
             'model' => $model,
             'profile' => $profile,
             'profileFormOptions' => $profileOpts,
             'allRoles' => $allRoles,
+            'profileSedeIds' => $profileSedeIds,
+            'sedesMap' => $sedesMap,
         ]);
     }
 
@@ -574,8 +636,13 @@ class UserManagementController extends Controller
     {
         $post['empresas_id'] = $empresaId;
         $intKeys = [
-            'empresas_id', 'sede_id', 'location_sede_id', 'cargo_id',
-            'centro_costo_id', 'centro_utilidad_id', 'area_id',
+            'empresas_id',
+            'sede_id',
+            'location_sede_id',
+            'cargo_id',
+            'centro_costo_id',
+            'centro_utilidad_id',
+            'area_id',
         ];
         foreach ($intKeys as $k) {
             if (!array_key_exists($k, $post)) {
@@ -604,7 +671,11 @@ class UserManagementController extends Controller
 
     private function getProfileFormOptions(): array
     {
-        return ProfileFormOptionsProvider::forEmpresaId(TenantContext::currentEmpresaId());
+        $eid = TenantContext::currentEmpresaId();
+        $opts = ProfileFormOptionsProvider::forEmpresaId($eid);
+        $opts['empresaId'] = $eid;
+
+        return $opts;
     }
 
     private function handleProfileAvatarUpload(int $userId, ?UploadedFile $file): void
@@ -630,4 +701,67 @@ class UserManagementController extends Controller
         }
     }
 
+    /**
+     * @return array<int, string> location_sede id => nombre
+     */
+    private function buildSedesMapForTenant(int $empresaId): array
+    {
+        $rows = LocationSedes::find()
+            ->select(['id', 'nombre'])
+            ->where(['empresa_id' => $empresaId, 'activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->asArray()
+            ->all();
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(int) $row['id']] = (string) $row['nombre'];
+        }
+
+        return $map;
+    }
+
+    /**
+     * Reemplaza las filas en profile_sedes para el perfil; solo acepta sedes activas de la empresa.
+     * Usa {@see Profile::getPivotProfileId()} al insertar y borra filas con cualquier profile_id
+     * candidato (id vs user_id) para evitar duplicados tras migraciones.
+     *
+     * @param int[]|string[]|null $rawIds
+     */
+    private function syncProfileSedes(Profile $profile, int $empresaId, $rawIds): void
+    {
+        $allowed = LocationSedes::find()
+            ->select('id')
+            ->where(['empresa_id' => $empresaId, 'activo' => 1])
+            ->column();
+        $allowedSet = array_flip(array_map('intval', $allowed));
+
+        $ids = [];
+        if (is_array($rawIds)) {
+            foreach ($rawIds as $v) {
+                if ($v === '' || $v === null) {
+                    continue;
+                }
+                $sid = (int) $v;
+                if (isset($allowedSet[$sid])) {
+                    $ids[$sid] = true;
+                }
+            }
+        }
+        $ids = array_keys($ids);
+
+        $pivotId = $profile->getPivotProfileId();
+        $candidates = $profile->profileSedePivotProfileIdCandidates();
+        if ($candidates !== []) {
+            ProfileSede::deleteAll(['profile_id' => $candidates]);
+        }
+
+        foreach ($ids as $locationSedeId) {
+            $link = new ProfileSede();
+            $link->profile_id = $pivotId;
+            $link->location_sede_id = $locationSedeId;
+            if (!$link->save(false)) {
+                throw new \RuntimeException('No se pudo guardar la asignación de sedes.');
+            }
+        }
+    }
 }

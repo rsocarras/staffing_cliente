@@ -41,6 +41,7 @@ use yii\helpers\Url;
  * @property int|null $centro_utilidad_id
  * @property string|null $city
  * @property int|null $area_id
+ * @property int|null $id PK numérica si existe en BD (además de user_id); usada en pivotes como profile_sedes.profile_id.
  *
  * @property Area $area
  * @property Cargos $cargo
@@ -49,6 +50,7 @@ use yii\helpers\Url;
  * @property EmpleadoVenueHistory[] $empleadoVenueHistories
  * @property Empresas $empresas
  * @property LocationSedes|null $locationSede
+ * @property ProfileSede[] $profileSedeLinks
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property NominaItem[] $nominaItems
  * @property ProfileEventosLog[] $profileEventosLogs
@@ -85,6 +87,82 @@ class Profile extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 'profile';
+    }
+
+    /**
+     * Columna de `profile` referenciada por la FK `profile_sedes.profile_id` (p. ej. `id` o `user_id`).
+     * Si la tabla aún no existe o no hay FK, se infiere por esquema.
+     */
+    public static function profileSedePivotReferencedProfileColumn(): string
+    {
+        static $cached;
+        if ($cached !== null) {
+            return $cached;
+        }
+        $cached = null;
+        try {
+            $schema = Yii::$app->db->getSchema()->getTableSchema('{{%profile_sedes}}', true);
+            if ($schema !== null) {
+                foreach ($schema->foreignKeys as $fk) {
+                    if (isset($fk['profile_id']) && is_string($fk['profile_id'])) {
+                        $cached = $fk['profile_id'];
+                        break;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+        }
+        if ($cached === null) {
+            $schema = static::getTableSchema();
+            $cached = ($schema !== null && isset($schema->columns['id'])) ? 'id' : 'user_id';
+        }
+
+        return $cached;
+    }
+
+    /**
+     * @deprecated Usar {@see profileSedePivotReferencedProfileColumn()}
+     */
+    public static function pivotProfileFkColumn(): string
+    {
+        return static::profileSedePivotReferencedProfileColumn();
+    }
+
+    /**
+     * Valor a guardar en `profile_sedes.profile_id` para este perfil (según FK hacia `profile`).
+     */
+    public function getPivotProfileId(): int
+    {
+        $col = static::profileSedePivotReferencedProfileColumn();
+        $v = $this->getAttribute($col);
+        if (($v === null || $v === '') && $col === 'id' && $this->user_id !== null && $this->user_id !== '') {
+            return (int) $this->user_id;
+        }
+
+        return (int) $v;
+    }
+
+    /**
+     * Posibles valores históricos de profile_id en pivotes (limpieza / lectura).
+     *
+     * @return int[]
+     */
+    public function profileSedePivotProfileIdCandidates(): array
+    {
+        $out = [];
+        $schema = static::getTableSchema();
+        if ($schema !== null && isset($schema->columns['id'])) {
+            $id = $this->getAttribute('id');
+            if ($id !== null && $id !== '') {
+                $out[] = (int) $id;
+            }
+        }
+        if ($this->user_id !== null && $this->user_id !== '') {
+            $out[] = (int) $this->user_id;
+        }
+
+        return array_values(array_unique(array_filter($out, static fn ($v) => $v > 0)));
     }
 
     /**
@@ -319,6 +397,16 @@ class Profile extends \yii\db\ActiveRecord
     public function getLocationSede()
     {
         return $this->hasOne(LocationSedes::class, ['id' => 'location_sede_id']);
+    }
+
+    /**
+     * Sedes adicionales asignadas al colaborador (módulo gestión).
+     */
+    public function getProfileSedeLinks()
+    {
+        $fk = static::profileSedePivotReferencedProfileColumn();
+
+        return $this->hasMany(ProfileSede::class, ['profile_id' => $fk]);
     }
 
     /**

@@ -137,7 +137,6 @@ $cargosUrl = Url::to(['/sistema/contratos/cargos-por-estructura']);
                         </span>
                         <h5 class="modal-title fw-bold mb-0"><?= Html::encode(\Yii::t('app', 'Colaborador')) ?></h5>
                     </div>
-                    <p class="text-muted small mb-0 ps-1"><?= Html::encode(\Yii::t('app', 'Vista de solo lectura; use Editar para modificar datos.')) ?></p>
                 </div>
                 <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
@@ -162,7 +161,6 @@ $cargosUrl = Url::to(['/sistema/contratos/cargos-por-estructura']);
                         </span>
                         <h5 class="modal-title fw-bold mb-0"><?= Html::encode(\Yii::t('app', 'Editar colaborador')) ?></h5>
                     </div>
-                    <p class="text-muted small mb-0 ps-1"><?= Html::encode(\Yii::t('app', 'Mismo formulario que en Gestión de usuarios (cuenta, roles y perfil).')) ?></p>
                 </div>
                 <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
@@ -276,17 +274,26 @@ $(document).ready(function() {
         modal.show();
         $.get(formAjaxUrl, { id: userId }, function(html) {
             $('#modal-edit-empleado-body').html(html);
+            var \$modalEdit = $('#modal-edit-empleado');
             $('#modal-edit-empleado-body').find('[data-toggle="select2"]').each(function() {
                 var \$el = $(this);
                 if (\$el.data('select2')) {
                     \$el.select2('destroy');
                 }
-                \$el.select2({
+                var opts = {
                     width: '100%',
                     placeholder: \$el.attr('data-placeholder') || '',
-                    allowClear: \$el.attr('data-allow-clear') === 'true'
-                });
+                    allowClear: \$el.attr('data-allow-clear') === 'true',
+                    dropdownParent: \$modalEdit.length ? \$modalEdit : undefined
+                };
+                if (\$el.prop('multiple') || \$el.attr('data-close-on-select') === 'false') {
+                    opts.closeOnSelect = false;
+                }
+                \$el.select2(opts);
             });
+            if (typeof syncProfileSedeTiles === 'function') {
+                syncProfileSedeTiles($('#modal-edit-empleado-body'));
+            }
         }).fail(function() {
             $('#modal-edit-empleado-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
         });

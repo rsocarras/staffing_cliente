@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "location_sedes".
@@ -98,6 +98,77 @@ class LocationSedes extends \yii\db\ActiveRecord
         $items = self::optsTipoSede();
 
         return isset($items[$this->tipo_sede]) ? $items[$this->tipo_sede] : $this->tipo_sede;
+    }
+
+    /**
+     * Sedes que puede usar un cliente empresa: las ya vinculadas en requisiciones o presupuestos;
+     * si no hay historial, todas las sedes activas del tenant. Incluye $includeSedeId si aplica.
+     *
+     * @return static[]
+     */
+    public static function findSelectableForEmpresaCliente(int $empresaClienteId, int $tenantEmpresaId, ?int $includeSedeId = null): array
+    {
+        $sedeIdsReq = (new Query())
+            ->select('sede_id')
+            ->distinct()
+            ->from('requisicion')
+            ->where([
+                'empresa_cliente_id' => $empresaClienteId,
+                'empresas_id' => $tenantEmpresaId,
+            ])
+            ->andWhere(['not', ['sede_id' => null]])
+            ->andWhere(['>', 'sede_id', 0])
+            ->column();
+
+        $sedeIdsPres = (new Query())
+            ->select('location_sede_id')
+            ->distinct()
+            ->from('presupuesto')
+            ->where([
+                'empresa_cliente_id' => $empresaClienteId,
+                'empresa_id' => $tenantEmpresaId,
+            ])
+            ->andWhere(['not', ['location_sede_id' => null]])
+            ->andWhere(['>', 'location_sede_id', 0])
+            ->column();
+
+        $merged = array_values(array_unique(array_merge(
+            array_map('intval', $sedeIdsReq),
+            array_map('intval', $sedeIdsPres)
+        )));
+
+        $q = static::find()
+            ->where(['empresa_id' => $tenantEmpresaId, 'activo' => 1]);
+
+        if ($merged !== []) {
+            $q->andWhere(['id' => $merged]);
+        }
+
+        /** @var static[] $models */
+        $models = $q->orderBy(['nombre' => SORT_ASC])->all();
+
+        if ($includeSedeId !== null && $includeSedeId > 0) {
+            $ids = array_map(static function ($m) {
+                return (int) $m->id;
+            }, $models);
+            if (!in_array($includeSedeId, $ids, true)) {
+                $extra = static::find()
+                    ->where([
+                        'id' => $includeSedeId,
+                        'empresa_id' => $tenantEmpresaId,
+                        'activo' => 1,
+                    ])
+                    ->one();
+                if ($extra !== null) {
+                    $models[] = $extra;
+                    usort($models, static function ($a, $b) {
+                        return strcmp($a->nombre, $b->nombre);
+                    });
+                }
+            }
+        }
+
+        return $models;
     }
 
 }

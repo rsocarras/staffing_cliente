@@ -673,3 +673,47 @@ Template Name: Dreams Timer - Time Tracking Boostrap 5 Admin Dashboard
 	}
 
 })();
+
+/**
+ * Selector de sedes (cuadrícula con fichas) — eventos delegados + sync inicial.
+ */
+(function () {
+	'use strict';
+	if (typeof jQuery === 'undefined') {
+		return;
+	}
+	var $ = jQuery;
+
+	function syncProfileSedeTiles($root) {
+		$root = $root && $root.length ? $root : $(document);
+		$root.find('.profile-sedes-picker input[type="checkbox"]').each(function () {
+			$(this).closest('.profile-sede-tile').toggleClass('is-selected', this.checked);
+		});
+	}
+
+	window.syncProfileSedeTiles = syncProfileSedeTiles;
+
+	$(document).on('change', '.profile-sedes-picker input[type="checkbox"]', function () {
+		$(this).closest('.profile-sede-tile').toggleClass('is-selected', this.checked);
+	});
+
+	$(document).on('click', '.js-profile-sedes-select-all', function (e) {
+		e.preventDefault();
+		var $p = $(this).closest('.profile-sedes-picker');
+		$p.find('input[type="checkbox"]').prop('checked', true).each(function () {
+			$(this).closest('.profile-sede-tile').addClass('is-selected');
+		});
+	});
+
+	$(document).on('click', '.js-profile-sedes-clear', function (e) {
+		e.preventDefault();
+		var $p = $(this).closest('.profile-sedes-picker');
+		$p.find('input[type="checkbox"]').prop('checked', false);
+		$p.find('.profile-sede-tile').removeClass('is-selected');
+	});
+
+	$(function () {
+		syncProfileSedeTiles($(document));
+	});
+})();
+

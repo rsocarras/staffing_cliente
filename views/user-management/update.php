@@ -7,6 +7,8 @@ use yii\helpers\Url;
 /** @var app\models\Profile $profile */
 /** @var array $profileFormOptions */
 /** @var \yii\rbac\Role[] $allRoles */
+/** @var int[] $profileSedeIds */
+/** @var array<int, string> $sedesMap */
 
 $this->title = 'Editar usuario: ' . $model->username;
 ?>
@@ -37,6 +39,8 @@ $this->title = 'Editar usuario: ' . $model->username;
             'profileFormOptions' => $profileFormOptions,
             'allRoles' => $allRoles,
             'isNew' => false,
+            'profileSedeIds' => $profileSedeIds,
+            'sedesMap' => $sedesMap,
         ]) ?>
     </div>
 </div>

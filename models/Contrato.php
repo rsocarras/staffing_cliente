@@ -5,7 +5,6 @@ namespace app\models;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Expression;
 
@@ -27,17 +26,31 @@ use yii\db\Expression;
  * @property string $updated_at
  * @property int|null $created_by
  * @property int|null $updated_by
+ * @property int|null $requisicion_id
+ * @property int|null $motivo_vinculacion_id
+ * @property int|null $empresa_cliente_id
+ * @property int|null $ciudad_id
+ * @property float|string|null $jornada
+ * @property float|string|null $salario
+ * @property float|string|null $auxilio
+ * @property int|null $esquema_variable_id
+ * @property string|null $tipo_contrato
  *
  * @property Area $area
  * @property Cargos $cargo
+ * @property City|null $ciudad
  * @property ContratoTipos $contratoTipo
  * @property ContratoDistribucionSede[] $contratoDistribucionSedes
+ * @property EmpresaCliente|null $empresaCliente
  * @property Empresas $empresa
+ * @property EsquemaVariable|null $esquemaVariable
+ * @property LocationSedes|null $sede
+ * @property MotivoVinculacion|null $motivoVinculacion
  * @property Profile $profile
- * @property LocationSedes $sede
- * @property Area $subArea
- * @property User $createdBy
- * @property User $updatedBy
+ * @property Requisicion|null $requisicion
+ * @property Area|null $subArea
+ * @property User|null $createdBy
+ * @property User|null $updatedBy
  */
 class Contrato extends ActiveRecord
 {
@@ -74,12 +87,50 @@ class Contrato extends ActiveRecord
     public function rules()
     {
         return [
-            [['sub_area_id', 'sede_id', 'fecha_fin', 'created_by', 'updated_by'], 'default', 'value' => null],
+            [
+                [
+                    'sub_area_id',
+                    'sede_id',
+                    'fecha_fin',
+                    'created_by',
+                    'updated_by',
+                    'requisicion_id',
+                    'motivo_vinculacion_id',
+                    'empresa_cliente_id',
+                    'ciudad_id',
+                    'jornada',
+                    'salario',
+                    'auxilio',
+                    'esquema_variable_id',
+                    'tipo_contrato',
+                ],
+                'default',
+                'value' => null,
+            ],
             [['estado'], 'default', 'value' => self::ESTADO_ACTIVO],
             [['empresa_id', 'profile_id', 'contrato_tipo_id', 'area_id', 'cargo_id', 'sede_id', 'fecha_inicio'], 'required'],
-            [['empresa_id', 'profile_id', 'area_id', 'sub_area_id', 'created_by', 'updated_by'], 'integer'],
-            [['contrato_tipo_id', 'cargo_id', 'sede_id'], 'integer'],
+            [
+                [
+                    'empresa_id',
+                    'profile_id',
+                    'contrato_tipo_id',
+                    'area_id',
+                    'sub_area_id',
+                    'cargo_id',
+                    'sede_id',
+                    'empresa_cliente_id',
+                    'created_by',
+                    'updated_by',
+                    'requisicion_id',
+                    'motivo_vinculacion_id',
+                    'ciudad_id',
+                    'esquema_variable_id',
+                ],
+                'integer',
+            ],
             [['fecha_inicio', 'fecha_fin', 'created_at', 'updated_at'], 'safe'],
+            [['jornada', 'salario', 'auxilio'], 'number'],
+            [['tipo_contrato'], 'string', 'max' => 20],
             [['estado'], 'string', 'max' => 20],
             [['estado'], 'in', 'range' => array_keys(self::optsEstado())],
             [['fecha_fin'], 'validateFechaFin'],
@@ -98,6 +149,11 @@ class Contrato extends ActiveRecord
             [['sub_area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['sub_area_id' => 'id']],
             [['cargo_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cargos::class, 'targetAttribute' => ['cargo_id' => 'id']],
             [['sede_id'], 'exist', 'skipOnError' => true, 'targetClass' => LocationSedes::class, 'targetAttribute' => ['sede_id' => 'id']],
+            [['empresa_cliente_id'], 'exist', 'skipOnError' => true, 'targetClass' => EmpresaCliente::class, 'targetAttribute' => ['empresa_cliente_id' => 'id']],
+            [['requisicion_id'], 'exist', 'skipOnError' => true, 'targetClass' => Requisicion::class, 'targetAttribute' => ['requisicion_id' => 'id']],
+            [['motivo_vinculacion_id'], 'exist', 'skipOnError' => true, 'targetClass' => MotivoVinculacion::class, 'targetAttribute' => ['motivo_vinculacion_id' => 'id']],
+            [['ciudad_id'], 'exist', 'skipOnError' => true, 'targetClass' => City::class, 'targetAttribute' => ['ciudad_id' => 'id']],
+            [['esquema_variable_id'], 'exist', 'skipOnError' => true, 'targetClass' => EsquemaVariable::class, 'targetAttribute' => ['esquema_variable_id' => 'id']],
         ];
     }
 
@@ -112,6 +168,15 @@ class Contrato extends ActiveRecord
             'sub_area_id' => 'Subárea',
             'cargo_id' => 'Cargo',
             'sede_id' => 'Sede principal',
+            'requisicion_id' => 'Requisición',
+            'motivo_vinculacion_id' => 'Motivo de vinculación',
+            'empresa_cliente_id' => 'Empresa cliente',
+            'ciudad_id' => 'Ciudad',
+            'jornada' => 'Jornada',
+            'salario' => 'Salario',
+            'auxilio' => 'Auxilio',
+            'esquema_variable_id' => 'Esquema variable',
+            'tipo_contrato' => 'Tipo contrato',
             'estado' => 'Estado',
             'fecha_inicio' => 'Fecha inicio',
             'fecha_fin' => 'Fecha fin',
@@ -449,6 +514,31 @@ class Contrato extends ActiveRecord
     public function getSede()
     {
         return $this->hasOne(LocationSedes::class, ['id' => 'sede_id']);
+    }
+
+    public function getEmpresaCliente()
+    {
+        return $this->hasOne(EmpresaCliente::class, ['id' => 'empresa_cliente_id']);
+    }
+
+    public function getRequisicion()
+    {
+        return $this->hasOne(Requisicion::class, ['id' => 'requisicion_id']);
+    }
+
+    public function getMotivoVinculacion()
+    {
+        return $this->hasOne(MotivoVinculacion::class, ['id' => 'motivo_vinculacion_id']);
+    }
+
+    public function getCiudad()
+    {
+        return $this->hasOne(City::class, ['id' => 'ciudad_id']);
+    }
+
+    public function getEsquemaVariable()
+    {
+        return $this->hasOne(EsquemaVariable::class, ['id' => 'esquema_variable_id']);
     }
 
     public function getContratoDistribucionSedes()
