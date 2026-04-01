@@ -1018,6 +1018,10 @@ class NovedadController extends Controller
             );
         }
 
+        if (!$this->request->isPost) {
+            $this->aplicarPrefillSolicitudDesdeRequest($model, $ctx, $tenantId);
+        }
+
         if ($this->request->isPost) {
             $ctx->load($this->request->post());
             $model->load($this->request->post());
@@ -1871,6 +1875,73 @@ class NovedadController extends Controller
     }
 
     /**
+     * Precarga empleado y contexto en GET (/novedad/create?profile_id=…&fecha_novedad=…).
+     */
+    private function aplicarPrefillSolicitudDesdeRequest(Novedad $model, NovedadSolicitudContextForm $ctx, int $tenantId): void
+    {
+        $pid = (int) Yii::$app->request->get('profile_id', 0);
+        if ($pid <= 0) {
+            return;
+        }
+
+        $profile = Profile::findOne([
+            'user_id' => $pid,
+            'empresas_id' => $tenantId,
+        ]);
+        if ($profile === null) {
+            Yii::$app->session->setFlash(
+                'warning',
+                Yii::t('app', 'No se pudo precargar el colaborador indicado (no encontrado en su organización).')
+            );
+
+            return;
+        }
+
+        if (Yii::$app->user->can('gerente_sede')) {
+            $identity = Yii::$app->user->identity;
+            $op = $identity && $identity->profile ? $identity->profile : null;
+            if ($op !== null && !empty($op->sede_id) && (int) $profile->sede_id !== (int) $op->sede_id) {
+                Yii::$app->session->setFlash(
+                    'warning',
+                    Yii::t('app', 'No se pudo precargar el colaborador indicado (no corresponde a su sede).')
+                );
+
+                return;
+            }
+        }
+
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+
+        $model->profile_id = $pid;
+        $model->fecha_novedad = $fecha;
+
+        $ctx->profileUserIdParaEmpresaCliente = $pid;
+        $ctx->fechaNovedadParaEmpresaCliente = $fecha;
+
+        $clientes = EmpresaCliente::activosPorPerfilYContratoVigente($tenantId, $pid, $fecha);
+        if (count($clientes) === 1) {
+            $ctx->empresa_cliente_id = (int) $clientes[0]->id;
+        }
+
+        if ($profile->sede_id !== null) {
+            $sede = LocationSedes::findOne([
+                'id' => (int) $profile->sede_id,
+                'empresa_id' => $tenantId,
+                'activo' => 1,
+            ]);
+            if ($sede !== null) {
+                $ctx->sede_id = (int) $sede->id;
+                if ($sede->city_id !== null) {
+                    $ctx->ciudad_id = (int) $sede->city_id;
+                }
+            }
+        }
+    }
+
+    /**
      * @param int $id ID
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException
@@ -1918,6 +1989,8 @@ class NovedadController extends Controller
      */
     private function buildSolicitudFormStateForView(Novedad $model, NovedadSolicitudContextForm $ctx): array
     {
+        $tenantId = $this->currentEmpresaId();
+
         $state = [
             'novedad_tipo_id' => $ctx->novedad_tipo_id !== null ? (int) $ctx->novedad_tipo_id : null,
             'empresa_cliente_id' => $ctx->empresa_cliente_id !== null ? (int) $ctx->empresa_cliente_id : null,
@@ -1930,12 +2003,20 @@ class NovedadController extends Controller
             'auxilio_movilizacion' => (int) Yii::$app->request->post('auxilio_movilizacion', 0) === 1,
         ];
         if ($model->profile_id !== null && (int) $model->profile_id > 0) {
-            $pf = Profile::findOne(['user_id' => (int) $model->profile_id]);
-            if ($pf !== null && $pf->num_doc !== null && trim((string) $pf->num_doc) !== '') {
+            $pfCond = ['user_id' => (int) $model->profile_id];
+            if ($tenantId !== null) {
+                $pfCond['empresas_id'] = (int) $tenantId;
+            }
+            $pf = Profile::findOne($pfCond);
+            if (
+                $pf !== null
+                && $pf->num_doc !== null
+                && trim((string) $pf->num_doc) !== ''
+                && $pf->estado === Profile::ESTADO_ACTIVO
+            ) {
                 $state['num_doc'] = trim((string) $pf->num_doc);
             }
         }
-        $tenantId = $this->currentEmpresaId();
         $fecha = (string) ($model->fecha_novedad ?? '');
         if (
             $tenantId !== null && $model->profile_id !== null

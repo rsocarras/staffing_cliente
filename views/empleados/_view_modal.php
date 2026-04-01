@@ -24,8 +24,15 @@ $estadoBadgeClass = $model->estado ? Profile::estadoBadgeSoftClass($model->estad
 
 <div class="w-100">
     <div class="px-3 px-md-4 pt-3 pb-2 border-bottom bg-white">
-        <h5 class="fw-bold mb-1"><?= Html::encode($model->name ?: 'Colaborador') ?></h5>
-        <p class="text-muted small mb-0">ID de usuario <?= Html::encode((string) $model->user_id) ?> · <?= Html::encode(\Yii::t('app', 'datos de la empresa actual')) ?></p>
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+            <div class="min-w-0">
+                <h5 class="fw-bold mb-1"><?= Html::encode($model->name ?: 'Colaborador') ?></h5>
+                <p class="text-muted small mb-0">ID de usuario <?= Html::encode((string) $model->user_id) ?> · <?= Html::encode(\Yii::t('app', 'datos de la empresa actual')) ?></p>
+            </div>
+            <a href="<?= Html::encode(Url::to(['/novedad/create', 'profile_id' => $model->user_id])) ?>" class="btn btn-sm btn-primary flex-shrink-0">
+                <i class="ti ti-file-plus me-1"></i><?= Html::encode(\Yii::t('app', 'Crear novedad')) ?>
+            </a>
+        </div>
     </div>
 
     <ul class="nav nav-tabs nav-tabs-custom mx-3 mx-md-4 mt-3 mb-0" role="tablist">
