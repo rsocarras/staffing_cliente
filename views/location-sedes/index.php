@@ -254,7 +254,7 @@ $(document).ready(function() {
             { data: 10, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
         ],
         order: [[2, 'asc']],
-        pageLength: 25,
+        pageLength: 7,
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",
