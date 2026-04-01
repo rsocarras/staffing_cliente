@@ -11,6 +11,8 @@ use yii\helpers\Url;
 /** @var array $contratoOptions */
 /** @var bool $canManageContratos */
 /** @var int $userId */
+/** @var \app\models\LocationSedes[] $sedesAsignadas Sedes adicionales (profile_sedes), solo lectura */
+$sedesAsignadas = $sedesAsignadas ?? [];
 
 $avatarUrl = $model->photo_ ? Url::to($model->photo_) : Url::to('@web/assets/img/users/user-13.jpg');
 $empresaNombre = $model->empresas ? trim((string) ($model->empresas->name ?? $model->empresas->social_name ?? '')) : '';
@@ -23,17 +25,15 @@ $estadoBadgeClass = $model->estado ? Profile::estadoBadgeSoftClass($model->estad
 ?>
 
 <div class="w-100">
-    <div class="px-3 px-md-4 pt-3 pb-2 border-bottom bg-white">
-        <h5 class="fw-bold mb-1"><?= Html::encode($model->name ?: 'Colaborador') ?></h5>
-        <p class="text-muted small mb-0">ID de usuario <?= Html::encode((string) $model->user_id) ?> · <?= Html::encode(\Yii::t('app', 'datos de la empresa actual')) ?></p>
-    </div>
-
     <ul class="nav nav-tabs nav-tabs-custom mx-3 mx-md-4 mt-3 mb-0" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="emp-view-tab-resumen" data-bs-toggle="tab" data-bs-target="#emp-view-resumen" type="button" role="tab"><?= Html::encode(\Yii::t('app', 'Resumen')) ?></button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="emp-view-tab-perfil" data-bs-toggle="tab" data-bs-target="#emp-view-perfil" type="button" role="tab"><?= Html::encode(\Yii::t('app', 'Perfil')) ?></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="emp-view-tab-sedes" data-bs-toggle="tab" data-bs-target="#emp-view-sedes" type="button" role="tab"><?= Html::encode(\Yii::t('app', 'Sedes')) ?></button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="emp-view-tab-contratos" data-bs-toggle="tab" data-bs-target="#emp-view-contratos" type="button" role="tab"><?= Html::encode(\Yii::t('app', 'Contratos')) ?></button>
@@ -200,13 +200,35 @@ $estadoBadgeClass = $model->estado ? Profile::estadoBadgeSoftClass($model->estad
         </div>
 
         <div class="tab-pane fade" id="emp-view-perfil" role="tabpanel">
-            <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light">
-                <h6 class="fw-semibold mb-3"><?= Html::encode(\Yii::t('app', 'Datos del perfil')) ?></h6>
-                <?= $this->render('//user-management/_profile_fields_readonly', [
-                    'profile' => $model,
-                    'profileFormOptions' => $profileFormOptions,
-                    'photoEditHint' => \Yii::t('app', 'Puede cambiar la foto y el resto de campos desde «Editar» en esta pantalla o desde Gestión de usuarios.'),
-                ]) ?>
+        <?= $this->render('//user-management/_profile_fields_readonly', [
+                'profile' => $model,
+                'profileFormOptions' => $profileFormOptions,
+                'photoEditHint' => \Yii::t('app', ''),
+                'hideTechnicalFields' => true,
+                'resumenStyleLayout' => true,
+            ]) ?>
+        </div>
+
+        <div class="tab-pane fade" id="emp-view-sedes" role="tabpanel">
+            <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <i class="ti ti-map-pin fs-20"></i>
+                    </span>
+                    <div>
+                        <h6 class="fw-semibold mb-1"><?= Html::encode(\Yii::t('app', 'Sedes asignadas')) ?></h6>
+                        <p class="text-muted small mb-0"><?= Html::encode(\Yii::t('app', 'Ubicaciones adicionales de la organización vinculadas a este colaborador.')) ?></p>
+                    </div>
+                </div>
+                <?php if (empty($sedesAsignadas)): ?>
+                    <p class="text-muted mb-0"><?= Html::encode(\Yii::t('app', 'No hay sedes adicionales asignadas.')) ?></p>
+                <?php else: ?>
+                    <div class="d-flex flex-wrap gap-2">
+                        <?php foreach ($sedesAsignadas as $sede): ?>
+                            <span class="badge badge-soft-primary fs-13 px-3 py-2 rounded-pill"><?= Html::encode($sede->nombre) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -217,6 +239,7 @@ $estadoBadgeClass = $model->estado ? Profile::estadoBadgeSoftClass($model->estad
                 'contratoOptions' => $contratoOptions,
                 'canManageContratos' => $canManageContratos,
                 'userId' => $userId,
+                'readOnlyView' => true,
             ]) ?>
         </div>
     </div>

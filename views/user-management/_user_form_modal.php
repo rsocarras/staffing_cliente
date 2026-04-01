@@ -7,6 +7,10 @@ use yii\widgets\ActiveForm;
 /** @var app\models\Profile $profile */
 /** @var array $profileFormOptions */
 /** @var \yii\rbac\Role[] $allRoles */
+/** @var int[] $profileSedeIds */
+/** @var array<int, string> $sedesMap */
+$profileSedeIds = $profileSedeIds ?? [];
+$sedesMap = $sedesMap ?? [];
 ?>
 <?php $form = ActiveForm::begin([
     'id' => 'form-edit-user-modal',
@@ -22,6 +26,9 @@ use yii\widgets\ActiveForm;
     </li>
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="tab-edit-profile-tab" data-bs-toggle="tab" data-bs-target="#tab-edit-profile" type="button" role="tab">Perfil</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-edit-sedes-tab" data-bs-toggle="tab" data-bs-target="#tab-edit-sedes" type="button" role="tab">Sedes</button>
     </li>
 </ul>
 
@@ -102,10 +109,14 @@ use yii\widgets\ActiveForm;
     </div>
 
     <div class="tab-pane fade" id="tab-edit-profile" role="tabpanel">
-        <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light">
-            <h6 class="fw-semibold mb-3">Datos del perfil</h6>
-            <?= $this->render('_profile_fields', ['profile' => $profile, 'profileFormOptions' => $profileFormOptions]) ?>
-        </div>
+        <?= $this->render('_profile_fields', ['profile' => $profile, 'profileFormOptions' => $profileFormOptions]) ?>
+    </div>
+
+    <div class="tab-pane fade" id="tab-edit-sedes" role="tabpanel">
+        <?= $this->render('_profile_sedes_tab', [
+            'profileSedeIds' => $profileSedeIds,
+            'sedesMap' => $sedesMap,
+        ]) ?>
     </div>
 </div>
 

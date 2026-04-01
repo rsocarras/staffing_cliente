@@ -329,17 +329,26 @@ $(document).ready(function() {
         modal.show();
         $.get(formAjaxUrl, { id: id }, function(html) {
             $('#modal-edit-user-body').html(html);
+            var \$modalEditUser = $('#modal-edit-user');
             $('#modal-edit-user-body').find('[data-toggle="select2"]').each(function() {
                 var \$el = $(this);
                 if (\$el.data('select2')) {
                     \$el.select2('destroy');
                 }
-                \$el.select2({
+                var opts = {
                     width: '100%',
                     placeholder: \$el.attr('data-placeholder') || '',
-                    allowClear: \$el.attr('data-allow-clear') === 'true'
-                });
+                    allowClear: \$el.attr('data-allow-clear') === 'true',
+                    dropdownParent: \$modalEditUser.length ? \$modalEditUser : undefined
+                };
+                if (\$el.prop('multiple') || \$el.attr('data-close-on-select') === 'false') {
+                    opts.closeOnSelect = false;
+                }
+                \$el.select2(opts);
             });
+            if (typeof syncProfileSedeTiles === 'function') {
+                syncProfileSedeTiles($('#modal-edit-user-body'));
+            }
         }).fail(function() {
             $('#modal-edit-user-body').html('<div class="alert alert-danger">Error al cargar el formulario.</div>');
         });
