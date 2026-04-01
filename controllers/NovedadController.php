@@ -1004,8 +1004,6 @@ class NovedadController extends Controller
         $model->loadDefaultValues();
 
         if ($tenantId === null) {
-            Yii::$app->session->setFlash('error', Yii::t('app', 'No tiene organización asignada en su perfil.'));
-
             return $this->render('create', $this->createViewParams($model, $ctx, $empresa, null));
         }
 
@@ -1040,6 +1038,7 @@ class NovedadController extends Controller
             }
 
             $this->mergeSolicitudDatos($model, $ctx);
+            $this->asignarContextoValidacionEmpresaCliente($ctx, $model);
 
             if (!$ctx->validate()) {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'Revise el contexto de la solicitud.'));
@@ -1861,6 +1860,16 @@ class NovedadController extends Controller
         }
     }
 
+    private function asignarContextoValidacionEmpresaCliente(NovedadSolicitudContextForm $ctx, Novedad $model): void
+    {
+        $ctx->profileUserIdParaEmpresaCliente = (int) ($model->profile_id ?: 0);
+        $fechaVal = (string) ($model->fecha_novedad ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaVal)) {
+            $fechaVal = date('Y-m-d');
+        }
+        $ctx->fechaNovedadParaEmpresaCliente = $fechaVal;
+    }
+
     /**
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -1883,14 +1892,7 @@ class NovedadController extends Controller
             $horasTipo = $hq->one();
         }
 
-        $clientesEmpresa = $tenantId ? EmpresaCliente::getActivos($tenantId) : [];
-        $clienteUnico = count($clientesEmpresa) === 1 ? $clientesEmpresa[0] : null;
-        if (
-            $clienteUnico !== null
-            && ($ctx->empresa_cliente_id === null || (int) $ctx->empresa_cliente_id <= 0)
-        ) {
-            $ctx->empresa_cliente_id = (int) $clienteUnico->id;
-        }
+        $clientesGlobales = $tenantId ? EmpresaCliente::getActivos($tenantId) : [];
 
         return [
             'model' => $model,
@@ -1898,9 +1900,9 @@ class NovedadController extends Controller
             'empresa' => $empresa,
             'tipoSeleccionado' => $tipoSeleccionado,
             'horasTipoId' => $horasTipo ? (int) $horasTipo->id : null,
-            'clientesEmpresa' => $clientesEmpresa,
-            'clienteUnico' => $clienteUnico,
-            'sinEmpresaCliente' => $tenantId !== null && $clientesEmpresa === [],
+            'clientesEmpresa' => [],
+            'clienteUnico' => null,
+            'sinEmpresaCliente' => $tenantId !== null && $clientesGlobales === [],
             'msgHorasRangoInvalido' => Yii::t(
                 'app',
                 'La hora final debe ser posterior a la hora inicial (mismo día; no puede ser anterior ni igual).'
@@ -1918,6 +1920,7 @@ class NovedadController extends Controller
     {
         $state = [
             'novedad_tipo_id' => $ctx->novedad_tipo_id !== null ? (int) $ctx->novedad_tipo_id : null,
+            'empresa_cliente_id' => $ctx->empresa_cliente_id !== null ? (int) $ctx->empresa_cliente_id : null,
             'ciudad_id' => $ctx->ciudad_id !== null ? (int) $ctx->ciudad_id : null,
             'sede_id' => $ctx->sede_id !== null ? (int) $ctx->sede_id : null,
             'profile_id' => $model->profile_id !== null ? (int) $model->profile_id : null,
@@ -2199,6 +2202,31 @@ class NovedadController extends Controller
         return array_map(static function (City $c) {
             return ['id' => $c->id, 'nombre' => $c->name];
         }, $rows);
+    }
+
+    /**
+     * Empresas cliente permitidas para la solicitud: activas del tenant y ligadas al empleado por contrato vigente a la fecha.
+     */
+    public function actionEmpresasClientePorEmpleado(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $eid = $this->currentEmpresaId();
+        $pid = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if ($eid === null || $pid <= 0) {
+            return ['success' => true, 'items' => []];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        $rows = EmpresaCliente::activosPorPerfilYContratoVigente((int) $eid, $pid, $fecha);
+
+        return [
+            'success' => true,
+            'items' => array_map(static function (EmpresaCliente $e): array {
+                return ['id' => (int) $e->id, 'nombre' => (string) $e->nombre];
+            }, $rows),
+        ];
     }
 
     public function actionBuscarEmpleado(): array

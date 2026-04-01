@@ -25,6 +25,12 @@ class NovedadSolicitudContextForm extends Model
     /** Tenant del operador (no viene del POST). */
     private ?int $empresasId = null;
 
+    /** Validación de empresa cliente según empleado y fecha (seteado en controlador, no POST). */
+    public ?int $profileUserIdParaEmpresaCliente = null;
+
+    /** @var string|null Fecha Y-m-d para filtrar contratos vigentes al validar empresa cliente */
+    public ?string $fechaNovedadParaEmpresaCliente = null;
+
     public function formName(): string
     {
         return 'SolicitudCtx';
@@ -91,17 +97,38 @@ class NovedadSolicitudContextForm extends Model
 
             return;
         }
-        $ids = array_map(
-            static fn (EmpresaCliente $e) => (int) $e->id,
-            EmpresaCliente::getActivos($tid)
-        );
-        if ($ids === []) {
+        if (EmpresaCliente::getActivos($tid) === []) {
             $this->addError($attribute, Yii::t('app', 'No hay empresa cliente válida para su usuario.'));
 
             return;
         }
+
+        $pid = (int) ($this->profileUserIdParaEmpresaCliente ?? 0);
+        $fecha = (string) ($this->fechaNovedadParaEmpresaCliente ?? '');
+        if ($pid <= 0) {
+            $this->addError($attribute, Yii::t('app', 'Busque y seleccione un empleado por documento antes de elegir la empresa cliente.'));
+
+            return;
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+
+        $permitidas = EmpresaCliente::activosPorPerfilYContratoVigente((int) $tid, $pid, $fecha);
+        $ids = array_map(static fn (EmpresaCliente $e) => (int) $e->id, $permitidas);
+        if ($ids === []) {
+            $this->addError(
+                $attribute,
+                Yii::t(
+                    'app',
+                    'No hay empresa cliente asociada a un contrato vigente del empleado en la fecha indicada. Compruebe la fecha de la novedad o la asignación de empresa cliente en el contrato.'
+                )
+            );
+
+            return;
+        }
         if (!in_array((int) $this->empresa_cliente_id, $ids, true)) {
-            $this->addError($attribute, Yii::t('app', 'La empresa cliente seleccionada no está permitida.'));
+            $this->addError($attribute, Yii::t('app', 'La empresa cliente seleccionada no está permitida para este empleado.'));
         }
     }
 
