@@ -153,7 +153,7 @@ class Requisicion extends ActiveRecord
         }
 
         if ($this->isContratoTipoHoras()) {
-            $this->jornada = null;
+            $this->jornada = 0;
             $this->jornada_selector = null;
             $this->jornada_otro = null;
             $this->salario = 0;

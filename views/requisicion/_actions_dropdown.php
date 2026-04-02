@@ -1,6 +1,7 @@
 <?php
 use app\models\Requisicion;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var Requisicion $model */
 ?>
@@ -22,13 +23,17 @@ use yii\helpers\Html;
                 </a>
             </li>
             <li>
-                <?= Html::a('<i class="ti ti-send me-2"></i>Enviar a aprobación', ['submit', 'id' => $model->id], [
-                    'class' => 'dropdown-item',
-                    'data' => [
-                        'confirm' => '¿Enviar a aprobación?',
-                        'method' => 'post',
-                    ],
-                ]) ?>
+                <a href="javascript:void(0);" class="dropdown-item btn-requisicion-submit"
+                   data-url="<?= Html::encode(Url::to(['submit', 'id' => $model->id])) ?>"
+                   data-requisicion="<?= Html::encode((string) $model->id) ?>"
+                   data-empresa="<?= Html::encode((string) ($model->empresa->nombre ?? '-')) ?>"
+                   data-ciudad="<?= Html::encode((string) ($model->ciudad->name ?? '-')) ?>"
+                   data-sede="<?= Html::encode((string) ($model->sede->nombre ?? '-')) ?>"
+                   data-area="<?= Html::encode((string) ($model->area->nombre ?? '-')) ?>"
+                   data-cargo="<?= Html::encode((string) ($model->cargo->nombre ?? '-')) ?>"
+                   data-fecha="<?= Html::encode((string) (Yii::$app->formatter->asDate($model->fecha_ingreso) ?: '-')) ?>">
+                    <i class="ti ti-send me-2"></i>Enviar a aprobación
+                </a>
             </li>
             <li>
                 <a href="javascript:void(0);" class="dropdown-item text-danger btn-requisicion-delete" data-id="<?= (int) $model->id ?>" data-nombre="<?= Html::encode($model->group_uuid ?: 'Requisición') ?>">

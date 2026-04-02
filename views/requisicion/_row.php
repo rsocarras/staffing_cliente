@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var app\models\Requisicion $model */
 
@@ -28,14 +29,19 @@ $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
         <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => 'Ver']) ?>
         <?php if ($model->isEditable()): ?>
             <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-soft-primary rounded-pill', 'title' => 'Editar']) ?>
-            <?= Html::a('<i class="ti ti-send"></i>', ['submit', 'id' => $model->id], [
-                'class' => 'btn btn-icon btn-sm btn-success rounded-pill',
-                'title' => 'Enviar a aprobación',
-                'data' => [
-                    'confirm' => '¿Enviar a aprobación?',
-                    'method' => 'post',
-                ],
-            ]) ?>
+            <a href="javascript:void(0);"
+               class="btn btn-icon btn-sm btn-success rounded-pill btn-requisicion-submit"
+               title="Enviar a aprobación"
+               data-url="<?= Html::encode(Url::to(['submit', 'id' => $model->id])) ?>"
+               data-requisicion="<?= Html::encode((string) $model->id) ?>"
+               data-empresa="<?= Html::encode((string) ($model->empresa->nombre ?? '-')) ?>"
+               data-ciudad="<?= Html::encode((string) ($model->ciudad->name ?? '-')) ?>"
+               data-sede="<?= Html::encode((string) ($model->sede->nombre ?? '-')) ?>"
+               data-area="<?= Html::encode((string) ($model->area->nombre ?? '-')) ?>"
+               data-cargo="<?= Html::encode((string) ($model->cargo->nombre ?? '-')) ?>"
+               data-fecha="<?= Html::encode((string) (Yii::$app->formatter->asDate($model->fecha_ingreso) ?: '-')) ?>">
+                <i class="ti ti-send"></i>
+            </a>
         <?php endif; ?>
     </td>
 </tr>
