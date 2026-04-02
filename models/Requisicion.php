@@ -26,6 +26,7 @@ use yii\behaviors\BlameableBehavior;
  * @property int|null $sub_area_id
  * @property int $cargo_id
  * @property string|null $tipo_contrato
+ * @property int|null $contrato_tipo_id
  * @property float $jornada
  * @property float $salario
  * @property float $auxilio
@@ -47,6 +48,7 @@ use yii\behaviors\BlameableBehavior;
  * @property Area $area
  * @property Area $subArea
  * @property Cargos $cargo
+ * @property ContratoTipos|null $contratoTipo
  * @property EsquemaVariable $esquemaVariable
  * @property Profile $profile
  * @property Requisicion $parent
@@ -57,6 +59,8 @@ use yii\behaviors\BlameableBehavior;
 class Requisicion extends ActiveRecord
 {
     private static $tipoContratoEnumCache = null;
+    public ?string $jornada_selector = null;
+    public ?string $jornada_otro = null;
     const ESTADO_DRAFT = 'DRAFT';   // Borrador 
 
     const ESTADO_SUBMITTED = 'SUBMITTED';  
@@ -100,15 +104,17 @@ class Requisicion extends ActiveRecord
     public function rules()
     {
         return [
-            [['empresa_cliente_id', 'empresas_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'tipo_contrato', 'jornada', 'salario', 'auxilio', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
-            [['motivo_vinculacion_id', 'empresa_cliente_id', 'empresas_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
+            [['empresa_cliente_id', 'empresas_id', 'fecha_ingreso', 'ciudad_id', 'sede_id', 'area_id', 'cargo_id', 'tipo_contrato', 'contrato_tipo_id', 'numero_vacantes'], 'required', 'on' => ['create', 'default']],
+            [['motivo_vinculacion_id', 'empresa_cliente_id', 'empresas_id', 'ciudad_id', 'sede_id', 'area_id', 'sub_area_id', 'cargo_id', 'contrato_tipo_id', 'esquema_variable_id', 'numero_vacantes', 'profile_id', 'parent_id', 'creado_por', 'actualizado_por'], 'integer'],
             [['fecha_ingreso', 'fecha_creacion', 'fecha_update'], 'safe'],
+            [['jornada_otro'], 'trim'],
             [['jornada', 'salario', 'auxilio'], 'number'],
             [['salario', 'auxilio'], 'number', 'min' => 0],
             [['numero_vacantes'], 'integer', 'min' => 1],
             [['motivo_rechazo', 'vinculacion_motivo_rechazo'], 'string'],
             [['tipo_contrato'], 'string', 'max' => 255],
             [['tipo_contrato'], 'in', 'range' => array_keys(self::optsTipoContrato())],
+            [['jornada_selector'], 'in', 'range' => ['110', '220', 'otro']],
             [['estado'], 'string', 'max' => 50],
             [['group_uuid'], 'string', 'max' => 36],
             [['motivo_vinculacion_id'], 'exist', 'skipOnError' => true, 'targetClass' => MotivoVinculacion::class, 'targetAttribute' => ['motivo_vinculacion_id' => 'id']],
@@ -119,13 +125,67 @@ class Requisicion extends ActiveRecord
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['area_id' => 'id']],
             [['sub_area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['sub_area_id' => 'id']],
             [['cargo_id'], 'exist', 'skipOnError' => true, 'targetClass' => Cargos::class, 'targetAttribute' => ['cargo_id' => 'id']],
+            [['contrato_tipo_id'], 'exist', 'skipOnError' => true, 'targetClass' => ContratoTipos::class, 'targetAttribute' => ['contrato_tipo_id' => 'id']],
             [['esquema_variable_id'], 'exist', 'skipOnError' => true, 'targetClass' => EsquemaVariable::class, 'targetAttribute' => ['esquema_variable_id' => 'id']],
             [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => Profile::class, 'targetAttribute' => ['profile_id' => 'user_id']],
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Requisicion::class, 'targetAttribute' => ['parent_id' => 'id']],
             [['sede_id'], 'validateSedeCiudad'],
             [['sub_area_id'], 'validateSubArea'],
+            [['cargo_id'], 'validateCargoDependencia'],
+            [['contrato_tipo_id'], 'validateContratoTipoTenant'],
+            [['jornada_selector'], 'validateJornadaRequeridaSegunTipoContrato'],
+            [['jornada'], 'validateJornadaRango'],
+            [['jornada_otro'], 'validateJornadaOtro'],
             [['empresa_cliente_id'], 'validateEmpresaClienteTenant'],
         ];
+    }
+
+    public function beforeValidate()
+    {
+        if (!parent::beforeValidate()) {
+            return false;
+        }
+
+        $selector = trim((string) $this->jornada_selector);
+        if ($selector === '' && $this->jornada !== null) {
+            $selector = in_array((string) (int) $this->jornada, ['110', '220'], true) ? (string) (int) $this->jornada : 'otro';
+            $this->jornada_selector = $selector;
+        }
+
+        if ($this->isContratoTipoHoras()) {
+            $this->jornada = null;
+            $this->jornada_selector = null;
+            $this->jornada_otro = null;
+            $this->salario = 0;
+        } else {
+            if ($selector === '110' || $selector === '220') {
+                $this->jornada = (float) $selector;
+                $this->jornada_otro = null;
+            } elseif ($selector === 'otro') {
+                $raw = str_replace(',', '.', trim((string) $this->jornada_otro));
+                if ($raw !== '' && is_numeric($raw)) {
+                    $this->jornada = (float) $raw;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $j = $this->jornada !== null ? (float) $this->jornada : null;
+        if ($j === 110.0) {
+            $this->jornada_selector = '110';
+            $this->jornada_otro = null;
+        } elseif ($j === 220.0) {
+            $this->jornada_selector = '220';
+            $this->jornada_otro = null;
+        } elseif ($j !== null) {
+            $this->jornada_selector = 'otro';
+            $this->jornada_otro = rtrim(rtrim(number_format($j, 2, '.', ''), '0'), '.');
+        }
     }
 
     public function validateSedeCiudad($attribute, $params, $validator)
@@ -144,6 +204,104 @@ class Requisicion extends ActiveRecord
                 $this->addError($attribute, 'La sub-área debe pertenecer al área seleccionada.');
             }
         }
+    }
+
+    public function validateCargoDependencia($attribute, $params, $validator)
+    {
+        if (empty($this->cargo_id) || empty($this->area_id)) {
+            return;
+        }
+        $cargo = Cargos::findOne((int) $this->cargo_id);
+        if ($cargo === null) {
+            return;
+        }
+        if ((int) $cargo->area_id !== (int) $this->area_id) {
+            $this->addError($attribute, 'El cargo debe pertenecer al área seleccionada.');
+
+            return;
+        }
+        if (!empty($this->sub_area_id) && (int) ($cargo->sub_area_id ?? 0) !== (int) $this->sub_area_id) {
+            $this->addError($attribute, 'El cargo debe pertenecer a la sub-área seleccionada.');
+        }
+    }
+
+    public function validateContratoTipoTenant($attribute, $params, $validator)
+    {
+        if (empty($this->contrato_tipo_id) || empty($this->empresas_id)) {
+            return;
+        }
+        $contratoTipo = ContratoTipos::findOne((int) $this->contrato_tipo_id);
+        if ($contratoTipo === null) {
+            return;
+        }
+        if (!$contratoTipo->hasAttribute('empresa_id')) {
+            return;
+        }
+        if ($contratoTipo->empresa_id !== null && (int) $contratoTipo->empresa_id !== (int) $this->empresas_id) {
+            $this->addError($attribute, 'El tipo de contrato debe pertenecer a la empresa actual.');
+        }
+    }
+
+    public function validateJornadaRango($attribute, $params, $validator)
+    {
+        if ($this->isContratoTipoHoras()) {
+            return;
+        }
+        if ($this->$attribute === null || $this->$attribute === '') {
+            return;
+        }
+        $value = (float) $this->$attribute;
+        if ($value < 100 || $value > 300) {
+            $this->addError($attribute, 'La jornada debe estar entre 100 y 300.');
+        }
+    }
+
+    public function validateJornadaOtro($attribute, $params, $validator)
+    {
+        if ($this->isContratoTipoHoras()) {
+            return;
+        }
+        if ((string) $this->jornada_selector !== 'otro') {
+            return;
+        }
+        $raw = str_replace(',', '.', trim((string) $this->$attribute));
+        if ($raw === '') {
+            $this->addError($attribute, 'Debe ingresar un valor de jornada cuando selecciona "otro".');
+
+            return;
+        }
+        if (!is_numeric($raw)) {
+            $this->addError($attribute, 'La jornada debe ser un número válido.');
+
+            return;
+        }
+        $value = (float) $raw;
+        if ($value < 100 || $value > 300) {
+            $this->addError($attribute, 'La jornada debe estar entre 100 y 300.');
+        }
+    }
+
+    public function validateJornadaRequeridaSegunTipoContrato($attribute, $params, $validator)
+    {
+        if ($this->isContratoTipoHoras()) {
+            return;
+        }
+        if (trim((string) $this->$attribute) === '') {
+            $this->addError($attribute, 'Debe seleccionar una jornada.');
+        }
+    }
+
+    private function isContratoTipoHoras(): bool
+    {
+        if (empty($this->contrato_tipo_id)) {
+            return false;
+        }
+        $tipo = $this->contratoTipo ?: ContratoTipos::findOne((int) $this->contrato_tipo_id);
+        if ($tipo === null || !$tipo->hasAttribute('code')) {
+            return false;
+        }
+
+        return strtoupper((string) $tipo->code) === 'HORAS';
     }
 
     public function validateEmpresaClienteTenant($attribute, $params, $validator)
@@ -176,8 +334,11 @@ class Requisicion extends ActiveRecord
             'area_id' => 'Área',
             'sub_area_id' => 'Sub-área',
             'cargo_id' => 'Cargo',
-            'tipo_contrato' => 'Tipo de contrato',
+            'tipo_contrato' => 'Modalidad de vinculación',
+            'contrato_tipo_id' => 'Tipo de contrato',
             'jornada' => 'Jornada',
+            'jornada_selector' => 'Jornada',
+            'jornada_otro' => 'Jornada (otro)',
             'salario' => 'Salario',
             'auxilio' => 'Auxilio',
             'esquema_variable_id' => 'Esquema variable',
@@ -227,6 +388,11 @@ class Requisicion extends ActiveRecord
     public function getCargo()
     {
         return $this->hasOne(Cargos::class, ['id' => 'cargo_id']);
+    }
+
+    public function getContratoTipo()
+    {
+        return $this->hasOne(ContratoTipos::class, ['id' => 'contrato_tipo_id']);
     }
 
     public function getEsquemaVariable()

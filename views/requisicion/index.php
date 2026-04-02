@@ -276,8 +276,9 @@ $(function() {
         if (form) form.reset();
         $('#requisicion-form-errors').addClass('d-none').empty();
         $('#requisicion-sede_id').html('<option value=\"\">Primero seleccione ciudad</option>').prop('disabled', true);
+        $('#requisicion-area_id').html('<option value=\"\">Primero seleccione empresa cliente</option>').prop('disabled', true);
         $('#requisicion-sub_area_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);
-        $('#requisicion-cargo_id').html('<option value=\"\">Primero seleccione subárea</option>').prop('disabled', true);
+        $('#requisicion-cargo_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);
     }
 
     function hasActiveServerFilters() {
