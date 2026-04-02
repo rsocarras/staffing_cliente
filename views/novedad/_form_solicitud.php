@@ -30,12 +30,11 @@ $ajax = [
     'agrupadores' => Url::to(['/novedad/agrupadores']),
     'buscarEmpleado' => Url::to(['/novedad/buscar-empleado']),
     'empresasClientePorEmpleado' => Url::to(['/novedad/empresas-cliente-por-empleado']),
-    'ciudades' => Url::to(['/novedad/ciudades']),
+    'sedes' => Url::to(['/novedad/sedes']),
     'cargoClases' => Url::to(['/novedad/cargo-clases-grupales']),
     'conceptos' => Url::to(['/novedad/conceptos']),
     'tipoCampos' => Url::to(['/novedad/tipo-campos']),
 ];
-$sedesBase = Url::to(['/novedad/sedes-por-ciudad']) . '?ciudad_id=';
 
 $lblClass = 'form-label fw-semibold mb-2';
 $fldRow = ['options' => ['class' => 'mb-0']];
@@ -115,7 +114,6 @@ CSS
             'data-novedad-tipo-horas-id' => $horasTipoId !== null ? (string) $horasTipoId : '',
             'data-novedad-cargo-clases-url' => $ajax['cargoClases'],
             'data-msg-horas-rango-invalido' => $msgHorasRangoInvalido,
-            'data-sedes-por-ciudad-base' => $sedesBase,
             'data-novedad-conceptos-url' => $ajax['conceptos'],
             'data-novedad-tipo-campos-url' => $ajax['tipoCampos'],
             'data-msg-empleado-no-encontrado' => Yii::t('app', 'No se encontró el empleado.'),
@@ -132,6 +130,8 @@ CSS
             ),
             'data-prompt-seleccionar' => Yii::t('app', 'Seleccionar…'),
             'data-placeholder-dinamico' => Yii::t('app', 'Ingrese el valor…'),
+            'data-msg-seleccione-sede' => Yii::t('app', 'Se completará al seleccionar una sede…'),
+            'data-msg-sin-ciudad-sede' => Yii::t('app', 'Esta sede no tiene ciudad asignada.'),
         ],
     ]); ?>
 
@@ -182,6 +182,8 @@ CSS
         </div>
     </div>
 
+    <div id="novedad-secciones-form" style="display:none;">
+
     <div class="novedad-solicitud-seccion rounded-3 border border-dashed p-3 p-md-4 mb-4 bg-light">
         <div class="d-flex align-items-start gap-3 mb-3">
             <span class="avatar avatar-md bg-soft-info text-info rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -229,23 +231,31 @@ CSS
             </span>
             <div>
                 <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Ubicación') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Ciudad y sede operativa (opcional según tipo de novedad).') ?></p>
+                <p class="text-muted small mb-0"><?= Yii::t('app', 'Sede operativa y ciudad vinculada (opcional según tipo de novedad).') ?></p>
             </div>
         </div>
         <div class="row g-3 novedad-solicitud-row-campos">
             <div class="col-md-6">
-                <?= $form->field($ctx, 'ciudad_id', array_merge($fldRow, $lblNorm()))->dropDownList([], [
-                    'prompt' => Yii::t('app', 'Seleccionar ciudad…'),
-                    'id' => 'solicitudctx-ciudad_id',
+                <?= $form->field($ctx, 'sede_id', array_merge($fldRow, $lblNorm()))->dropDownList([], [
+                    'prompt' => Yii::t('app', 'Seleccionar sede…'),
+                    'id' => 'solicitudctx-sede_id',
                     'class' => 'form-select rounded-3',
                 ]) ?>
             </div>
             <div class="col-md-6">
-                <?= $form->field($ctx, 'sede_id', array_merge($fldRow, $lblNorm()))->dropDownList([], [
-                    'prompt' => Yii::t('app', 'Primero seleccione una ciudad…'),
-                    'id' => 'solicitudctx-sede_id',
-                    'class' => 'form-select rounded-3',
-                ]) ?>
+                <label class="<?= Html::encode($lblClass) ?>"><?= Html::encode(Yii::t('app', 'Ciudad')) ?></label>
+                <div id="ciudad-display" class="form-control bg-white rounded-3 text-muted">
+                    <?= Html::encode(Yii::t('app', 'Se completará al seleccionar una sede…')) ?>
+                </div>
+                <?= Html::hiddenInput(
+                    'SolicitudCtx[ciudad_id]',
+                    $ctx->ciudad_id !== null ? (string) $ctx->ciudad_id : '',
+                    ['id' => 'solicitudctx-ciudad_id']
+                ) ?>
+                <?php if ($ctx->hasErrors('ciudad_id')): ?>
+                    <div class="invalid-feedback d-block"><?= Html::encode($ctx->getFirstError('ciudad_id')) ?></div>
+                <?php endif; ?>
+                <div class="form-text"><?= Html::encode(Yii::t('app', 'Ciudad vinculada a la sede seleccionada.')) ?></div>
             </div>
         </div>
     </div>
@@ -386,6 +396,8 @@ CSS
         ) ?>
     </div>
 
+    </div><!-- /#novedad-secciones-form -->
+
     <?php ActiveForm::end(); ?>
 
     <div class="modal fade" id="novedad-solicitud-modal-alerta" tabindex="-1" aria-labelledby="novedad-solicitud-modal-alerta-titulo" aria-hidden="true">
@@ -423,6 +435,11 @@ $jsTemplate = <<<'JS'
   var tipoCamposUrl = $form.attr('data-novedad-tipo-campos-url') || '';
   var promptSel = ($form.attr('data-prompt-seleccionar') || 'Seleccionar…').trim();
   var placeholderDinamico = ($form.attr('data-placeholder-dinamico') || 'Ingrese el valor…').trim();
+  var msgSeleccioneSede = ($form.attr('data-msg-seleccione-sede') || 'Se completará al seleccionar una sede…').trim();
+  var msgSinCiudadSede = ($form.attr('data-msg-sin-ciudad-sede') || 'Sin ciudad asignada.').trim();
+
+  /* Mapa sedeId → { city_id, city_nombre } cargado al inicio */
+  var sedesData = {};
 
   function escapeHtml(s) {
     if (s == null || s === '') { return ''; }
@@ -434,9 +451,7 @@ $jsTemplate = <<<'JS'
   function mostrarModalAlerta(mensaje) {
     var modalEl = document.getElementById('novedad-solicitud-modal-alerta');
     var cuerpo = document.getElementById('novedad-solicitud-modal-alerta-cuerpo');
-    if (!modalEl || !cuerpo) {
-      return;
-    }
+    if (!modalEl || !cuerpo) { return; }
     cuerpo.textContent = mensaje || '';
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
       bootstrap.Modal.getOrCreateInstance(modalEl).show();
@@ -477,12 +492,42 @@ $jsTemplate = <<<'JS'
 
   function fechaParaContratoCliente() {
     var f = ($('#novedad-fecha_novedad').val() || '').trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(f)) {
-      return f;
-    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(f)) { return f; }
     var d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   }
+
+  /* ── Visibilidad de secciones ── */
+
+  function mostrarSecciones() {
+    $('#novedad-secciones-form').show();
+  }
+
+  function ocultarSecciones() {
+    $('#novedad-secciones-form').hide();
+  }
+
+  /* ── Ciudad vinculada a la sede ── */
+
+  function actualizarCiudadDesdeSede(sedeId) {
+    var $hidden = $('#solicitudctx-ciudad_id');
+    var $display = $('#ciudad-display');
+    if (!sedeId || !sedesData[String(sedeId)]) {
+      $hidden.val('');
+      $display.text(msgSeleccioneSede).addClass('text-muted');
+      return;
+    }
+    var d = sedesData[String(sedeId)];
+    if (d.city_id) {
+      $hidden.val(String(d.city_id));
+      $display.text(d.city_nombre || '—').removeClass('text-muted').css('color', '');
+    } else {
+      $hidden.val('');
+      $display.text(msgSinCiudadSede).addClass('text-muted');
+    }
+  }
+
+  /* ── Empresa cliente ── */
 
   function loadEmpresasCliente(done) {
     var $sel = $('#solicitudctx-empresa_cliente_id');
@@ -528,11 +573,14 @@ $jsTemplate = <<<'JS'
     });
   }
 
+  /* ── Búsqueda de empleado ── */
+
   function buscarEmpleadoPorDocumento(done) {
     var doc = ($('#buscar-num-doc').val() || '').trim();
     var fecha = $('#novedad-fecha_novedad').val() || '';
     if (doc.length < 3) {
       ocultarPanelesEmpleado();
+      ocultarSecciones();
       $('#novedad-profile_id').val('');
       $('#empleado-cargo-id').val('');
       loadEmpresasCliente(function () {
@@ -545,6 +593,7 @@ $jsTemplate = <<<'JS'
       var results = (data && data.results) ? data.results : [];
       if (!results.length) {
         setEmpleadoNoEncontrado();
+        ocultarSecciones();
         $('#novedad-profile_id').val('');
         $('#empleado-cargo-id').val('');
         loadEmpresasCliente(function () {
@@ -557,12 +606,17 @@ $jsTemplate = <<<'JS'
       $('#novedad-profile_id').val(r.id);
       setEmpleadoPanel(r);
       $('#empleado-cargo-id').val(r.cargo_id != null ? r.cargo_id : '');
+      mostrarSecciones();
       loadEmpresasCliente(function () {
-        refreshAuxilioCheckbox();
-        loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
+        loadSedes(function () {
+          refreshAuxilioCheckbox();
+          loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
+        });
       });
     });
   }
+
+  /* ── Agrupadores (tipo) ── */
 
   function loadAgrupadores() {
     $.getJSON(ajax.agrupadores, function (rows) {
@@ -579,18 +633,7 @@ $jsTemplate = <<<'JS'
     });
   }
 
-  function loadCiudades(done) {
-    $.getJSON(ajax.ciudades, function (rows) {
-      var $sel = $('#solicitudctx-ciudad_id');
-      var v = $sel.val() || (formState.ciudad_id != null ? String(formState.ciudad_id) : '');
-      $sel.empty().append($('<option/>').val('').text(promptSel));
-      $.each(rows, function (_, r) {
-        $sel.append($('<option/>').val(r.id).text(r.nombre));
-      });
-      if (v) { $sel.val(v); }
-      if (typeof done === 'function') { done(); }
-    });
-  }
+  /* ── Conceptos ── */
 
   function loadConceptos(tipoId, done) {
     var $c = $('#novedad-concepto_id');
@@ -615,6 +658,8 @@ $jsTemplate = <<<'JS'
       if (typeof done === 'function') { done(); }
     });
   }
+
+  /* ── Campos dinámicos ── */
 
   function inputTypeForDato(t) {
     var x = (t || '').toLowerCase();
@@ -657,9 +702,7 @@ $jsTemplate = <<<'JS'
             placeholder: placeholderDinamico
           });
         }
-        if (f.requerido) {
-          $field.prop('required', true);
-        }
+        if (f.requerido) { $field.prop('required', true); }
         var pv = persisted[f.campo_id];
         if (pv !== undefined && pv !== null && String(pv) !== '') {
           $field.val(String(pv));
@@ -670,23 +713,38 @@ $jsTemplate = <<<'JS'
     });
   }
 
-  function loadSedes(ciudadId, done) {
-    var base = $form.attr('data-sedes-por-ciudad-base') || '';
+  /* ── Sedes filtradas por contexto (cliente → contrato → todas) ── */
+
+  function loadSedes(done) {
     var $s = $('#solicitudctx-sede_id');
+    var currentVal = $s.val(); // conservar selección si sigue disponible
     $s.empty().append($('<option/>').val('').text(promptSel));
-    if (!ciudadId) {
+    actualizarCiudadDesdeSede('');
+    if (!ajax.sedes) {
       if (typeof done === 'function') { done(); }
       return;
     }
-    $.getJSON(base + encodeURIComponent(ciudadId), function (rows) {
+    var params = {
+      empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || '',
+      profile_id:         $('#novedad-profile_id').val() || '',
+      fecha_novedad:      $('#novedad-fecha_novedad').val() || ''
+    };
+    $.getJSON(ajax.sedes, params, function (rows) {
+      sedesData = {};
+      var sv = currentVal || (formState.sede_id != null ? String(formState.sede_id) : '');
       $.each(rows, function (_, r) {
         $s.append($('<option/>').val(r.id).text(r.nombre));
+        sedesData[String(r.id)] = { city_id: r.city_id, city_nombre: r.city_nombre };
       });
-      var sv = formState.sede_id != null ? String(formState.sede_id) : '';
       if (sv) { $s.val(sv); }
+      actualizarCiudadDesdeSede($s.val());
+      if (typeof done === 'function') { done(); }
+    }).fail(function () {
       if (typeof done === 'function') { done(); }
     });
   }
+
+  /* ── Restaurar estado tras POST con errores ── */
 
   function restaurarEmpleadoPostCarga() {
     if (formState.auxilio_movilizacion) {
@@ -703,6 +761,7 @@ $jsTemplate = <<<'JS'
       return;
     }
     if (formState.profile_id) {
+      mostrarSecciones();
       $('#novedad-profile_id').val(String(formState.profile_id));
       if (formState.cargo_id != null) {
         $('#empleado-cargo-id').val(String(formState.cargo_id));
@@ -713,12 +772,14 @@ $jsTemplate = <<<'JS'
         '<span class="text-muted">' + escapeHtml($form.attr('data-msg-empleado-recuperado') || '') + '</span>'
       );
       loadEmpresasCliente(function () {
-        refreshAuxilioCheckbox();
-        loadConceptos($('#solicitudctx-novedad_tipo_id').val(), function () {
-          if (formState.auxilio_movilizacion) {
-            $('#auxilio_movilizacion').prop('checked', true);
-          }
+        loadSedes(function () {
           refreshAuxilioCheckbox();
+          loadConceptos($('#solicitudctx-novedad_tipo_id').val(), function () {
+            if (formState.auxilio_movilizacion) {
+              $('#auxilio_movilizacion').prop('checked', true);
+            }
+            refreshAuxilioCheckbox();
+          });
         });
       });
       return;
@@ -796,6 +857,8 @@ $jsTemplate = <<<'JS'
     $hidden.val(JSON.stringify(o));
   }
 
+  /* ── Manejadores de eventos ── */
+
   $('#solicitudctx-novedad_tipo_id').on('change', function () {
     var id = $(this).val();
     toggleModoHoras(id);
@@ -803,8 +866,12 @@ $jsTemplate = <<<'JS'
     refreshAuxilioCheckbox();
   });
 
-  $('#solicitudctx-ciudad_id').on('change', function () {
-    loadSedes($(this).val(), null);
+  $('#solicitudctx-empresa_cliente_id').on('change', function () {
+    loadSedes(null);
+  });
+
+  $('#solicitudctx-sede_id').on('change', function () {
+    actualizarCiudadDesdeSede($(this).val());
   });
 
   $('#btn-buscar-empleado').on('click', function () {
@@ -842,14 +909,9 @@ $jsTemplate = <<<'JS'
     mergeDatosDinamicos();
   });
 
-  loadCiudades(function () {
-    var cid = $('#solicitudctx-ciudad_id').val();
-    if (cid) {
-      loadSedes(cid, loadAgrupadores);
-    } else {
-      loadAgrupadores();
-    }
-  });
+  /* ── Arranque: cargar sedes → agrupadores → restaurar estado ── */
+  loadSedes(loadAgrupadores);
+
 })(jQuery);
 JS;
 $js = str_replace(

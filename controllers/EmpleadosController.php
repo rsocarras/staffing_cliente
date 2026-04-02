@@ -6,7 +6,9 @@ use app\components\ContratoFormSupport;
 use app\components\ProfileFormOptionsProvider;
 use app\components\TenantContext;
 use app\models\Contrato;
+use app\models\LocationSedes;
 use app\models\Profile;
+use app\models\ProfileSede;
 use app\services\AdministracionPlantaService;
 use Yii;
 use yii\filters\AccessControl;
@@ -194,6 +196,16 @@ class EmpleadosController extends Controller
         $planta = new AdministracionPlantaService();
         $contratoOptions = ContratoFormSupport::buildFormOptions($contratoNew, $planta);
 
+        $sedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+        $sedesAsignadas = [];
+        if ($sedeIds !== []) {
+            $sedesAsignadas = LocationSedes::find()
+                ->where(['id' => $sedeIds])
+                ->andWhere(['empresa_id' => (int) $profile->empresas_id])
+                ->orderBy(['nombre' => SORT_ASC])
+                ->all();
+        }
+
         return $this->renderPartial('_view_modal', [
             'model' => $profile,
             'profileFormOptions' => $profileFormOptions,
@@ -202,6 +214,7 @@ class EmpleadosController extends Controller
             'contratoOptions' => $contratoOptions,
             'canManageContratos' => ContratoFormSupport::currentUserCanManageContratos(),
             'userId' => (int) $profile->user_id,
+            'sedesAsignadas' => $sedesAsignadas,
         ]);
     }
 

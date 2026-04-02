@@ -261,7 +261,7 @@ $(function() {
             { data: 10, orderable: false, class: 'text-end', render: function(d) { return d || ''; } },
         ],
         order: [[0, 'desc']],
-        pageLength: 25,
+        pageLength: 7,
         columnDefs: [{ orderable: false, targets: -1 }],
         language: {
             search: 'Buscar:',

@@ -331,7 +331,7 @@ $distributionRowTemplateJson = json_encode($distributionRowTemplate);
 $js = <<<JS
 $(function() {
     $('#contrato-table').DataTable({
-        pageLength: 25,
+        pageLength: 7,
         order: [[0, 'desc']],
         columnDefs: [{ orderable: false, targets: -1 }],
         language: {

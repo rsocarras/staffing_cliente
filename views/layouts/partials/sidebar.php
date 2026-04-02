@@ -4,6 +4,7 @@ use yii\helpers\Url;
 
 $path = Yii::$app->request->getPathInfo();
 $homeUrl = Yii::$app->homeUrl;
+$isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === 'sistema/soporte/ticket';
 
 ?>
 
@@ -54,6 +55,7 @@ $homeUrl = Yii::$app->homeUrl;
                 </li>
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
+                <li><a href="<?= Url::to(['/support-ticket/index']) ?>" class="<?php echo $isSupportTicket ? 'active' : ''; ?>"><i class="ti ti-ticket"></i><span>Soporte / Tickets</span></a></li>
                 <li class="submenu">
                     <a href="javascript:void(0);">
                         <i class="ti ti-calculator"></i><span>Presupuestos</span>

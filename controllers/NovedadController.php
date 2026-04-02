@@ -6,6 +6,8 @@ namespace app\controllers;
 
 use app\models\City;
 use app\models\Contrato;
+use app\models\ContratoDistribucionSede;
+use app\models\ProfileSede;
 use app\models\EmpresaCliente;
 use app\models\EmpresaNovedadConcepto;
 use app\models\Empresas;
@@ -2255,6 +2257,72 @@ class NovedadController extends Controller
         return array_map(static function (NovedadConcepto $c) {
             return ['id' => (int) $c->id, 'nombre' => $c->nombre, 'codigo' => $c->codigo];
         }, $conceptos);
+    }
+
+    public function actionSedes(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $eid = $this->currentEmpresaId();
+        if ($eid === null) {
+            return [];
+        }
+
+        $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        $profileId        = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha            = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+
+        /**
+         * Cascada de filtrado (se evalúa cuando hay un empleado identificado):
+         * 1. Sedes asignadas al perfil del empleado en profile_sedes.
+         * 2. Si no tiene sedes en profile_sedes → sedes del contrato vigente (contrato_distribucion_sede).
+         * 3. Si tampoco hay distribución → todas las sedes activas del tenant.
+         */
+        $sedeIds = null; // null = sin filtro por IDs
+
+        if ($profileId > 0) {
+            $profile = Profile::findOne(['user_id' => $profileId]);
+            if ($profile !== null) {
+                $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+                if (!empty($profileSedeIds)) {
+                    $sedeIds = $profileSedeIds;
+                } else {
+                    $contrato = Contrato::findOccupyingAt($fecha)
+                        ->andWhere(['contrato.profile_id' => $profileId, 'contrato.empresa_id' => $eid])
+                        ->one();
+                    if ($contrato !== null) {
+                        $distribIds = ContratoDistribucionSede::find()
+                            ->select('sede_id')
+                            ->where(['contrato_id' => $contrato->id])
+                            ->column();
+                        $distribIds = array_map('intval', $distribIds);
+                        if (!empty($distribIds)) {
+                            $sedeIds = $distribIds;
+                        }
+                    }
+                }
+            }
+        }
+
+        $query = LocationSedes::find()
+            ->with('city')
+            ->where(['empresa_id' => $eid, 'activo' => 1])
+            ->orderBy('nombre');
+
+        if ($sedeIds !== null) {
+            $query->andWhere(['id' => $sedeIds]);
+        }
+
+        return array_map(static function (LocationSedes $s): array {
+            return [
+                'id'          => (int) $s->id,
+                'nombre'      => (string) $s->nombre,
+                'city_id'     => $s->city_id !== null ? (int) $s->city_id : null,
+                'city_nombre' => $s->city ? (string) $s->city->name : null,
+            ];
+        }, $query->all());
     }
 
     public function actionSedesPorCiudad(int $ciudad_id): array
