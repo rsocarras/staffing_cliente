@@ -43,8 +43,7 @@ final class ContratoFormSupport
     {
         $eid = (int) $model->empresa_id;
         $tipos = ContratoTipos::find()
-            ->where(['or', ['empresa_id' => $eid], ['empresa_id' => null]])
-            ->andWhere(['activo' => 1])
+            ->where(['activo' => 1])
             ->orderBy(['nombre' => SORT_ASC])
             ->all();
         $sedes = LocationSedes::find()->where(['empresa_id' => $eid, 'activo' => 1])->orderBy(['nombre' => SORT_ASC])->all();

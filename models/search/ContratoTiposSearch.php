@@ -2,7 +2,6 @@
 
 namespace app\models\search;
 
-use app\components\TenantContext;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ContratoTipos;
@@ -18,7 +17,7 @@ class ContratoTiposSearch extends ContratoTipos
     public function rules()
     {
         return [
-            [['id', 'empresa_id', 'requiere_fecha_fin', 'es_indefinido', 'duracion_dias_default', 'activo'], 'integer'],
+            [['id', 'requiere_fecha_fin', 'es_indefinido', 'duracion_dias_default', 'activo'], 'integer'],
             [['code', 'nombre', 'descripcion', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -53,7 +52,6 @@ class ContratoTiposSearch extends ContratoTipos
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            TenantContext::applyFilter($query, 'empresa_id', true);
             return $dataProvider;
         }
 
@@ -71,8 +69,6 @@ class ContratoTiposSearch extends ContratoTipos
         $query->andFilterWhere(['like', 'code', $this->code])
             ->andFilterWhere(['like', 'nombre', $this->nombre])
             ->andFilterWhere(['like', 'descripcion', $this->descripcion]);
-
-        TenantContext::applyFilter($query, 'empresa_id', true);
 
         return $dataProvider;
     }
