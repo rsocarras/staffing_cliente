@@ -18,6 +18,9 @@ use yii\db\Query;
  * @property float|string|null $max_horas_clases_grupales
  * @property float|string|null $valor_hora_base
  * @property float|string|null $valor_hora_domingo_festivos
+ * @property float|string|null $valor_hora_nocturna
+ * @property float|string|null $valor_hora_nocturna_festiva
+ * @property float|string|null $valor_hora_nocturna_dominical_festiva
  * @property float|string|null $valor_movilizacion
  * @property float|string|null $valor_hora_especial
  * @property int|null $centro_costo
@@ -52,6 +55,9 @@ class LocationSedes extends \yii\db\ActiveRecord
                 'max_horas_clases_grupales',
                 'valor_hora_base',
                 'valor_hora_domingo_festivos',
+                'valor_hora_nocturna',
+                'valor_hora_nocturna_festiva',
+                'valor_hora_nocturna_dominical_festiva',
                 'valor_movilizacion',
                 'valor_hora_especial',
             ], 'default', 'value' => null],
@@ -64,6 +70,9 @@ class LocationSedes extends \yii\db\ActiveRecord
                 'max_horas_clases_grupales',
                 'valor_hora_base',
                 'valor_hora_domingo_festivos',
+                'valor_hora_nocturna',
+                'valor_hora_nocturna_festiva',
+                'valor_hora_nocturna_dominical_festiva',
                 'valor_movilizacion',
                 'valor_hora_especial',
             ], 'number'],
@@ -100,6 +109,9 @@ class LocationSedes extends \yii\db\ActiveRecord
             'max_horas_clases_grupales' => 'Máx. horas clases grupales',
             'valor_hora_base' => 'Valor hora base',
             'valor_hora_domingo_festivos' => 'Valor hora domingo/festivos',
+            'valor_hora_nocturna' => 'Valor hora nocturna',
+            'valor_hora_nocturna_festiva' => 'Valor hora nocturna festiva',
+            'valor_hora_nocturna_dominical_festiva' => 'Valor hora nocturna dominical/festiva',
             'valor_movilizacion' => 'Valor movilización',
             'valor_hora_especial' => 'Valor hora especial',
             'centro_costo' => 'Centro de Costo',

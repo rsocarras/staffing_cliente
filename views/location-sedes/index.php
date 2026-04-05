@@ -119,14 +119,6 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                                 <th>Dirección</th>
                                 <th>Tipo Sede</th>
                                 <th>Ciudad</th>
-                                <th>Centro Costo</th>
-                                <th>Centro Costo Staffing</th>
-                                <th>Cód. Externo</th>
-                                <th>Máx. Horas CG</th>
-                                <th>Valor Hora Base</th>
-                                <th>Valor Hora Dom/Fest</th>
-                                <th>Valor Hora Especial</th>
-                                <th>Valor Movilización</th>
                                 <th>Activo</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -276,11 +268,38 @@ $this->registerCss(<<<'CSS'
         max-height: calc(100vh - 180px);
     }
 }
+
+/* Evita que el dropdown de acciones se recorte dentro de la tabla responsive */
+#sedes-table_wrapper .table-responsive {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+#sedes-table_wrapper .dropdown-menu {
+    z-index: 1080;
+}
 CSS
 );
 
 $js = <<<JS
 $(document).ready(function() {
+    $(document).on('show.bs.dropdown', '.sede-actions-dropdown', function() {
+        var rect = this.getBoundingClientRect();
+        var menu = this.querySelector('.dropdown-menu');
+        var itemsCount = menu ? menu.querySelectorAll('.dropdown-item').length : 3;
+        var estimatedMenuHeight = Math.max((itemsCount * 56) + 16, 180);
+        var spaceBelow = window.innerHeight - rect.bottom;
+        var spaceAbove = rect.top;
+        if (spaceBelow < estimatedMenuHeight && spaceAbove > spaceBelow) {
+            this.classList.add('dropup');
+        } else {
+            this.classList.remove('dropup');
+        }
+    });
+
+    $(document).on('hidden.bs.dropdown', '.sede-actions-dropdown', function() {
+        this.classList.remove('dropup');
+    });
+
     var addSedeModalEl = document.getElementById('add_sede');
     if (addSedeModalEl) {
         addSedeModalEl.addEventListener('show.bs.modal', function() {
@@ -301,16 +320,8 @@ $(document).ready(function() {
             { data: 3, render: function(d) { return d || ''; } },
             { data: 4 },
             { data: 5, render: function(d) { return d || ''; } },
-            { data: 6 },
-            { data: 7 },
-            { data: 8, render: function(d) { return d || ''; } },
-            { data: 9, render: function(d) { return d || ''; } },
-            { data: 10, render: function(d) { return d || ''; } },
-            { data: 11, render: function(d) { return d || ''; } },
-            { data: 12, render: function(d) { return d || ''; } },
-            { data: 13, render: function(d) { return d || ''; } },
-            { data: 14, render: function(d) { return d || ''; } },
-            { data: 15, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
         ],
         order: [[2, 'asc']],
         pageLength: 7,

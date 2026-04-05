@@ -94,30 +94,16 @@ class LocationSedesController extends Controller
                 ['like', 'CAST(sede.max_horas_clases_grupales AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_base AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_domingo_festivos AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna_festiva AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna_dominical_festiva AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_especial AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_movilizacion AS CHAR)', $searchValue],
             ]);
         }
         $filteredCount = (int) (clone $query)->count();
 
-        $orderColumns = [
-            'sede.id',
-            'sede.codigo',
-            'sede.nombre',
-            'sede.direccion',
-            'sede.tipo_sede',
-            null,
-            'sede.centro_costo',
-            'sede.centro_costo_staffing',
-            'sede.codigo_externo',
-            'sede.max_horas_clases_grupales',
-            'sede.valor_hora_base',
-            'sede.valor_hora_domingo_festivos',
-            'sede.valor_hora_especial',
-            'sede.valor_movilizacion',
-            'sede.activo',
-            null,
-        ];
+        $orderColumns = ['sede.id', 'sede.codigo', 'sede.nombre', 'sede.direccion', 'sede.tipo_sede', null, 'sede.activo', null];
         $orderBy = $orderColumns[$orderCol] ?? 'sede.nombre';
         if ($orderBy) {
             $query->orderBy([$orderBy => $orderDir]);
@@ -134,14 +120,6 @@ class LocationSedesController extends Controller
                 \yii\helpers\Html::encode($model->direccion ?? '-'),
                 \yii\helpers\Html::encode($model->getTipoSedeLabel()),
                 $model->city ? \yii\helpers\Html::encode($model->city->name) : '-',
-                $model->centro_costo !== null ? $model->centro_costo : '-',
-                $model->centro_costo_staffing !== null ? $model->centro_costo_staffing : '-',
-                \yii\helpers\Html::encode($model->codigo_externo ?? '-'),
-                $model->max_horas_clases_grupales !== null ? number_format((float) $model->max_horas_clases_grupales, 2, '.', ',') : '-',
-                $model->valor_hora_base !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_base, 'COP') : '-',
-                $model->valor_hora_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_domingo_festivos, 'COP') : '-',
-                $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '-',
-                $model->valor_movilizacion !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_movilizacion, 'COP') : '-',
                 $model->activo
                     ? '<span class="badge badge-soft-success">Sí</span>'
                     : '<span class="badge badge-soft-danger">No</span>',
@@ -238,6 +216,9 @@ class LocationSedesController extends Controller
                         'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
                         'valor_hora_base' => $model->valor_hora_base,
                         'valor_hora_domingo_festivos' => $model->valor_hora_domingo_festivos,
+                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
+                        'valor_hora_nocturna_festiva' => $model->valor_hora_nocturna_festiva,
+                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
                         'valor_hora_especial' => $model->valor_hora_especial,
                         'valor_movilizacion' => $model->valor_movilizacion,
                     ],
@@ -396,6 +377,9 @@ class LocationSedesController extends Controller
                         'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
                         'valor_hora_base' => $model->valor_hora_base,
                         'valor_hora_domingo_festivos' => $model->valor_hora_domingo_festivos,
+                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
+                        'valor_hora_nocturna_festiva' => $model->valor_hora_nocturna_festiva,
+                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
                         'valor_hora_especial' => $model->valor_hora_especial,
                         'valor_movilizacion' => $model->valor_movilizacion,
                     ],

@@ -2143,6 +2143,13 @@ class NovedadController extends Controller
         if ($eid === null) {
             return [];
         }
+        $profileUserId = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        [$cargoId] = $this->resolveCargoContext($eid, $profileUserId, $fecha);
+
         $tq = NovedadTipo::find()->where(['activo' => 1]);
         if ($this->novedadTipoTieneColumnaEmpresa()) {
             $tq->andWhere(['empresa_id' => $eid]);
@@ -2152,6 +2159,11 @@ class NovedadController extends Controller
             $tipos,
             fn(NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
         ));
+        if ($profileUserId > 0) {
+            $tipos = array_values(array_filter($tipos, function (NovedadTipo $t) use ($eid, $cargoId): bool {
+                return !empty($this->conceptosPermitidosPorTipo($eid, (int) $t->id, $cargoId));
+            }));
+        }
 
         return array_map(static function (NovedadTipo $t) {
             return [
@@ -2215,7 +2227,7 @@ class NovedadController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $eid = $this->currentEmpresaId();
         if ($eid === null) {
-            return [];
+            return ['success' => false, 'items' => []];
         }
         $tipoCond = ['id' => $novedad_tipo_id, 'activo' => 1];
         if ($this->novedadTipoTieneColumnaEmpresa()) {
@@ -2223,40 +2235,33 @@ class NovedadController extends Controller
         }
         $tipo = NovedadTipo::findOne($tipoCond);
         if ($tipo === null || !$this->usuarioPuedeCrearTipo($tipo)) {
-            return [];
+            return ['success' => false, 'items' => []];
         }
-
-        $q = NovedadConcepto::find()
-            ->where(['novedad_tipo_id' => $tipo->id, 'activo' => 1])
-            ->orderBy(['nombre' => SORT_ASC]);
-
-        $hayEnc = EmpresaNovedadConcepto::find()->where(['empresa_id' => $eid])->exists();
-        if ($hayEnc) {
-            $q->innerJoin(
-                'empresa_novedad_concepto enc',
-                'enc.novedad_concepto_id = novedad_concepto.id AND enc.empresa_id = ' . (int) $eid
-            );
-        }
-
-        /** @var NovedadConcepto[] $conceptos */
-        $conceptos = $q->all();
 
         $profileUserId = (int) Yii::$app->request->get('profile_id', 0);
         $fecha = (string) Yii::$app->request->get('fecha_novedad', '');
-        if (
-            $profileUserId > 0
-            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)
-        ) {
-            $contrato = Contrato::findOccupyingAt($fecha)
-                ->andWhere(['contrato.profile_id' => $profileUserId, 'contrato.empresa_id' => $eid])
-                ->one();
-            $cargoId = $contrato !== null ? (int) $contrato->cargo_id : null;
-            $conceptos = $this->filtrarConceptosPorCargoAplicabilidad($conceptos, $cargoId);
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
         }
+        [$cargoId, $cargoNombre] = $this->resolveCargoContext($eid, $profileUserId, $fecha);
+        $conceptos = $this->conceptosPermitidosPorTipo($eid, (int) $tipo->id, $cargoId);
 
-        return array_map(static function (NovedadConcepto $c) {
+        $items = array_map(static function (NovedadConcepto $c) {
             return ['id' => (int) $c->id, 'nombre' => $c->nombre, 'codigo' => $c->codigo];
         }, $conceptos);
+
+        $emptyMessage = null;
+        if ($profileUserId > 0 && $items === []) {
+            $emptyMessage = Yii::t('app', 'Deben configurarse los conceptos para el cargo {cargo} del empleado.', [
+                'cargo' => $cargoNombre !== null && $cargoNombre !== '' ? $cargoNombre : '—',
+            ]);
+        }
+
+        return [
+            'success' => true,
+            'items' => $items,
+            'empty_message' => $emptyMessage,
+        ];
     }
 
     public function actionSedes(): array
@@ -2551,6 +2556,51 @@ class NovedadController extends Controller
                 'cargo_id' => $cargoId,
             ])->exists();
         }));
+    }
+
+    /**
+     * @return array{0: ?int, 1: ?string}
+     */
+    private function resolveCargoContext(int $empresaId, int $profileUserId, string $fechaYmd): array
+    {
+        if ($profileUserId <= 0) {
+            return [null, null];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaYmd)) {
+            $fechaYmd = date('Y-m-d');
+        }
+        $contrato = Contrato::findOccupyingAt($fechaYmd)
+            ->with('cargo')
+            ->andWhere(['contrato.profile_id' => $profileUserId, 'contrato.empresa_id' => $empresaId])
+            ->orderBy(['contrato.id' => SORT_DESC])
+            ->one();
+        if ($contrato === null || $contrato->cargo_id === null) {
+            return [null, null];
+        }
+        $cargoNombre = $contrato->cargo ? (string) $contrato->cargo->nombre : null;
+        return [(int) $contrato->cargo_id, $cargoNombre];
+    }
+
+    /**
+     * @return NovedadConcepto[]
+     */
+    private function conceptosPermitidosPorTipo(int $empresaId, int $tipoId, ?int $cargoId): array
+    {
+        $q = NovedadConcepto::find()
+            ->where(['novedad_tipo_id' => $tipoId, 'activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC]);
+
+        $hayEnc = EmpresaNovedadConcepto::find()->where(['empresa_id' => $empresaId])->exists();
+        if ($hayEnc) {
+            $q->innerJoin(
+                'empresa_novedad_concepto enc',
+                'enc.novedad_concepto_id = novedad_concepto.id AND enc.empresa_id = ' . (int) $empresaId
+            );
+        }
+
+        /** @var NovedadConcepto[] $conceptos */
+        $conceptos = $q->all();
+        return $this->filtrarConceptosPorCargoAplicabilidad($conceptos, $cargoId);
     }
 
     private function currentEmpresaId(): ?int

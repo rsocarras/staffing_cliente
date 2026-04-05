@@ -73,6 +73,18 @@ use yii\helpers\Html;
                         <span class="fw-medium"><?= $model->valor_hora_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_domingo_festivos, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora nocturna</small>
+                        <span class="fw-medium"><?= $model->valor_hora_nocturna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora nocturna festiva</small>
+                        <span class="fw-medium"><?= $model->valor_hora_nocturna_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_festiva, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora nocturna dominical/festiva</small>
+                        <span class="fw-medium"><?= $model->valor_hora_nocturna_dominical_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_dominical_festiva, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
                         <small class="text-muted d-block">Valor hora especial</small>
                         <span class="fw-medium"><?= $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '—' ?></span>
                     </div>

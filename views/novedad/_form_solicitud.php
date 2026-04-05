@@ -132,6 +132,7 @@ CSS
             'data-placeholder-dinamico' => Yii::t('app', 'Ingrese el valor…'),
             'data-msg-seleccione-sede' => Yii::t('app', 'Se completará al seleccionar una sede…'),
             'data-msg-sin-ciudad-sede' => Yii::t('app', 'Esta sede no tiene ciudad asignada.'),
+            'data-msg-config-conceptos-cargo' => Yii::t('app', 'Deben configurarse los conceptos para el cargo {cargo} del empleado.'),
         ],
     ]); ?>
 
@@ -170,6 +171,7 @@ CSS
                     ->hiddenInput(['id' => 'novedad-profile_id'])
                     ->label(false) ?>
                 <input type="hidden" id="empleado-cargo-id" value="">
+                <input type="hidden" id="empleado-cargo-nombre" value="">
             </div>
             <div class="col-md-8 col-lg-9">
                 <span class="<?= Html::encode($lblClass) ?> d-block"><?= Html::encode(Yii::t('app', 'Datos del empleado')) ?></span>
@@ -279,6 +281,7 @@ CSS
                         'id' => 'solicitudctx-novedad_tipo_id',
                         'class' => 'form-select rounded-3',
                     ])->hint(Yii::t('app', 'Solo agrupadores para los que tiene permiso de creación.'), ['class' => 'form-text mt-2']) ?>
+                <div id="tipos-cargo-alert" class="alert alert-warning border-0 rounded-3 py-2 px-3 mt-2 mb-0 d-none small"></div>
             </div>
         </div>
         <?php if (!empty($horasTipoId)): ?>
@@ -297,6 +300,7 @@ CSS
                     'id' => 'novedad-concepto_id',
                     'class' => 'form-select rounded-3',
                 ])->hint(Yii::t('app', 'Filtrado por organización, contrato, cargo y conceptos habilitados.'), ['class' => 'form-text mt-2']) ?>
+            <div id="conceptos-cargo-alert" class="alert alert-warning border-0 rounded-3 py-2 px-3 mt-2 mb-0 d-none small"></div>
         </div>
         <div id="bloque-campos-dinamicos" class="row g-3 mt-1 pt-2 border-top border-opacity-25"></div>
     </div>
@@ -437,6 +441,7 @@ $jsTemplate = <<<'JS'
   var placeholderDinamico = ($form.attr('data-placeholder-dinamico') || 'Ingrese el valor…').trim();
   var msgSeleccioneSede = ($form.attr('data-msg-seleccione-sede') || 'Se completará al seleccionar una sede…').trim();
   var msgSinCiudadSede = ($form.attr('data-msg-sin-ciudad-sede') || 'Sin ciudad asignada.').trim();
+  var msgConfigConceptosCargo = ($form.attr('data-msg-config-conceptos-cargo') || 'Deben configurarse los conceptos para el cargo {cargo} del empleado.').trim();
 
   /* Mapa sedeId → { city_id, city_nombre } cargado al inicio */
   var sedesData = {};
@@ -464,6 +469,29 @@ $jsTemplate = <<<'JS'
     $('#empleado-seleccionado').addClass('d-none').empty();
     $('#empleado-seleccionado-error').addClass('d-none').empty();
     $('#empleado-sin-consulta').removeClass('d-none');
+    $('#empleado-cargo-nombre').val('');
+  }
+
+  function mensajeConfigConceptosCargo() {
+    var cargo = ($('#empleado-cargo-nombre').val() || '').trim();
+    if (!cargo) { cargo = '—'; }
+    return msgConfigConceptosCargo.replace('{cargo}', cargo);
+  }
+
+  function showTiposCargoAlert(msg) {
+    $('#tipos-cargo-alert').text(msg || mensajeConfigConceptosCargo()).removeClass('d-none');
+  }
+
+  function hideTiposCargoAlert() {
+    $('#tipos-cargo-alert').addClass('d-none').empty();
+  }
+
+  function showConceptosCargoAlert(msg) {
+    $('#conceptos-cargo-alert').text(msg || mensajeConfigConceptosCargo()).removeClass('d-none');
+  }
+
+  function hideConceptosCargoAlert() {
+    $('#conceptos-cargo-alert').addClass('d-none').empty();
   }
 
   function setEmpleadoNoEncontrado() {
@@ -482,8 +510,10 @@ $jsTemplate = <<<'JS'
     var line2;
     if (r.cargo_nombre) {
       line2 = '<div class="text-muted mt-1">' + escapeHtml(lblCargo) + ': <span class="text-dark">' + escapeHtml(r.cargo_nombre) + '</span></div>';
+      $('#empleado-cargo-nombre').val(String(r.cargo_nombre));
     } else {
       line2 = '<div class="text-muted fst-italic mt-1">' + escapeHtml(sinCargo) + '</div>';
+      $('#empleado-cargo-nombre').val('');
     }
     $('#empleado-seleccionado-error').addClass('d-none').empty();
     $('#empleado-sin-consulta').addClass('d-none');
@@ -583,6 +613,9 @@ $jsTemplate = <<<'JS'
       ocultarSecciones();
       $('#novedad-profile_id').val('');
       $('#empleado-cargo-id').val('');
+      hideTiposCargoAlert();
+      hideConceptosCargoAlert();
+      loadAgrupadores({ restore: false });
       loadEmpresasCliente(function () {
         refreshAuxilioCheckbox();
         loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
@@ -596,6 +629,10 @@ $jsTemplate = <<<'JS'
         ocultarSecciones();
         $('#novedad-profile_id').val('');
         $('#empleado-cargo-id').val('');
+        $('#empleado-cargo-nombre').val('');
+        hideTiposCargoAlert();
+        hideConceptosCargoAlert();
+        loadAgrupadores({ restore: false });
         loadEmpresasCliente(function () {
           refreshAuxilioCheckbox();
           loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
@@ -607,19 +644,31 @@ $jsTemplate = <<<'JS'
       setEmpleadoPanel(r);
       $('#empleado-cargo-id').val(r.cargo_id != null ? r.cargo_id : '');
       mostrarSecciones();
-      loadEmpresasCliente(function () {
-        loadSedes(function () {
-          refreshAuxilioCheckbox();
-          loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
-        }, { forcePreferida: true, preserveCurrent: false });
+      loadAgrupadores({
+        restore: false,
+        done: function () {
+          loadEmpresasCliente(function () {
+            loadSedes(function () {
+              refreshAuxilioCheckbox();
+              loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
+            }, { forcePreferida: true, preserveCurrent: false });
+          });
+        }
       });
     });
   }
 
   /* ── Agrupadores (tipo) ── */
 
-  function loadAgrupadores() {
-    $.getJSON(ajax.agrupadores, function (rows) {
+  function loadAgrupadores(options) {
+    options = options || {};
+    var restore = options.restore !== false;
+    var done = (typeof options.done === 'function') ? options.done : null;
+    var params = {
+      profile_id: $('#novedad-profile_id').val() || '',
+      fecha_novedad: $('#novedad-fecha_novedad').val() || ''
+    };
+    $.getJSON(ajax.agrupadores, params, function (rows) {
       var $sel = $('#solicitudctx-novedad_tipo_id');
       var v = $sel.val() || (formState.novedad_tipo_id != null ? String(formState.novedad_tipo_id) : '');
       $sel.empty().append($('<option/>').val('').text(promptSel));
@@ -627,9 +676,18 @@ $jsTemplate = <<<'JS'
         $sel.append($('<option/>').val(r.id).text(r.nombre).attr('data-codigo', r.codigo || ''));
       });
       if (v) { $sel.val(v); }
+      if (params.profile_id && rows.length === 0) {
+        showTiposCargoAlert();
+      } else {
+        hideTiposCargoAlert();
+      }
       var id = $sel.val();
       toggleModoHoras(id);
-      restaurarEmpleadoPostCarga();
+      if (restore) {
+        restaurarEmpleadoPostCarga();
+      } else if (done) {
+        done(rows);
+      }
     });
   }
 
@@ -639,6 +697,7 @@ $jsTemplate = <<<'JS'
     var $c = $('#novedad-concepto_id');
     if (!tipoId) {
       $c.empty().append($('<option/>').val('').text(promptSel));
+      hideConceptosCargoAlert();
       if (typeof done === 'function') { done(); }
       return;
     }
@@ -648,13 +707,20 @@ $jsTemplate = <<<'JS'
       novedad_tipo_id: tipoId,
       profile_id: pid,
       fecha_novedad: fecha
-    }, function (rows) {
+    }, function (res) {
+      var rows = Array.isArray(res) ? res : (res && res.items ? res.items : []);
+      var emptyMessage = (!Array.isArray(res) && res && res.empty_message) ? String(res.empty_message) : '';
       var v = $c.val() || (formState.concepto_id != null ? String(formState.concepto_id) : '');
       $c.empty().append($('<option/>').val('').text(promptSel));
       $.each(rows, function (_, r) {
         $c.append($('<option/>').val(r.id).text(r.nombre));
       });
       if (v) { $c.val(v); }
+      if (pid && tipoId && rows.length === 0) {
+        showConceptosCargoAlert(emptyMessage || mensajeConfigConceptosCargo());
+      } else {
+        hideConceptosCargoAlert();
+      }
       if (typeof done === 'function') { done(); }
     });
   }
@@ -930,7 +996,9 @@ $jsTemplate = <<<'JS'
   });
 
   /* ── Arranque: cargar sedes → agrupadores → restaurar estado ── */
-  loadSedes(loadAgrupadores);
+  loadSedes(function () {
+    loadAgrupadores({ restore: true });
+  });
 
 })(jQuery);
 JS;
