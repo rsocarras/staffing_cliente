@@ -122,6 +122,11 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                                 <th>Centro Costo</th>
                                 <th>Centro Costo Staffing</th>
                                 <th>Cód. Externo</th>
+                                <th>Máx. Horas CG</th>
+                                <th>Valor Hora Base</th>
+                                <th>Valor Hora Dom/Fest</th>
+                                <th>Valor Hora Especial</th>
+                                <th>Valor Movilización</th>
                                 <th>Activo</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -300,7 +305,12 @@ $(document).ready(function() {
             { data: 7 },
             { data: 8, render: function(d) { return d || ''; } },
             { data: 9, render: function(d) { return d || ''; } },
-            { data: 10, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
+            { data: 10, render: function(d) { return d || ''; } },
+            { data: 11, render: function(d) { return d || ''; } },
+            { data: 12, render: function(d) { return d || ''; } },
+            { data: 13, render: function(d) { return d || ''; } },
+            { data: 14, render: function(d) { return d || ''; } },
+            { data: 15, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
         ],
         order: [[2, 'asc']],
         pageLength: 7,

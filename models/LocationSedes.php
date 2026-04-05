@@ -14,6 +14,12 @@ use yii\db\Query;
  * @property string $nombre
  * @property string|null $direccion
  * @property int $activo
+ * @property string $tipo_sede
+ * @property float|string|null $max_horas_clases_grupales
+ * @property float|string|null $valor_hora_base
+ * @property float|string|null $valor_hora_domingo_festivos
+ * @property float|string|null $valor_movilizacion
+ * @property float|string|null $valor_hora_especial
  * @property int|null $centro_costo
  * @property int|null $centro_costo_staffing
  * @property string|null $codigo_externo
@@ -42,11 +48,25 @@ class LocationSedes extends \yii\db\ActiveRecord
     {
         return [
             [['codigo', 'direccion', 'codigo_externo'], 'default', 'value' => null],
+            [[
+                'max_horas_clases_grupales',
+                'valor_hora_base',
+                'valor_hora_domingo_festivos',
+                'valor_movilizacion',
+                'valor_hora_especial',
+            ], 'default', 'value' => null],
             [['tipo_sede'], 'default', 'value' => self::TIPO_SEDE_OPERATIVA],
             [['codigo', 'codigo_externo'], 'filter', 'filter' => function ($v) { return $v === '' ? null : $v; }],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
             [['empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],
+            [[
+                'max_horas_clases_grupales',
+                'valor_hora_base',
+                'valor_hora_domingo_festivos',
+                'valor_movilizacion',
+                'valor_hora_especial',
+            ], 'number'],
             [['created_at', 'updated_at'], 'safe'],
             [['codigo', 'codigo_externo'], 'string', 'max' => 50],
             [['nombre'], 'string', 'max' => 190],
@@ -77,11 +97,16 @@ class LocationSedes extends \yii\db\ActiveRecord
             'direccion' => 'Dirección',
             'activo' => 'Activo',
             'tipo_sede' => 'Tipo de Sede',
+            'max_horas_clases_grupales' => 'Máx. horas clases grupales',
+            'valor_hora_base' => 'Valor hora base',
+            'valor_hora_domingo_festivos' => 'Valor hora domingo/festivos',
+            'valor_movilizacion' => 'Valor movilización',
+            'valor_hora_especial' => 'Valor hora especial',
             'centro_costo' => 'Centro de Costo',
             'centro_costo_staffing' => 'Centro de Costo Staffing',
             'codigo_externo' => 'Código Externo',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
+            'created_at' => 'Creado el',
+            'updated_at' => 'Actualizado el',
         ];
     }
 

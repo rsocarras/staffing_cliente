@@ -152,6 +152,91 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
         </div>
     </div>
 
+    <!-- Parámetros de operación -->
+    <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
+        <div class="d-flex align-items-start gap-3 mb-3">
+            <span class="avatar avatar-md bg-soft-secondary text-secondary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                <i class="ti ti-calculator fs-20"></i>
+            </span>
+            <div>
+                <h6 class="fw-semibold mb-1">Parámetros de operación</h6>
+                <p class="text-muted small mb-0">Valores para cálculo de horas y movilización.</p>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <?= $form->field($model, 'max_horas_clases_grupales', [
+                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-clock-hour-4 text-secondary"></i></span>{input}</div>{error}{hint}',
+                    'options' => ['class' => 'mb-0'],
+                    'labelOptions' => ['class' => 'form-label fw-medium'],
+                ])->textInput([
+                    'type' => 'number',
+                    'step' => '0.01',
+                    'min' => '0',
+                    'class' => 'form-control',
+                    'placeholder' => '0.00',
+                    'inputmode' => 'decimal',
+                ]) ?>
+            </div>
+            <div class="col-md-4">
+                <?= $form->field($model, 'valor_hora_base', [
+                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-currency-dollar text-secondary"></i></span>{input}</div>{error}{hint}',
+                    'options' => ['class' => 'mb-0'],
+                    'labelOptions' => ['class' => 'form-label fw-medium'],
+                ])->textInput([
+                    'type' => 'number',
+                    'step' => '0.0001',
+                    'min' => '0',
+                    'class' => 'form-control',
+                    'placeholder' => '0.0000',
+                    'inputmode' => 'decimal',
+                ]) ?>
+            </div>
+            <div class="col-md-4">
+                <?= $form->field($model, 'valor_hora_domingo_festivos', [
+                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-calendar-star text-secondary"></i></span>{input}</div>{error}{hint}',
+                    'options' => ['class' => 'mb-0'],
+                    'labelOptions' => ['class' => 'form-label fw-medium'],
+                ])->textInput([
+                    'type' => 'number',
+                    'step' => '0.0001',
+                    'min' => '0',
+                    'class' => 'form-control',
+                    'placeholder' => '0.0000',
+                    'inputmode' => 'decimal',
+                ]) ?>
+            </div>
+            <div class="col-md-6">
+                <?= $form->field($model, 'valor_hora_especial', [
+                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-star text-secondary"></i></span>{input}</div>{error}{hint}',
+                    'options' => ['class' => 'mb-0'],
+                    'labelOptions' => ['class' => 'form-label fw-medium'],
+                ])->textInput([
+                    'type' => 'number',
+                    'step' => '0.0001',
+                    'min' => '0',
+                    'class' => 'form-control',
+                    'placeholder' => '0.0000',
+                    'inputmode' => 'decimal',
+                ]) ?>
+            </div>
+            <div class="col-md-6">
+                <?= $form->field($model, 'valor_movilizacion', [
+                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-car text-secondary"></i></span>{input}</div>{error}{hint}',
+                    'options' => ['class' => 'mb-0'],
+                    'labelOptions' => ['class' => 'form-label fw-medium'],
+                ])->textInput([
+                    'type' => 'number',
+                    'step' => '0.0001',
+                    'min' => '0',
+                    'class' => 'form-control',
+                    'placeholder' => '0.0000',
+                    'inputmode' => 'decimal',
+                ]) ?>
+            </div>
+        </div>
+    </div>
+
     <!-- Estado -->
     <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">

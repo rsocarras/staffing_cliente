@@ -60,6 +60,26 @@ use yii\helpers\Html;
                         <small class="text-muted d-block">Cód. externo</small>
                         <span class="fw-medium"><?= Html::encode($model->codigo_externo ?: '—') ?></span>
                     </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Máx. horas clases grupales</small>
+                        <span class="fw-medium"><?= $model->max_horas_clases_grupales !== null ? Html::encode(number_format((float) $model->max_horas_clases_grupales, 2, '.', ',')) : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora base</small>
+                        <span class="fw-medium"><?= $model->valor_hora_base !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_base, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora domingo/festivos</small>
+                        <span class="fw-medium"><?= $model->valor_hora_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_domingo_festivos, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor hora especial</small>
+                        <span class="fw-medium"><?= $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '—' ?></span>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted d-block">Valor movilización</small>
+                        <span class="fw-medium"><?= $model->valor_movilizacion !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_movilizacion, 'COP') : '—' ?></span>
+                    </div>
                 </div>
             </div>
 
