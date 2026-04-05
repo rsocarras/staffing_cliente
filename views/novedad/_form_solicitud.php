@@ -611,7 +611,7 @@ $jsTemplate = <<<'JS'
         loadSedes(function () {
           refreshAuxilioCheckbox();
           loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
-        });
+        }, { forcePreferida: true, preserveCurrent: false });
       });
     });
   }
@@ -715,9 +715,12 @@ $jsTemplate = <<<'JS'
 
   /* ── Sedes filtradas por contexto (cliente → contrato → todas) ── */
 
-  function loadSedes(done) {
+  function loadSedes(done, options) {
+    options = options || {};
+    var forcePreferida = options.forcePreferida === true;
+    var preserveCurrent = options.preserveCurrent !== false;
     var $s = $('#solicitudctx-sede_id');
-    var currentVal = $s.val(); // conservar selección si sigue disponible
+    var currentVal = preserveCurrent ? $s.val() : '';
     $s.empty().append($('<option/>').val('').text(promptSel));
     actualizarCiudadDesdeSede('');
     if (!ajax.sedes) {
@@ -731,12 +734,29 @@ $jsTemplate = <<<'JS'
     };
     $.getJSON(ajax.sedes, params, function (rows) {
       sedesData = {};
-      var sv = currentVal || (formState.sede_id != null ? String(formState.sede_id) : '');
+      var sv = preserveCurrent ? (currentVal || (formState.sede_id != null ? String(formState.sede_id) : '')) : '';
+      var preferredSedeId = '';
       $.each(rows, function (_, r) {
         $s.append($('<option/>').val(r.id).text(r.nombre));
         sedesData[String(r.id)] = { city_id: r.city_id, city_nombre: r.city_nombre };
+        if (!preferredSedeId && r.preferida) {
+          preferredSedeId = String(r.id);
+        }
       });
-      if (sv) { $s.val(sv); }
+      var targetVal = '';
+      if (forcePreferida && preferredSedeId) {
+        targetVal = preferredSedeId;
+      } else if (sv) {
+        targetVal = sv;
+      } else if (preferredSedeId) {
+        targetVal = preferredSedeId;
+      }
+      if (targetVal) {
+        $s.val(targetVal);
+        if (String($s.val() || '') !== String(targetVal)) {
+          $s.val('');
+        }
+      }
       actualizarCiudadDesdeSede($s.val());
       if (typeof done === 'function') { done(); }
     }).fail(function () {
@@ -867,7 +887,7 @@ $jsTemplate = <<<'JS'
   });
 
   $('#solicitudctx-empresa_cliente_id').on('change', function () {
-    loadSedes(null);
+    loadSedes(null, { forcePreferida: true, preserveCurrent: false });
   });
 
   $('#solicitudctx-sede_id').on('change', function () {

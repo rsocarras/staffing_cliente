@@ -2275,32 +2275,60 @@ class NovedadController extends Controller
         }
 
         /**
-         * Cascada de filtrado (se evalúa cuando hay un empleado identificado):
-         * 1. Sedes asignadas al perfil del empleado en profile_sedes.
-         * 2. Si no tiene sedes en profile_sedes → sedes del contrato vigente (contrato_distribucion_sede).
-         * 3. Si tampoco hay distribución → todas las sedes activas del tenant.
+         * Cascada de filtrado (cuando hay empleado):
+         * 1) Contrato vigente (preferiblemente del cliente seleccionado) → sede/ciudad preferida.
+         * 2) Si no hay sede en contrato, distribución del contrato.
+         * 3) Si no hay contrato aplicable, profile_sedes.
+         * 4) Fallback: sedes del contrato vigente (distribución).
+         * 5) Último fallback: todas las sedes activas del tenant.
          */
         $sedeIds = null; // null = sin filtro por IDs
+        $preferredSedeId = null;
+        $preferredCityId = null;
 
         if ($profileId > 0) {
-            $profile = Profile::findOne(['user_id' => $profileId]);
-            if ($profile !== null) {
-                $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
-                if (!empty($profileSedeIds)) {
-                    $sedeIds = $profileSedeIds;
-                } else {
-                    $contrato = Contrato::findOccupyingAt($fecha)
-                        ->andWhere(['contrato.profile_id' => $profileId, 'contrato.empresa_id' => $eid])
-                        ->one();
-                    if ($contrato !== null) {
-                        $distribIds = ContratoDistribucionSede::find()
-                            ->select('sede_id')
-                            ->where(['contrato_id' => $contrato->id])
-                            ->column();
-                        $distribIds = array_map('intval', $distribIds);
-                        if (!empty($distribIds)) {
-                            $sedeIds = $distribIds;
-                        }
+            $contratoQuery = Contrato::findOccupyingAt($fecha)
+                ->andWhere(['contrato.profile_id' => $profileId, 'contrato.empresa_id' => $eid]);
+
+            $contrato = null;
+            if ($empresaClienteId > 0) {
+                $contrato = (clone $contratoQuery)
+                    ->andWhere(['contrato.empresa_cliente_id' => $empresaClienteId])
+                    ->orderBy(['contrato.id' => SORT_DESC])
+                    ->one();
+            }
+            if ($contrato === null) {
+                $contrato = (clone $contratoQuery)
+                    ->orderBy(['contrato.id' => SORT_DESC])
+                    ->one();
+            }
+
+            if ($contrato !== null) {
+                if (!empty($contrato->sede_id)) {
+                    $preferredSedeId = (int) $contrato->sede_id;
+                    $sedeIds = [$preferredSedeId];
+                }
+                if (!empty($contrato->ciudad_id)) {
+                    $preferredCityId = (int) $contrato->ciudad_id;
+                }
+                if ($sedeIds === null) {
+                    $distribIds = ContratoDistribucionSede::find()
+                        ->select('sede_id')
+                        ->where(['contrato_id' => $contrato->id])
+                        ->column();
+                    $distribIds = array_map('intval', $distribIds);
+                    if (!empty($distribIds)) {
+                        $sedeIds = $distribIds;
+                    }
+                }
+            }
+
+            if ($sedeIds === null) {
+                $profile = Profile::findOne(['user_id' => $profileId]);
+                if ($profile !== null) {
+                    $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+                    if (!empty($profileSedeIds)) {
+                        $sedeIds = $profileSedeIds;
                     }
                 }
             }
@@ -2315,12 +2343,20 @@ class NovedadController extends Controller
             $query->andWhere(['id' => $sedeIds]);
         }
 
-        return array_map(static function (LocationSedes $s): array {
+        return array_map(static function (LocationSedes $s) use ($preferredSedeId, $preferredCityId): array {
+            $cityId = $s->city_id !== null ? (int) $s->city_id : null;
+            $preferida = false;
+            if ($preferredSedeId !== null && $preferredSedeId > 0) {
+                $preferida = ((int) $s->id === (int) $preferredSedeId);
+            } elseif ($preferredCityId !== null && $preferredCityId > 0 && $cityId !== null) {
+                $preferida = ($cityId === (int) $preferredCityId);
+            }
             return [
                 'id'          => (int) $s->id,
                 'nombre'      => (string) $s->nombre,
-                'city_id'     => $s->city_id !== null ? (int) $s->city_id : null,
+                'city_id'     => $cityId,
                 'city_nombre' => $s->city ? (string) $s->city->name : null,
+                'preferida'   => $preferida,
             ];
         }, $query->all());
     }
