@@ -6,6 +6,7 @@ $db = require __DIR__ . '/db.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
+    'language' => 'es',
     'bootstrap' => ['log'],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -23,6 +24,13 @@ $config = [
 
         'cache' => [
             'class' => 'yii\caching\FileCache',
+        ],
+        /** Fechas, números y moneda según español (p. ej. nombres de mes en tablas y vistas). */
+        'formatter' => [
+            'class' => yii\i18n\Formatter::class,
+            'locale' => 'es-CO',
+            'currencyCode' => 'COP',
+            'defaultTimeZone' => 'America/Bogota',
         ],
         'user' => [
             'class' => app\components\WebUser::class,

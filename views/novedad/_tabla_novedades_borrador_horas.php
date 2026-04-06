@@ -12,6 +12,13 @@ $compact = (bool) ($compact ?? false);
 $cellPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
 $thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
 
+$sumaImporte = 0.0;
+foreach ($novedades as $n) {
+    if ($n->importe !== null && (string) $n->importe !== '') {
+        $sumaImporte += (float) $n->importe;
+    }
+}
+
 ?>
 <div class="table-responsive">
     <table class="<?= Html::encode($tableClass) ?>">
@@ -20,8 +27,6 @@ $thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
             <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'ID')) ?></th>
             <th class="<?= Html::encode($thPad) ?>"><?= Html::encode(Yii::t('app', 'Concepto')) ?></th>
             <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Fecha')) ?></th>
-            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Desde')) ?></th>
-            <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Hasta')) ?></th>
             <th class="<?= Html::encode($thPad) ?> text-end text-nowrap"><?= Html::encode(Yii::t('app', 'Cantidad')) ?></th>
             <th class="<?= Html::encode($thPad) ?> text-nowrap"><?= Html::encode(Yii::t('app', 'Unidad')) ?></th>
             <th class="<?= Html::encode($thPad) ?> text-end text-nowrap"><?= Html::encode(Yii::t('app', 'Valor unitario')) ?></th>
@@ -36,8 +41,6 @@ $thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
             $nombreConcepto = $conc && trim((string) $conc->nombre) !== ''
                 ? (string) $conc->nombre
                 : ($conc ? Yii::t('app', 'Concepto #{id}', ['id' => $n->concepto_id]) : '—');
-            $hIni = $n->hora_inicio ? substr((string) $n->hora_inicio, 0, 5) : '—';
-            $hFin = $n->hora_fin ? substr((string) $n->hora_fin, 0, 5) : '—';
             $fechaFmt = $n->fecha_novedad
                 ? Yii::$app->formatter->asDate($n->fecha_novedad)
                 : '—';
@@ -56,8 +59,6 @@ $thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
                 <td class="<?= Html::encode($cellPad) ?> text-muted text-nowrap"><?= (int) $n->id ?></td>
                 <td class="<?= Html::encode($cellPad) ?> fw-medium"><?= Html::encode($nombreConcepto) ?></td>
                 <td class="<?= Html::encode($cellPad) ?> text-nowrap"><?= Html::encode($fechaFmt) ?></td>
-                <td class="<?= Html::encode($cellPad) ?> text-nowrap font-monospace"><?= Html::encode($hIni) ?></td>
-                <td class="<?= Html::encode($cellPad) ?> text-nowrap font-monospace"><?= Html::encode($hFin) ?></td>
                 <td class="<?= Html::encode($cellPad) ?> text-end text-nowrap fw-semibold"><?= $n->cantidad !== null ? Html::encode(Yii::$app->formatter->asDecimal((float) $n->cantidad, 2)) : '—' ?></td>
                 <td class="<?= Html::encode($cellPad) ?> text-nowrap"><?= Html::encode($unidadFmt) ?></td>
                 <td class="<?= Html::encode($cellPad) ?> text-end text-nowrap"><?= Html::encode($vuFmt) ?></td>
@@ -65,5 +66,15 @@ $thPad = $compact ? 'px-3 py-2' : 'px-4 py-3';
             </tr>
         <?php endforeach; ?>
         </tbody>
+        <tfoot class="table-light border-top">
+        <tr>
+            <td colspan="6" class="<?= Html::encode($cellPad) ?> text-end fw-semibold text-nowrap">
+                <?= Html::encode(Yii::t('app', 'Total borrador')) ?>
+            </td>
+            <td class="<?= Html::encode($cellPad) ?> text-end text-nowrap fw-bold">
+                <?= Html::encode(Yii::$app->formatter->asCurrency($sumaImporte)) ?>
+            </td>
+        </tr>
+        </tfoot>
     </table>
 </div>
