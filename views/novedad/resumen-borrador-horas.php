@@ -7,6 +7,17 @@ use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var Novedad[] $novedades */
+/** @var string $batchId */
+/** @var array{nombre: string, documento: string, cargo: string, organizacion: string, empresaCliente: string} $resumenContexto */
+
+$batchId = $batchId ?? '';
+$resumenContexto = $resumenContexto ?? [
+    'nombre' => '—',
+    'documento' => '—',
+    'cargo' => '—',
+    'organizacion' => '—',
+    'empresaCliente' => '—',
+];
 
 $this->title = Yii::t('app', 'Revisar solicitudes (borrador)');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Solicitudes'), 'url' => ['index']];
@@ -48,8 +59,33 @@ if ($novedades !== []) {
     <?php if ($empleadoNombre !== ''): ?>
         <br><strong><?= Html::encode(Yii::t('app', 'Empleado: {n}', ['n' => $empleadoNombre])) ?></strong>
     <?php endif; ?>
+    <?php if ($batchId !== ''): ?>
+        <br><span class="text-muted small"><?= Html::encode(Yii::t('app', 'Lote:')) ?> <?= Html::encode($batchId) ?></span>
+    <?php endif; ?>
     <br><strong><?= Html::encode(Yii::t('app', 'Total importe:')) ?></strong>
     <?= Html::encode(Yii::$app->formatter->asCurrency($totalImporte)) ?>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-3">
+        <div class="row g-3 small">
+            <div class="col-md-4">
+                <div class="text-muted text-uppercase fw-semibold mb-1"><?= Html::encode(Yii::t('app', 'Empleado')) ?></div>
+                <div class="fw-medium"><?= Html::encode($resumenContexto['nombre']) ?></div>
+                <div class="text-muted"><?= Html::encode($resumenContexto['documento']) ?></div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted text-uppercase fw-semibold mb-1"><?= Html::encode(Yii::t('app', 'Cargo')) ?></div>
+                <div><?= Html::encode($resumenContexto['cargo']) ?></div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted text-uppercase fw-semibold mb-1"><?= Html::encode(Yii::t('app', 'Organización')) ?></div>
+                <div><?= Html::encode($resumenContexto['organizacion']) ?></div>
+                <div class="mt-2 text-muted text-uppercase fw-semibold mb-1"><?= Html::encode(Yii::t('app', 'Empresa cliente')) ?></div>
+                <div><?= Html::encode($resumenContexto['empresaCliente']) ?></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="card border-0 shadow-sm">

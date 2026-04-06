@@ -9,11 +9,10 @@ use yii\helpers\Html;
 /** @var app\models\Empresas|null $empresa */
 /** @var app\models\NovedadTipo|null $tipoSeleccionado */
 /** @var int|null $horasTipoId */
+/** @var bool $esContratoTipoHoras */
 /** @var app\models\EmpresaCliente[] $clientesEmpresa */
 /** @var app\models\EmpresaCliente|null $clienteUnico */
 /** @var bool $sinEmpresaCliente */
-/** @var string $msgHorasRangoInvalido */
-
 $clienteUnico = $clienteUnico ?? null;
 $sinEmpresaCliente = $sinEmpresaCliente ?? false;
 
@@ -50,10 +49,10 @@ $clientesEmpresa = $clientesEmpresa ?? [];
                 'ctx' => $ctx,
                 'empresa' => $empresa,
                 'horasTipoId' => $horasTipoId,
+                'esContratoTipoHoras' => $esContratoTipoHoras ?? false,
                 'clientesEmpresa' => $clientesEmpresa,
                 'clienteUnico' => $clienteUnico,
                 'sinEmpresaCliente' => $sinEmpresaCliente,
-                'msgHorasRangoInvalido' => $msgHorasRangoInvalido,
                 'solicitudFormState' => $solicitudFormState ?? [],
             ]) ?>
         </div>

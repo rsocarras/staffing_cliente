@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\services\NovedadGuard;
 use Da\User\Model\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -15,29 +16,33 @@ use yii\web\Application as WebApplication;
  * @property int|null $created_by
  * @property int $profile_id
  * @property int $concepto_id
- * @property string|null $descripcion
  * @property int $novedad_tipo_id
- * @property int|null $novedad_flujo_id (solo si existe la columna en BD)
- * @property string $estado
+ * @property string $estado borrador|pendiente|aprobada|rechazada
  * @property string $estado_carga borrador|creada
- * @property string $datos JSON
+ * @property string $datos JSON (longtext)
  * @property string|null $schema_snapshot
  * @property string|null $alertas
  * @property int|null $paso_actual_id
  * @property int $es_masivo
  * @property int|null $lote_masivo_id
+ * @property string $created_at
+ * @property string $updated_at
+ * @property string|null $descripcion
  * @property int|null $novedad_centro_costo_id
  * @property int|null $novedad_centro_utilidad_id
  * @property string|null $fecha_novedad
- * @property string|null $hora_inicio H:i:s
- * @property string|null $hora_fin H:i:s
- * @property float|null $horas_calculadas diferencia hora_fin − hora_inicio (mismo día en solicitud web; en otros flujos puede calcularse con fin en día siguiente)
+ * @property string|null $hora_inicio
+ * @property string|null $hora_fin
+ * @property float|string|null $cantidad Cantidad genérica (p. ej. horas calculadas entre {@see $hora_inicio} y {@see $hora_fin} cuando {@see $unidad} es {@see UNIDAD_HORAS})
+ * @property string|null $unidad
  * @property string|null $periodo_nomina mensual|quincenal
  * @property int|null $anio
  * @property int|null $novedad_origen_id
- * @property string|null $importe importe monetario asociado a la novedad (p. ej. auxilio o 0 si aún no aplica cálculo)
- * @property int|string $created_at Unix o datetime según esquema BD
- * @property int|string $updated_at Unix o datetime según esquema BD
+ * @property string|null $batch_id UUID de lote/importación
+ * @property float|string|null $importe
+ * @property float|string|null $valor_unitario
+ * @property int|null $novedad_flujo_id (columna opcional en despliegues antiguos; ver {@see hasNovedadFlujoIdColumn})
+ * @property string|null $horas_filas_error Mensaje de validación de filas tipo Horas (solicitud); no columna BD
  *
  * @property NovedadConcepto $concepto
  * @property Empresas $empresa
@@ -58,6 +63,9 @@ class Novedad extends ActiveRecord
     /** Solicitud tipo Horas: sin concepto único; el servidor trocea y crea varias novedades. */
     public const SCENARIO_SOLICITUD_HORAS_AUTO = 'solicitud_horas_auto';
 
+    /** Solicitud tipo Horas: filas manuales (concepto, cantidad, unidad, comentario por línea). */
+    public const SCENARIO_SOLICITUD_HORAS_FILAS = 'solicitud_horas_filas';
+
     /** Novedad auxilio movilización ligada a troceo Horas (sin rango horario obligatorio). */
     public const SCENARIO_AUXILIO_MOVILIZACION = 'auxilio_movilizacion';
 
@@ -74,6 +82,12 @@ class Novedad extends ActiveRecord
 
     public const PERIODO_MENSUAL = 'mensual';
     public const PERIODO_QUINCENAL = 'quincenal';
+
+    /** Valor de {@see $unidad} cuando la cantidad proviene del cálculo por rango horario. */
+    public const UNIDAD_HORAS = 'horas';
+
+    /** Validación de filas HorasFilas[] en solicitud web; no persiste. */
+    public ?string $horas_filas_error = null;
 
     public static function tableName(): string
     {
@@ -140,11 +154,14 @@ class Novedad extends ActiveRecord
                 'fecha_novedad',
                 'hora_inicio',
                 'hora_fin',
-                'horas_calculadas',
+                'cantidad',
+                'unidad',
                 'periodo_nomina',
                 'anio',
                 'novedad_origen_id',
+                'batch_id',
                 'importe',
+                'valor_unitario',
             ], 'default', 'value' => null],
             [['estado'], 'default', 'value' => self::ESTADO_BORRADOR],
             [['estado_carga'], 'default', 'value' => self::ESTADO_CARGA_BORRADOR],
@@ -162,13 +179,19 @@ class Novedad extends ActiveRecord
             }],
             [['empresa_id', 'profile_id', 'concepto_id', 'novedad_tipo_id', 'paso_actual_id', 'es_masivo', 'lote_masivo_id', 'created_by', 'anio', 'novedad_origen_id'], 'integer'],
             [['novedad_centro_costo_id', 'novedad_centro_utilidad_id'], 'integer'],
+            [['batch_id'], 'string', 'max' => 36],
+            [['batch_id'], 'filter', 'filter' => static function ($v) {
+                return $v === '' ? null : $v;
+            }],
             [['estado', 'estado_carga'], 'string'],
-            [['datos', 'schema_snapshot', 'alertas'], 'safe'],
+            [['datos', 'schema_snapshot', 'alertas', 'horas_filas_error'], 'safe'],
             [['descripcion'], 'string'],
             [['fecha_novedad'], 'date', 'format' => 'php:Y-m-d', 'skipOnEmpty' => true],
             [['hora_inicio', 'hora_fin'], 'match', 'pattern' => '/^\d{2}:\d{2}(:\d{2})?$/', 'skipOnEmpty' => true],
-            [['horas_calculadas'], 'number', 'skipOnEmpty' => true],
+            [['cantidad', 'valor_unitario'], 'number', 'skipOnEmpty' => true],
             [['importe'], 'number', 'min' => 0],
+            [['valor_unitario'], 'number', 'min' => 0, 'skipOnEmpty' => true],
+            [['unidad'], 'string', 'max' => 20],
             [['periodo_nomina'], 'in', 'range' => [self::PERIODO_MENSUAL, self::PERIODO_QUINCENAL], 'skipOnEmpty' => true],
             ['estado', 'in', 'range' => array_keys(self::optsEstado())],
             ['estado_carga', 'in', 'range' => [self::ESTADO_CARGA_BORRADOR, self::ESTADO_CARGA_CREADA]],
@@ -179,19 +202,22 @@ class Novedad extends ActiveRecord
             [['novedad_centro_costo_id'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => NovedadCentroCosto::class, 'targetAttribute' => ['novedad_centro_costo_id' => 'id']],
             [['novedad_centro_utilidad_id'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => NovedadCentroUtilidad::class, 'targetAttribute' => ['novedad_centro_utilidad_id' => 'id']],
             [['novedad_origen_id'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => self::class, 'targetAttribute' => ['novedad_origen_id' => 'id']],
-            [['fecha_novedad', 'hora_inicio', 'hora_fin'], 'required', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO]],
+            [['fecha_novedad'], 'required', 'on' => self::SCENARIO_SOLICITUD_WEB],
+            [['fecha_novedad', 'hora_inicio', 'hora_fin'], 'required', 'on' => self::SCENARIO_SOLICITUD_HORAS_AUTO],
+            [['fecha_novedad', 'concepto_id', 'cantidad', 'unidad'], 'required', 'on' => self::SCENARIO_SOLICITUD_HORAS_FILAS],
+            [['cantidad'], 'number', 'min' => 0.01, 'on' => self::SCENARIO_SOLICITUD_HORAS_FILAS],
             [['fecha_novedad'], 'required', 'on' => self::SCENARIO_AUXILIO_MOVILIZACION],
             [['importe'], 'required', 'on' => self::SCENARIO_AUXILIO_MOVILIZACION],
             [['importe'], 'number', 'min' => 0.01, 'on' => self::SCENARIO_AUXILIO_MOVILIZACION],
             [['hora_inicio'], 'validateRangoHoras', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO]],
             [['datos'], 'validateDatosJsonAdmin', 'on' => self::SCENARIO_ADMIN_UPDATE],
             [['schema_snapshot', 'alertas'], 'validateJsonNullableAdmin', 'on' => self::SCENARIO_ADMIN_UPDATE],
-            [['novedad_tipo_id'], 'validatePermisoCrearTipoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_AUXILIO_MOVILIZACION]],
-            [['profile_id'], 'validateProfileEmpleadoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_AUXILIO_MOVILIZACION]],
-            [['profile_id'], 'validateEmpleadoGerenteSede', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_AUXILIO_MOVILIZACION]],
-            [['concepto_id', 'novedad_tipo_id'], 'validateConceptoTipoEmpresaSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_AUXILIO_MOVILIZACION]],
-            [['concepto_id'], 'validateEmpresaNovedadConceptoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_AUXILIO_MOVILIZACION]],
-            [['concepto_id'], 'validateConceptoCargoContratoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['novedad_tipo_id'], 'validatePermisoCrearTipoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['profile_id'], 'validateProfileEmpleadoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['profile_id'], 'validateEmpleadoGerenteSede', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_AUTO, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['concepto_id', 'novedad_tipo_id'], 'validateConceptoTipoEmpresaSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['concepto_id'], 'validateEmpresaNovedadConceptoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
+            [['concepto_id'], 'validateConceptoCargoContratoSolicitud', 'on' => [self::SCENARIO_SOLICITUD_WEB, self::SCENARIO_SOLICITUD_HORAS_FILAS, self::SCENARIO_AUXILIO_MOVILIZACION]],
         ];
         if (static::hasNovedadFlujoIdColumn()) {
             $rules[] = [['novedad_flujo_id'], 'default', 'value' => null];
@@ -247,20 +273,25 @@ class Novedad extends ActiveRecord
         if ($this->hasErrors() || !Yii::$app instanceof WebApplication || Yii::$app->user->isGuest) {
             return;
         }
-        if (!Yii::$app->user->can('gerente_sede')) {
-            return;
-        }
-        $identity = Yii::$app->user->identity;
-        $op = $identity && $identity->profile ? $identity->profile : null;
-        if ($op === null || empty($op->sede_id)) {
-            return;
-        }
-        $emp = Profile::findOne(['user_id' => $this->profile_id]);
-        if ($emp === null) {
-            return;
-        }
-        if ((int) $emp->sede_id !== (int) $op->sede_id) {
-            $this->addError($attribute, Yii::t('app', 'El empleado no pertenece a su sede.'));
+        $fecha = $this->fecha_novedad !== null && $this->fecha_novedad !== ''
+            ? (string) $this->fecha_novedad
+            : null;
+        $fechaOk = $fecha !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha);
+        if (
+            !NovedadGuard::gerenteSedePuedeParaEmpleado(
+                (int) Yii::$app->user->id,
+                (int) $this->profile_id,
+                (int) $this->empresa_id,
+                $fechaOk ? $fecha : null
+            )
+        ) {
+            $this->addError(
+                $attribute,
+                Yii::t(
+                    'app',
+                    'Solo puede registrar novedades para empleados de una sede que tenga asignada o cuando su contrato y el del empleado son en la misma empresa y sede.'
+                )
+            );
         }
     }
 
@@ -389,6 +420,22 @@ class Novedad extends ActiveRecord
         $hi = self::normalizarTimeString($this->hora_inicio);
         $hf = self::normalizarTimeString($this->hora_fin);
 
+        if ($this->scenario === self::SCENARIO_SOLICITUD_WEB) {
+            $hiEmpty = $hi === null || $hi === '';
+            $hfEmpty = $hf === null || $hf === '';
+            if ($hiEmpty && $hfEmpty) {
+                return;
+            }
+            if ($hiEmpty !== $hfEmpty) {
+                $this->addError(
+                    'hora_fin',
+                    Yii::t('app', 'Indique hora inicial y hora final, o deje ambas vacías.')
+                );
+
+                return;
+            }
+        }
+
         // Solo la plantilla de solicitud tipo Horas (una sola franja en el formulario): sin cruce de medianoche en reloj.
         // Los fragmentos generados por el troceo usan {@see SCENARIO_SOLICITUD_WEB} y pueden tener hora_fin &lt; hora_inicio
         // sobre la misma fecha_novedad (p. ej. hasta medianoche); ahí {@see calcularHorasEntre} suma un día.
@@ -407,12 +454,12 @@ class Novedad extends ActiveRecord
         }
 
         $this->normalizarHorasYCalcular();
-        if ($this->horas_calculadas === null) {
+        if ($this->cantidad === null) {
             $this->addError('hora_fin', Yii::t('app', 'No se pudo calcular la duración; revise fecha y horas.'));
 
             return;
         }
-        if ($this->horas_calculadas <= 0) {
+        if ((float) $this->cantidad <= 0) {
             $this->addError('hora_fin', Yii::t('app', 'La hora final debe ser posterior a la hora inicial.'));
         }
     }
@@ -438,10 +485,13 @@ class Novedad extends ActiveRecord
             'fecha_novedad' => Yii::t('app', 'Fecha novedad'),
             'hora_inicio' => Yii::t('app', 'Hora inicial'),
             'hora_fin' => Yii::t('app', 'Hora final'),
-            'horas_calculadas' => Yii::t('app', 'Horas calculadas'),
+            'cantidad' => Yii::t('app', 'Cantidad'),
+            'unidad' => Yii::t('app', 'Unidad'),
             'periodo_nomina' => Yii::t('app', 'Periodo nómina'),
             'anio' => Yii::t('app', 'Año'),
+            'batch_id' => Yii::t('app', 'Batch / importación'),
             'importe' => Yii::t('app', 'Importe'),
+            'valor_unitario' => Yii::t('app', 'Valor unitario'),
             'novedad_centro_costo_id' => Yii::t('app', 'Centro de costo'),
             'novedad_centro_utilidad_id' => Yii::t('app', 'Centro de utilidad'),
             'novedad_origen_id' => Yii::t('app', 'Novedad de origen'),
@@ -459,7 +509,9 @@ class Novedad extends ActiveRecord
         if (!parent::beforeValidate()) {
             return false;
         }
-        $this->normalizarHorasYCalcular();
+        if ($this->scenario !== self::SCENARIO_SOLICITUD_HORAS_FILAS) {
+            $this->normalizarHorasYCalcular();
+        }
 
         return true;
     }
@@ -472,13 +524,15 @@ class Novedad extends ActiveRecord
         if ($insert && $this->created_by === null && !Yii::$app->user->isGuest) {
             $this->created_by = Yii::$app->user->id;
         }
-        $this->normalizarHorasYCalcular();
+        if ($this->scenario !== self::SCENARIO_SOLICITUD_HORAS_FILAS) {
+            $this->normalizarHorasYCalcular();
+        }
 
         return true;
     }
 
     /**
-     * Normaliza TIME a H:i:s y asigna {@see $horas_calculadas} si hay fecha y ambas horas.
+     * Normaliza TIME a H:i:s y asigna {@see $cantidad}/{@see $unidad} si hay fecha y ambas horas.
      */
     public function normalizarHorasYCalcular(): void
     {
@@ -490,7 +544,8 @@ class Novedad extends ActiveRecord
             || $this->hora_inicio === null || $this->hora_inicio === ''
             || $this->hora_fin === null || $this->hora_fin === ''
         ) {
-            $this->horas_calculadas = null;
+            $this->cantidad = null;
+            $this->unidad = null;
 
             return;
         }
@@ -500,7 +555,8 @@ class Novedad extends ActiveRecord
             (string) $this->hora_inicio,
             (string) $this->hora_fin
         );
-        $this->horas_calculadas = $calc;
+        $this->cantidad = $calc;
+        $this->unidad = self::UNIDAD_HORAS;
     }
 
     public static function normalizarTimeString(?string $t): ?string

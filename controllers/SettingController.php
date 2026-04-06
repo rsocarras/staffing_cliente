@@ -126,7 +126,10 @@ class SettingController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Setting::findOne(['id' => $id])) !== null) {
+        if (($model = Setting::find()
+            ->with(['locationCountry', 'createdBy', 'updatedBy'])
+            ->where(['id' => $id])
+            ->one()) !== null) {
             return $model;
         }
 

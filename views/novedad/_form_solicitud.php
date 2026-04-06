@@ -14,16 +14,25 @@ use yii\widgets\ActiveForm;
 /** @var NovedadSolicitudContextForm $ctx */
 /** @var app\models\Empresas|null $empresa */
 /** @var int|null $horasTipoId */
+/** @var bool $esContratoTipoHoras */
 /** @var app\models\EmpresaCliente[] $clientesEmpresa */
 /** @var app\models\EmpresaCliente|null $clienteUnico */
 /** @var bool $sinEmpresaCliente */
-/** @var string $msgHorasRangoInvalido */
 /** @var array<string, mixed> $solicitudFormState */
 
 $clienteUnico = $clienteUnico ?? null;
+$esContratoTipoHoras = $esContratoTipoHoras ?? false;
 $solicitudFormState = $solicitudFormState ?? [];
 $sinEmpresaCliente = $sinEmpresaCliente ?? false;
 $puedeEnviar = $empresa !== null && !$sinEmpresaCliente;
+
+$buscarNumDocValor = trim((string) ($solicitudFormState['num_doc'] ?? ''));
+$seccionesFormVisibles = Yii::$app->request->isPost
+    && ((int) ($model->profile_id ?? 0) > 0 || $buscarNumDocValor !== '');
+$empleadoNombreState = trim((string) ($solicitudFormState['empleado_display_name'] ?? ''));
+$empleadoCargoState = trim((string) ($solicitudFormState['empleado_cargo_nombre'] ?? ''));
+$mostrarPanelEmpleadoServidor = $seccionesFormVisibles && $empleadoNombreState !== '';
+$ciudadNombreSrv = trim((string) ($solicitudFormState['ciudad_nombre'] ?? ''));
 
 $formId = 'novedad-solicitud-form';
 $ajax = [
@@ -31,7 +40,6 @@ $ajax = [
     'buscarEmpleado' => Url::to(['/novedad/buscar-empleado']),
     'empresasClientePorEmpleado' => Url::to(['/novedad/empresas-cliente-por-empleado']),
     'sedes' => Url::to(['/novedad/sedes']),
-    'cargoClases' => Url::to(['/novedad/cargo-clases-grupales']),
     'conceptos' => Url::to(['/novedad/conceptos']),
     'tipoCampos' => Url::to(['/novedad/tipo-campos']),
 ];
@@ -112,8 +120,7 @@ CSS
             'class' => 'needs-validation',
             'novalidate' => true,
             'data-novedad-tipo-horas-id' => $horasTipoId !== null ? (string) $horasTipoId : '',
-            'data-novedad-cargo-clases-url' => $ajax['cargoClases'],
-            'data-msg-horas-rango-invalido' => $msgHorasRangoInvalido,
+            'data-novedad-contrato-tipo-horas' => $esContratoTipoHoras ? '1' : '0',
             'data-novedad-conceptos-url' => $ajax['conceptos'],
             'data-novedad-tipo-campos-url' => $ajax['tipoCampos'],
             'data-msg-empleado-no-encontrado' => Yii::t('app', 'No se encontró el empleado.'),
@@ -133,6 +140,17 @@ CSS
             'data-msg-seleccione-sede' => Yii::t('app', 'Se completará al seleccionar una sede…'),
             'data-msg-sin-ciudad-sede' => Yii::t('app', 'Esta sede no tiene ciudad asignada.'),
             'data-msg-config-conceptos-cargo' => Yii::t('app', 'Deben configurarse los conceptos para el cargo {cargo} del empleado.'),
+            'data-lbl-fila-concepto' => Yii::t('app', 'Concepto'),
+            'data-lbl-fila-cantidad' => Yii::t('app', 'Cantidad'),
+            'data-lbl-fila-unidad' => Yii::t('app', 'Unidad'),
+            'data-lbl-fila-comentario' => Yii::t('app', 'Comentario'),
+            'data-placeholder-fila-cantidad' => Yii::t('app', 'Ej: 1'),
+            'data-placeholder-fila-unidad' => Yii::t('app', 'Hora'),
+            'data-fila-unidad-hora' => Yii::t('app', 'Hora'),
+            'data-fila-unidad-auxilio' => Yii::t('app', 'Unidad'),
+            'data-placeholder-fila-comentario' => Yii::t('app', 'Comentario del concepto'),
+            'data-msg-horas-filas-vacio' => Yii::t('app', 'Agregue al menos una fila con concepto, cantidad y unidad.'),
+            'data-msg-fecha-aplicacion' => Yii::t('app', 'Indique la fecha de aplicación de la novedad.'),
         ],
     ]); ?>
 
@@ -154,7 +172,7 @@ CSS
                 </label>
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0"><i class="ti ti-search text-primary"></i></span>
-                    <?= Html::textInput('buscar_num_doc', '', [
+                    <?= Html::textInput('buscar_num_doc', $buscarNumDocValor, [
                         'class' => 'form-control border-start-0 ps-0',
                         'id' => 'buscar-num-doc',
                         'autocomplete' => 'off',
@@ -171,20 +189,34 @@ CSS
                     ->hiddenInput(['id' => 'novedad-profile_id'])
                     ->label(false) ?>
                 <input type="hidden" id="empleado-cargo-id" value="">
-                <input type="hidden" id="empleado-cargo-nombre" value="">
+                <input type="hidden" id="empleado-cargo-nombre" value="<?= Html::encode($empleadoCargoState) ?>">
             </div>
             <div class="col-md-8 col-lg-9">
                 <span class="<?= Html::encode($lblClass) ?> d-block"><?= Html::encode(Yii::t('app', 'Datos del empleado')) ?></span>
                 <div id="empleado-seleccionado-error" class="alert alert-danger border-0 py-2 px-3 mb-0 d-none rounded-3" role="alert"></div>
-                <div id="empleado-seleccionado" class="border rounded-3 px-3 py-3 bg-white small novedad-solicitud-panel-lectura h-100 d-none"></div>
-                <div id="empleado-sin-consulta" class="border rounded-3 px-3 py-3 bg-white text-muted small novedad-solicitud-panel-lectura h-100 d-flex align-items-center">
+                <div id="empleado-seleccionado" class="border rounded-3 px-3 py-3 bg-white small novedad-solicitud-panel-lectura h-100 <?= ($mostrarPanelEmpleadoServidor || ($seccionesFormVisibles && (int) ($model->profile_id ?? 0) > 0)) ? '' : 'd-none' ?>">
+                    <?php if ($mostrarPanelEmpleadoServidor): ?>
+                        <div class="fw-medium"><?= Html::encode($empleadoNombreState) ?><?php if ($buscarNumDocValor !== ''): ?> <span class="text-muted fw-normal">· <?= Html::encode($buscarNumDocValor) ?></span><?php endif; ?></div>
+                        <?php if ($empleadoCargoState !== ''): ?>
+                            <div class="text-muted mt-1"><?= Html::encode(Yii::t('app', 'Cargo')) ?>: <span class="text-dark"><?= Html::encode($empleadoCargoState) ?></span></div>
+                        <?php else: ?>
+                            <div class="text-muted fst-italic mt-1"><?= Html::encode(Yii::t('app', 'Sin contrato vigente en la fecha')) ?></div>
+                        <?php endif; ?>
+                    <?php elseif ($seccionesFormVisibles && (int) ($model->profile_id ?? 0) > 0): ?>
+                        <span class="text-muted"><?= Html::encode(Yii::t(
+                            'app',
+                            'Empleado asociado a la solicitud. Puede volver a buscar por documento para ver nombre y cargo.'
+                        )) ?></span>
+                    <?php endif; ?>
+                </div>
+                <div id="empleado-sin-consulta" class="border rounded-3 px-3 py-3 bg-white text-muted small novedad-solicitud-panel-lectura h-100 d-flex align-items-center <?= $seccionesFormVisibles ? 'd-none' : '' ?>">
                     <?= Yii::t('app', 'Busque por documento para ver nombre y cargo según contrato en la fecha de la novedad.') ?>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="novedad-secciones-form" style="display:none;">
+    <div id="novedad-secciones-form"<?= $seccionesFormVisibles ? '' : ' style="display:none;"' ?>>
 
     <div class="novedad-solicitud-seccion rounded-3 border border-dashed p-3 p-md-4 mb-4 bg-light">
         <div class="d-flex align-items-start gap-3 mb-3">
@@ -233,21 +265,14 @@ CSS
             </span>
             <div>
                 <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Ubicación') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Sede operativa y ciudad vinculada (opcional según tipo de novedad).') ?></p>
+                <p class="text-muted small mb-0"><?= Yii::t('app', 'Ciudad (según la sede) y sede operativa (opcional según tipo de novedad).') ?></p>
             </div>
         </div>
         <div class="row g-3 novedad-solicitud-row-campos">
             <div class="col-md-6">
-                <?= $form->field($ctx, 'sede_id', array_merge($fldRow, $lblNorm()))->dropDownList([], [
-                    'prompt' => Yii::t('app', 'Seleccionar sede…'),
-                    'id' => 'solicitudctx-sede_id',
-                    'class' => 'form-select rounded-3',
-                ]) ?>
-            </div>
-            <div class="col-md-6">
                 <label class="<?= Html::encode($lblClass) ?>"><?= Html::encode(Yii::t('app', 'Ciudad')) ?></label>
-                <div id="ciudad-display" class="form-control bg-white rounded-3 text-muted">
-                    <?= Html::encode(Yii::t('app', 'Se completará al seleccionar una sede…')) ?>
+                <div id="ciudad-display" class="form-control bg-white rounded-3<?= $ciudadNombreSrv !== '' ? '' : ' text-muted' ?>">
+                    <?= Html::encode($ciudadNombreSrv !== '' ? $ciudadNombreSrv : Yii::t('app', 'Se completará al seleccionar una sede…')) ?>
                 </div>
                 <?= Html::hiddenInput(
                     'SolicitudCtx[ciudad_id]',
@@ -259,6 +284,13 @@ CSS
                 <?php endif; ?>
                 <div class="form-text"><?= Html::encode(Yii::t('app', 'Ciudad vinculada a la sede seleccionada.')) ?></div>
             </div>
+            <div class="col-md-6">
+                <?= $form->field($ctx, 'sede_id', array_merge($fldRow, $lblNorm()))->dropDownList([], [
+                    'prompt' => Yii::t('app', 'Seleccionar sede…'),
+                    'id' => 'solicitudctx-sede_id',
+                    'class' => 'form-select rounded-3',
+                ]) ?>
+            </div>
         </div>
     </div>
 
@@ -269,11 +301,21 @@ CSS
             </span>
             <div>
                 <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Tipo y concepto') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Agrupador, concepto y campos adicionales del tipo.') ?></p>
+                <p class="text-muted small mb-0"><?= Yii::t('app', 'Fecha de aplicación, agrupador, concepto(s) y campos adicionales del tipo.') ?></p>
             </div>
         </div>
         <div class="row g-3 novedad-solicitud-row-campos">
-            <div class="col-12">
+            <div class="col-12 col-md-6 col-lg-4">
+                <?= $form->field($model, 'fecha_novedad', $fldRow)
+                    ->label($txtReq(Yii::t('app', 'Fecha de aplicación')), array_merge($lblOpts, ['encode' => false]))
+                    ->textInput([
+                        'type' => 'date',
+                        'id' => 'novedad-fecha_novedad',
+                        'class' => 'form-control rounded-3',
+                        'required' => true,
+                    ])->hint(Yii::t('app', 'Fecha en que aplica la novedad para todas las líneas.'), ['class' => 'form-text mt-2']) ?>
+            </div>
+            <div class="col-12 col-md-6 col-lg-8">
                 <?= $form->field($ctx, 'novedad_tipo_id', $fldRow)
                     ->label($txtReq(Yii::t('app', 'Tipo / agrupador')), array_merge($lblOpts, ['encode' => false]))
                     ->dropDownList([], [
@@ -284,14 +326,7 @@ CSS
                 <div id="tipos-cargo-alert" class="alert alert-warning border-0 rounded-3 py-2 px-3 mt-2 mb-0 d-none small"></div>
             </div>
         </div>
-        <?php if (!empty($horasTipoId)): ?>
-            <div class="alert alert-info border-0 rounded-3 small mt-3 mb-0 py-3" role="status">
-                <i class="ti ti-info-circle me-1"></i><?= Yii::t(
-                    'app',
-                    'Para solicitar horas (intervalo hora inicio y fin, con troceo en servidor), elija en «Tipo / agrupador» la opción de novedades de tipo horas. Luego complete fecha, empleado y las horas que se muestran debajo.'
-                ) ?>
-            </div>
-        <?php endif; ?>
+        <p id="hint-seleccion-concepto" class="text-muted small mt-2 mb-0"><?= Yii::t('app', 'Selecciona un concepto para ver los campos del formulario.') ?></p>
         <div id="bloque-concepto" class="mt-3 mb-0">
             <?= $form->field($model, 'concepto_id', array_merge(['enableClientValidation' => false], $fldRow))
                 ->label($txtReq(Yii::t('app', 'Concepto')), array_merge($lblOpts, ['encode' => false]))
@@ -302,84 +337,31 @@ CSS
                 ])->hint(Yii::t('app', 'Filtrado por organización, contrato, cargo y conceptos habilitados.'), ['class' => 'form-text mt-2']) ?>
             <div id="conceptos-cargo-alert" class="alert alert-warning border-0 rounded-3 py-2 px-3 mt-2 mb-0 d-none small"></div>
         </div>
+
+        <div id="bloque-conceptos-por-horas" class="mt-3 pt-3 border-top border-opacity-25" style="display:none;">
+            <div class="d-flex align-items-start gap-3 mb-3">
+                <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <i class="ti ti-list-check fs-20"></i>
+                </span>
+                <div>
+                    <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Conceptos por horas') ?></h6>
+                    <p class="text-muted small mb-0"><?= Yii::t('app', 'Agregue uno o varios conceptos, cantidad, unidad y comentario por cada registro. La fecha de aplicación es la indicada arriba para todas las filas.') ?></p>
+                </div>
+            </div>
+            <?php if ($model->hasErrors('horas_filas_error')): ?>
+                <div class="alert alert-danger border-0 py-2 px-3 mb-3 rounded-3 small" role="alert">
+                    <?php foreach ($model->getErrors('horas_filas_error') as $err): ?>
+                        <div><?= Html::encode((string) $err) ?></div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <div id="horas-filas-container" class="d-flex flex-column gap-3"></div>
+            <button type="button" class="btn btn-outline-success rounded-pill mt-2" id="btn-agregar-fila-horas">
+                <i class="ti ti-plus me-1"></i><?= Yii::t('app', 'Agregar concepto') ?>
+            </button>
+        </div>
+
         <div id="bloque-campos-dinamicos" class="row g-3 mt-1 pt-2 border-top border-opacity-25"></div>
-    </div>
-
-    <div class="novedad-solicitud-seccion rounded-3 border border-dashed p-3 p-md-4 mb-4 bg-light">
-        <div class="d-flex align-items-start gap-3 mb-3">
-            <span class="avatar avatar-md bg-soft-danger text-danger rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                <i class="ti ti-calendar-event fs-20"></i>
-            </span>
-            <div>
-                <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Fecha y horario') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Fecha de la novedad y, si aplica, rango de horas.') ?></p>
-            </div>
-        </div>
-        <div class="row g-3 novedad-solicitud-row-campos">
-            <div class="col-md-6 col-lg-4">
-                <?= $form->field($model, 'fecha_novedad', $fldRow)
-                    ->label($txtReq(Yii::t('app', 'Fecha de la novedad')), array_merge($lblOpts, ['encode' => false]))
-                    ->textInput([
-                        'type' => 'date',
-                        'id' => 'novedad-fecha_novedad',
-                        'class' => 'form-control rounded-3',
-                    ]) ?>
-            </div>
-            <div class="col-12 col-lg-8" id="bloque-horas" style="display:none;">
-                <div class="row g-3 novedad-solicitud-row-campos">
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'hora_inicio', $fldRow)
-                            ->label($txtReq(Yii::t('app', 'Hora inicio')), array_merge($lblOpts, ['encode' => false]))
-                            ->textInput([
-                                'type' => 'time',
-                                'step' => 60,
-                                'id' => 'novedad-hora_inicio',
-                                'class' => 'form-control rounded-3',
-                            ]) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'hora_fin', $fldRow)
-                            ->label($txtReq(Yii::t('app', 'Hora fin')), array_merge($lblOpts, ['encode' => false]))
-                            ->textInput([
-                                'type' => 'time',
-                                'step' => 60,
-                                'id' => 'novedad-hora_fin',
-                                'class' => 'form-control rounded-3',
-                            ]) ?>
-                    </div>
-                    <div class="col-12">
-                        <p class="text-muted small mb-0"><?= Yii::t('app', 'Tipo horas: sin cruce de medianoche en el formulario; el servidor trocea el intervalo (recargos, etc.).') ?></p>
-                    </div>
-                </div>
-                <div id="bloque-auxilio" class="d-flex align-items-start gap-3 mt-3 mb-0 p-3 bg-white rounded-3 border novedad-solicitud-auxilio-check" style="display:none;">
-                    <?= Html::checkbox('auxilio_movilizacion', false, [
-                        'class' => 'form-check-input',
-                        'id' => 'auxilio_movilizacion',
-                        'value' => '1',
-                    ]) ?>
-                    <label class="form-check-label fw-medium mb-0 flex-grow-1" for="auxilio_movilizacion">
-                        <?= Yii::t('app', 'Solicitar auxilio de movilización (importe fijo según configuración, si el cargo aplica a clases grupales)') ?>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="novedad-solicitud-seccion rounded-3 border border-dashed p-3 p-md-4 mb-4 bg-light">
-        <div class="d-flex align-items-start gap-3 mb-3">
-            <span class="avatar avatar-md bg-soft-secondary text-secondary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                <i class="ti ti-align-left fs-20"></i>
-            </span>
-            <div>
-                <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Descripción') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Detalle opcional de la solicitud.') ?></p>
-            </div>
-        </div>
-        <?= $form->field($model, 'descripcion', array_merge($fldRow, $lblNorm()))->textarea([
-            'rows' => 4,
-            'class' => 'form-control rounded-3',
-            'placeholder' => Yii::t('app', 'Describa el motivo o el detalle de la solicitud (opcional)…'),
-        ]) ?>
     </div>
 
     <?= $form->field($model, 'datos')->hiddenInput(['id' => 'novedad-datos-json', 'value' => $model->datos ?: '{}'])->label(false) ?>
@@ -434,7 +416,9 @@ $jsTemplate = <<<'JS'
     if (!el || !el.textContent) { return; }
     try { formState = JSON.parse(el.textContent) || {}; } catch (e) { formState = {}; }
   })();
-  var msgHoras = $form.attr('data-msg-horas-rango-invalido') || '';
+  if (formState.profile_id || (formState.num_doc && String(formState.num_doc).length >= 3)) {
+    mostrarSecciones();
+  }
   var conceptosUrl = $form.attr('data-novedad-conceptos-url') || '';
   var tipoCamposUrl = $form.attr('data-novedad-tipo-campos-url') || '';
   var promptSel = ($form.attr('data-prompt-seleccionar') || 'Seleccionar…').trim();
@@ -617,12 +601,15 @@ $jsTemplate = <<<'JS'
       hideConceptosCargoAlert();
       loadAgrupadores({ restore: false });
       loadEmpresasCliente(function () {
-        refreshAuxilioCheckbox();
         loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
       });
       return;
     }
-    $.getJSON(ajax.buscarEmpleado, { num_documento: doc, fecha_novedad: fecha }, function (data) {
+    $.getJSON(ajax.buscarEmpleado, {
+      num_documento: doc,
+      fecha_novedad: fecha,
+      empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
+    }, function (data) {
       var results = (data && data.results) ? data.results : [];
       if (!results.length) {
         setEmpleadoNoEncontrado();
@@ -634,7 +621,6 @@ $jsTemplate = <<<'JS'
         hideConceptosCargoAlert();
         loadAgrupadores({ restore: false });
         loadEmpresasCliente(function () {
-          refreshAuxilioCheckbox();
           loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
         });
         return;
@@ -649,7 +635,6 @@ $jsTemplate = <<<'JS'
         done: function () {
           loadEmpresasCliente(function () {
             loadSedes(function () {
-              refreshAuxilioCheckbox();
               loadConceptos($('#solicitudctx-novedad_tipo_id').val(), done);
             }, { forcePreferida: true, preserveCurrent: false });
           });
@@ -666,7 +651,8 @@ $jsTemplate = <<<'JS'
     var done = (typeof options.done === 'function') ? options.done : null;
     var params = {
       profile_id: $('#novedad-profile_id').val() || '',
-      fecha_novedad: $('#novedad-fecha_novedad').val() || ''
+      fecha_novedad: $('#novedad-fecha_novedad').val() || '',
+      empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
     };
     $.getJSON(ajax.agrupadores, params, function (rows) {
       var $sel = $('#solicitudctx-novedad_tipo_id');
@@ -693,11 +679,146 @@ $jsTemplate = <<<'JS'
 
   /* ── Conceptos ── */
 
+  var lastConceptosRows = [];
+
+  function reindexHorasFilas() {
+    $('#horas-filas-container .horas-fila-row').each(function (i) {
+      $(this).find('.horas-fila-concepto').attr('name', 'HorasFilas[' + i + '][concepto_id]');
+      $(this).find('.horas-fila-cantidad').attr('name', 'HorasFilas[' + i + '][cantidad]');
+      $(this).find('.horas-fila-unidad').attr('name', 'HorasFilas[' + i + '][unidad]');
+      $(this).find('.horas-fila-comentario').attr('name', 'HorasFilas[' + i + '][comentario]');
+    });
+  }
+
+  /** Código de catálogo del concepto (misma lógica que staffing_admin/novedad-solicitud-form.js). */
+  function codigoHorasFilaPorConceptoId(conceptoId) {
+    var rows = lastConceptosRows || [];
+    var k = String(conceptoId || '');
+    var i;
+    for (i = 0; i < rows.length; i++) {
+      if (String(rows[i].id) === k) {
+        return String(rows[i].codigo || '').toUpperCase();
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Auxilio movilización: cantidad 1, unidad «Unidad» (no horas). Resto: unidad «Hora».
+   * @see staffing_admin applyHorasItemCantidadRule
+   */
+  function aplicarReglasFilaHoras($row) {
+    var $sel = $row.find('.horas-fila-concepto');
+    var $cant = $row.find('.horas-fila-cantidad');
+    var $uni = $row.find('.horas-fila-unidad');
+    var id = ($sel.val() || '').trim();
+    var cod = codigoHorasFilaPorConceptoId(id);
+    var uHora = ($form.attr('data-fila-unidad-hora') || 'Hora').trim();
+    var uAux = ($form.attr('data-fila-unidad-auxilio') || 'Unidad').trim();
+    $uni.prop('readonly', true);
+    if (cod === 'AUXILIO_MOVILIZACION') {
+      $cant.val('1').prop('readonly', true);
+      $uni.val(uAux);
+      return;
+    }
+    $cant.prop('readonly', false);
+    if (id) {
+      $uni.val(uHora);
+    } else {
+      $uni.val('');
+    }
+  }
+
+  function fillHorasFilasConceptSelects(rows) {
+    $('#horas-filas-container .horas-fila-concepto').each(function () {
+      var $sel = $(this);
+      var v = $sel.val();
+      $sel.empty().append($('<option/>').val('').text(promptSel));
+      $.each(rows || [], function (_, r) {
+        $sel.append($('<option/>').val(r.id).text(r.nombre));
+      });
+      if (v) { $sel.val(v); }
+    });
+    $('#horas-filas-container .horas-fila-row').each(function () {
+      aplicarReglasFilaHoras($(this));
+    });
+  }
+
+  function addHorasFilaRow(prefill) {
+    var rows = lastConceptosRows || [];
+    var lc = ($form.attr('data-lbl-fila-concepto') || 'Concepto').trim();
+    var lq = ($form.attr('data-lbl-fila-cantidad') || 'Cantidad').trim();
+    var lu = ($form.attr('data-lbl-fila-unidad') || 'Unidad').trim();
+    var lm = ($form.attr('data-lbl-fila-comentario') || 'Comentario').trim();
+    var pc = ($form.attr('data-placeholder-fila-cantidad') || '').trim();
+    var pm = ($form.attr('data-placeholder-fila-comentario') || '').trim();
+    var $sel = $('<select class="form-select rounded-3 horas-fila-concepto"/>');
+    $sel.append($('<option/>').val('').text(promptSel));
+    $.each(rows, function (_, r) {
+      $sel.append($('<option/>').val(r.id).text(r.nombre));
+    });
+    if (prefill && prefill.concepto_id) {
+      $sel.val(String(prefill.concepto_id));
+    }
+    var uHoraDef = ($form.attr('data-fila-unidad-hora') || 'Hora').trim();
+    var cantVal = (prefill && prefill.cantidad != null && String(prefill.cantidad) !== '') ? String(prefill.cantidad) : '';
+    var uniVal = (prefill && prefill.unidad != null && String(prefill.unidad) !== '') ? String(prefill.unidad) : uHoraDef;
+    var comVal = (prefill && prefill.comentario != null) ? String(prefill.comentario) : '';
+    var $row = $('<div class="horas-fila-row rounded-3 border bg-white p-3 shadow-sm"/>');
+    $row.append(
+      $('<div class="row g-2 g-md-3 align-items-end"/>').append(
+        $('<div class="col-12 col-md-4"/>').append(
+          $('<label class="form-label fw-semibold mb-2"/>').text(lc),
+          $sel
+        ),
+        $('<div class="col-6 col-md-2"/>').append(
+          $('<label class="form-label fw-semibold mb-2"/>').text(lq),
+          $('<input type="number" class="form-control rounded-3 horas-fila-cantidad" min="0" step="any"/>').attr('placeholder', pc)
+            .val(cantVal)
+        ),
+        $('<div class="col-6 col-md-2"/>').append(
+          $('<label class="form-label fw-semibold mb-2"/>').text(lu),
+          $('<input type="text" class="form-control rounded-3 horas-fila-unidad bg-light"/>')
+            .prop('readonly', true)
+            .val(uniVal)
+        ),
+        $('<div class="col-12 col-md-3"/>').append(
+          $('<label class="form-label fw-semibold mb-2"/>').text(lm),
+          $('<input type="text" class="form-control rounded-3 horas-fila-comentario"/>').attr('placeholder', pm).val(comVal)
+        ),
+        $('<div class="col-12 col-md-1 text-md-end"/>').append(
+          $('<button type="button" class="btn btn-soft-danger btn-sm rounded-pill horas-fila-remove" title="Quitar"/>').append(
+            $('<i class="ti ti-trash"/>')
+          )
+        )
+      )
+    );
+    $('#horas-filas-container').append($row);
+    reindexHorasFilas();
+    aplicarReglasFilaHoras($row);
+  }
+
+  $(document).on('change', '#horas-filas-container .horas-fila-concepto', function () {
+    aplicarReglasFilaHoras($(this).closest('.horas-fila-row'));
+  });
+
+  function restoreHorasFilasFromState() {
+    var filas = formState.horas_filas;
+    if (!filas || !filas.length) { return; }
+    $('#horas-filas-container').empty();
+    $.each(filas, function (_, f) {
+      addHorasFilaRow(f);
+    });
+  }
+
   function loadConceptos(tipoId, done) {
     var $c = $('#novedad-concepto_id');
+    var isHoras = horasTipoId !== null && String(tipoId) === String(horasTipoId);
     if (!tipoId) {
       $c.empty().append($('<option/>').val('').text(promptSel));
       hideConceptosCargoAlert();
+      lastConceptosRows = [];
+      if (isHoras) { $('#horas-filas-container').empty(); }
       if (typeof done === 'function') { done(); }
       return;
     }
@@ -706,9 +827,11 @@ $jsTemplate = <<<'JS'
     $.getJSON(conceptosUrl, {
       novedad_tipo_id: tipoId,
       profile_id: pid,
-      fecha_novedad: fecha
+      fecha_novedad: fecha,
+      empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
     }, function (res) {
       var rows = Array.isArray(res) ? res : (res && res.items ? res.items : []);
+      lastConceptosRows = rows;
       var emptyMessage = (!Array.isArray(res) && res && res.empty_message) ? String(res.empty_message) : '';
       var v = $c.val() || (formState.concepto_id != null ? String(formState.concepto_id) : '');
       $c.empty().append($('<option/>').val('').text(promptSel));
@@ -720,6 +843,14 @@ $jsTemplate = <<<'JS'
         showConceptosCargoAlert(emptyMessage || mensajeConfigConceptosCargo());
       } else {
         hideConceptosCargoAlert();
+      }
+      if (isHoras) {
+        fillHorasFilasConceptSelects(rows);
+        if (formState.horas_filas && formState.horas_filas.length) {
+          restoreHorasFilasFromState();
+        } else if ($('#horas-filas-container').children().length === 0) {
+          addHorasFilaRow(null);
+        }
       }
       if (typeof done === 'function') { done(); }
     });
@@ -833,17 +964,18 @@ $jsTemplate = <<<'JS'
   /* ── Restaurar estado tras POST con errores ── */
 
   function restaurarEmpleadoPostCarga() {
-    if (formState.auxilio_movilizacion) {
-      $('#auxilio_movilizacion').prop('checked', true);
-    }
     if (formState.num_doc && String(formState.num_doc).length >= 3) {
       $('#buscar-num-doc').val(formState.num_doc);
-      buscarEmpleadoPorDocumento(function () {
-        if (formState.auxilio_movilizacion) {
-          $('#auxilio_movilizacion').prop('checked', true);
-        }
-        refreshAuxilioCheckbox();
-      });
+      if (formState.empleado_display_name) {
+        mostrarSecciones();
+        loadEmpresasCliente(function () {
+          loadSedes(function () {
+            loadConceptos($('#solicitudctx-novedad_tipo_id').val(), null);
+          });
+        });
+        return;
+      }
+      buscarEmpleadoPorDocumento(null);
       return;
     }
     if (formState.profile_id) {
@@ -859,75 +991,38 @@ $jsTemplate = <<<'JS'
       );
       loadEmpresasCliente(function () {
         loadSedes(function () {
-          refreshAuxilioCheckbox();
-          loadConceptos($('#solicitudctx-novedad_tipo_id').val(), function () {
-            if (formState.auxilio_movilizacion) {
-              $('#auxilio_movilizacion').prop('checked', true);
-            }
-            refreshAuxilioCheckbox();
-          });
+          loadConceptos($('#solicitudctx-novedad_tipo_id').val(), null);
         });
       });
       return;
     }
     var tid = $('#solicitudctx-novedad_tipo_id').val();
     if (tid) {
-      loadConceptos(tid, function () {
-        if (formState.auxilio_movilizacion) {
-          $('#auxilio_movilizacion').prop('checked', true);
-        }
-        refreshAuxilioCheckbox();
-      });
-    } else {
-      refreshAuxilioCheckbox();
+      loadConceptos(tid, null);
     }
   }
 
   function toggleModoHoras(tipoId) {
     var isHoras = horasTipoId !== null && String(tipoId) === String(horasTipoId);
-    $('#bloque-horas').toggle(isHoras);
+    $('#bloque-conceptos-por-horas').toggle(isHoras);
     $('#bloque-concepto').toggle(!isHoras);
+    $('#hint-seleccion-concepto').toggle(!isHoras);
     var $conc = $('#novedad-concepto_id');
     if (isHoras) {
       $conc.val('').prop({ disabled: true, required: false });
+      var tieneFilasPost = formState.horas_filas && formState.horas_filas.length;
+      if ($('#horas-filas-container').children().length === 0 && !tieneFilasPost) {
+        addHorasFilaRow(null);
+      }
     } else {
       $conc.prop({ disabled: false, required: true });
+      $('#horas-filas-container').empty();
     }
     if (!isHoras) {
       loadTipoCampos(tipoId);
     } else {
       $('#bloque-campos-dinamicos').empty();
     }
-  }
-
-  function refreshAuxilioCheckbox() {
-    var tipoId = $('#solicitudctx-novedad_tipo_id').val();
-    var isHoras = horasTipoId !== null && String(tipoId) === String(horasTipoId);
-    if (!isHoras) {
-      $('#bloque-auxilio').hide();
-      $('#auxilio_movilizacion').prop('checked', false);
-      return;
-    }
-    var cargoId = $('#empleado-cargo-id').val();
-    var url = $form.attr('data-novedad-cargo-clases-url');
-    if (!cargoId || !url) {
-      $('#bloque-auxilio').hide();
-      $('#auxilio_movilizacion').prop('checked', false);
-      return;
-    }
-    $.getJSON(url, { cargo_id: cargoId })
-      .done(function (res) {
-        if (res && res.aplica) {
-          $('#bloque-auxilio').show();
-        } else {
-          $('#bloque-auxilio').hide();
-          $('#auxilio_movilizacion').prop('checked', false);
-        }
-      })
-      .fail(function () {
-        $('#bloque-auxilio').hide();
-        $('#auxilio_movilizacion').prop('checked', false);
-      });
   }
 
   function mergeDatosDinamicos() {
@@ -949,11 +1044,40 @@ $jsTemplate = <<<'JS'
     var id = $(this).val();
     toggleModoHoras(id);
     loadConceptos(id, null);
-    refreshAuxilioCheckbox();
   });
+
+  function recargarAgrupadoresYConceptosTrasCambioCliente() {
+    loadAgrupadores({
+      restore: false,
+      done: function () {
+        loadConceptos($('#solicitudctx-novedad_tipo_id').val(), null);
+      }
+    });
+  }
 
   $('#solicitudctx-empresa_cliente_id').on('change', function () {
     loadSedes(null, { forcePreferida: true, preserveCurrent: false });
+    var doc = ($('#buscar-num-doc').val() || '').trim();
+    var pid = $('#novedad-profile_id').val() || '';
+    if (doc.length >= 3 && pid) {
+      $.getJSON(ajax.buscarEmpleado, {
+        num_documento: doc,
+        fecha_novedad: $('#novedad-fecha_novedad').val() || '',
+        empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
+      }, function (data) {
+        var results = (data && data.results) ? data.results : [];
+        if (results.length && String(results[0].id) === String(pid)) {
+          var r = results[0];
+          setEmpleadoPanel(r);
+          $('#empleado-cargo-id').val(r.cargo_id != null ? r.cargo_id : '');
+        }
+        recargarAgrupadoresYConceptosTrasCambioCliente();
+      }).fail(function () {
+        recargarAgrupadoresYConceptosTrasCambioCliente();
+      });
+    } else {
+      recargarAgrupadoresYConceptosTrasCambioCliente();
+    }
   });
 
   $('#solicitudctx-sede_id').on('change', function () {
@@ -981,13 +1105,44 @@ $jsTemplate = <<<'JS'
     }
   });
 
+  $('#btn-agregar-fila-horas').on('click', function () {
+    addHorasFilaRow(null);
+  });
+
+  $(document).on('click', '.horas-fila-remove', function () {
+    var $c = $('#horas-filas-container');
+    if ($c.children('.horas-fila-row').length <= 1) {
+      var $row = $(this).closest('.horas-fila-row');
+      $row.find('.horas-fila-cantidad').val('').prop('readonly', false);
+      $row.find('.horas-fila-comentario').val('');
+      $row.find('.horas-fila-unidad').val('').prop('readonly', true);
+      $row.find('.horas-fila-concepto').val('');
+      return;
+    }
+    $(this).closest('.horas-fila-row').remove();
+    reindexHorasFilas();
+  });
+
   $form.on('submit', function (e) {
     var tipoId = $('#solicitudctx-novedad_tipo_id').val();
+    var msgFecha = ($form.attr('data-msg-fecha-aplicacion') || '').trim();
+    var msgFilas = ($form.attr('data-msg-horas-filas-vacio') || '').trim();
+    var fd = ($('#novedad-fecha_novedad').val() || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fd)) {
+      mostrarModalAlerta(msgFecha);
+      e.preventDefault();
+      return false;
+    }
     if (horasTipoId !== null && String(tipoId) === String(horasTipoId)) {
-      var hi = $('#novedad-hora_inicio').val();
-      var hf = $('#novedad-hora_fin').val();
-      if (hi && hf && hf <= hi) {
-        mostrarModalAlerta(msgHoras);
+      var okFila = false;
+      $('#horas-filas-container .horas-fila-row').each(function () {
+        var c = ($(this).find('.horas-fila-concepto').val() || '').trim();
+        var ca = ($(this).find('.horas-fila-cantidad').val() || '').trim();
+        var u = ($(this).find('.horas-fila-unidad').val() || '').trim();
+        if (c && ca && u) { okFila = true; }
+      });
+      if (!okFila) {
+        mostrarModalAlerta(msgFilas);
         e.preventDefault();
         return false;
       }

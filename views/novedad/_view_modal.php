@@ -131,9 +131,11 @@ $importeTxt = ($model->importe !== null && $model->importe !== '')
     ? $fmt->asCurrency($model->importe)
     : $dash;
 
-$horasCalcTxt = ($model->horas_calculadas !== null && $model->horas_calculadas !== '')
-    ? $fmt->asDecimal($model->horas_calculadas)
-    : $dash;
+$cantidadTxt = $dash;
+if ($model->cantidad !== null && $model->cantidad !== '') {
+    $u = trim((string) ($model->unidad ?? ''));
+    $cantidadTxt = $fmt->asDecimal($model->cantidad, 2) . ($u !== '' ? ' ' . $u : '');
+}
 
 $fechaNovedadTxt = ($model->fecha_novedad !== null && $model->fecha_novedad !== '')
     ? $fmt->asDate($model->fecha_novedad)
@@ -240,8 +242,8 @@ $detallesHoras = $model->novedadHorasDetalles;
                 <span class="fw-medium"><?= Html::encode($timeShort($model->hora_fin)) ?></span>
             </div>
             <div class="col-md-6">
-                <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('horas_calculadas')) ?></small>
-                <span class="fw-medium"><?= Html::encode($horasCalcTxt) ?></span>
+                <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('cantidad')) ?> / <?= Html::encode($model->getAttributeLabel('unidad')) ?></small>
+                <span class="fw-medium"><?= Html::encode($cantidadTxt) ?></span>
             </div>
             <div class="col-md-6">
                 <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('periodo_nomina')) ?></small>
@@ -258,6 +260,14 @@ $detallesHoras = $model->novedadHorasDetalles;
             <div class="col-md-6">
                 <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('importe')) ?></small>
                 <span class="fw-medium"><?= Html::encode($importeTxt) ?></span>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_unitario')) ?></small>
+                <span class="fw-medium"><?= ($model->valor_unitario !== null && $model->valor_unitario !== '') ? Html::encode($fmt->asCurrency($model->valor_unitario)) : Html::encode($dash) ?></span>
+            </div>
+            <div class="col-md-6">
+                <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('batch_id')) ?></small>
+                <span class="fw-medium"><?= Html::encode($model->batch_id !== null && $model->batch_id !== '' ? (string) $model->batch_id : $dash) ?></span>
             </div>
             <div class="col-md-6">
                 <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('novedad_centro_costo_id')) ?></small>

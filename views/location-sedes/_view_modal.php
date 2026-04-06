@@ -65,31 +65,27 @@ use yii\helpers\Html;
                         <span class="fw-medium"><?= $model->max_horas_clases_grupales !== null ? Html::encode(number_format((float) $model->max_horas_clases_grupales, 2, '.', ',')) : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora base</small>
-                        <span class="fw-medium"><?= $model->valor_hora_base !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_base, 'COP') : '—' ?></span>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_diurna')) ?></small>
+                        <span class="fw-medium"><?= $model->valor_hora_diurna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora domingo/festivos</small>
-                        <span class="fw-medium"><?= $model->valor_hora_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_domingo_festivos, 'COP') : '—' ?></span>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_diurna_domingo_festivos')) ?></small>
+                        <span class="fw-medium"><?= $model->valor_hora_diurna_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna_domingo_festivos, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora nocturna</small>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna')) ?></small>
                         <span class="fw-medium"><?= $model->valor_hora_nocturna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora nocturna festiva</small>
-                        <span class="fw-medium"><?= $model->valor_hora_nocturna_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_festiva, 'COP') : '—' ?></span>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna_domingo_festiva')) ?></small>
+                        <span class="fw-medium"><?= $model->valor_hora_nocturna_domingo_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_domingo_festiva, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora nocturna dominical/festiva</small>
-                        <span class="fw-medium"><?= $model->valor_hora_nocturna_dominical_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_dominical_festiva, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Valor hora especial</small>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_especial')) ?></small>
                         <span class="fw-medium"><?= $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Valor movilización</small>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_movilizacion')) ?></small>
                         <span class="fw-medium"><?= $model->valor_movilizacion !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_movilizacion, 'COP') : '—' ?></span>
                     </div>
                 </div>

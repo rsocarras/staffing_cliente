@@ -1,12 +1,13 @@
 <?php
 
+use Yii;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
 /** @var app\models\Setting $model */
 
-$this->title = 'Create Setting';
-$this->params['breadcrumbs'][] = ['label' => 'Settings', 'url' => ['index']];
+$this->title = Yii::t('app', 'Nuevo parámetro laboral');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Parámetros laborales'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="setting-create">

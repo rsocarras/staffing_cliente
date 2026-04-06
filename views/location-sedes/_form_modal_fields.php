@@ -179,7 +179,7 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
                 ]) ?>
             </div>
             <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_base', [
+                <?= $form->field($model, 'valor_hora_diurna', [
                     'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-currency-dollar text-secondary"></i></span>{input}</div>{error}{hint}',
                     'options' => ['class' => 'mb-0'],
                     'labelOptions' => ['class' => 'form-label fw-medium'],
@@ -193,7 +193,7 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
                 ]) ?>
             </div>
             <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_domingo_festivos', [
+                <?= $form->field($model, 'valor_hora_diurna_domingo_festivos', [
                     'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-calendar-star text-secondary"></i></span>{input}</div>{error}{hint}',
                     'options' => ['class' => 'mb-0'],
                     'labelOptions' => ['class' => 'form-label fw-medium'],
@@ -221,22 +221,8 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
                 ]) ?>
             </div>
             <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_nocturna_festiva', [
+                <?= $form->field($model, 'valor_hora_nocturna_domingo_festiva', [
                     'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-moon-stars text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_nocturna_dominical_festiva', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-moon-filled text-secondary"></i></span>{input}</div>{error}{hint}',
                     'options' => ['class' => 'mb-0'],
                     'labelOptions' => ['class' => 'form-label fw-medium'],
                 ])->textInput([
