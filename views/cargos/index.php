@@ -9,6 +9,9 @@ use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var array $summaryCounts */
+/** @var list<array{tipo: \app\models\NovedadTipo, conceptos: list<\app\models\NovedadConcepto>}> $conceptosPorAgrupador */
+/** @var string $urlAjaxConceptosCargoHtml */
+/** @var string $cargoAccordionSuffixNew */
 
 $this->title = 'Cargos';
 $this->params['breadcrumbs'][] = $this->title;
@@ -18,6 +21,7 @@ $this->registerCssFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/jquery.dataTables.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/datatables/js/dataTables.bootstrap5.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
 $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.js'), ['depends' => ['yii\web\JqueryAsset']]);
+$this->registerJsFile(Url::to('@web/js/cargo-novedad-conceptos.js'), ['depends' => ['yii\web\JqueryAsset']]);
 
 $createAjaxUrl = Url::to(['cargos/create-ajax']);
 $dataUrl = Url::to(['cargos/data']);
@@ -222,6 +226,10 @@ if ($profile && $profile->empresas_id) {
                     'model' => $modelCargoModal,
                     'form' => $formCargo,
                     'areasForSelect' => $areasForSelect,
+                    'conceptosPorAgrupador' => $conceptosPorAgrupador ?? [],
+                    'selectedIdsConceptosCargo' => [],
+                    'cargoAccordionSuffix' => $cargoAccordionSuffixNew ?? 'new',
+                    'urlAjaxConceptosCargoHtml' => $urlAjaxConceptosCargoHtml ?? Url::to(['/cargos/ajax-conceptos-cargo-html']),
                 ]) ?>
             </div>
             <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
@@ -240,7 +248,15 @@ if ($profile && $profile->empresas_id) {
 
 <?php
 $js = <<<JS
+function staffingSyncCargoConceptosWrap() {
+    var w = document.getElementById('js-cargo-conceptos-wrap');
+    if (w && window.staffingCargoConceptosSyncRoot) {
+        window.staffingCargoConceptosSyncRoot(w);
+    }
+}
+
 $(document).ready(function() {
+    staffingSyncCargoConceptosWrap();
     var table = $('#cargos-table').DataTable({
         processing: true,
         serverSide: true,
@@ -300,6 +316,7 @@ $(document).ready(function() {
         modal.show();
         $.get('{$formAjaxUrl}', { id: id }, function(html) {
             $('#modal-edit-cargo-body').html(html);
+            staffingSyncCargoConceptosWrap();
             $('#cargos-edit-area_id').off('change.cargoSub').on('change.cargoSub', function() {
                 loadCargoSubAreas($('#cargos-edit-sub_area_id'), $(this).val());
             });
@@ -466,6 +483,7 @@ $(document).ready(function() {
         $('#form-add-cargo')[0].reset();
         $('#cargos-sub_area_id').html('<option value="">Seleccione sub-área</option>').prop('disabled', true);
         $('#cargo-form-errors').addClass('d-none').empty();
+        staffingSyncCargoConceptosWrap();
     });
 });
 JS;

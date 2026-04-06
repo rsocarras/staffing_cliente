@@ -7,6 +7,10 @@ use yii\helpers\ArrayHelper;
 /** @var app\models\Cargos $model */
 /** @var yii\widgets\ActiveForm $form */
 /** @var array|null $areasForSelect */
+/** @var list<array{tipo: \app\models\NovedadTipo, conceptos: list<\app\models\NovedadConcepto>}>|null $conceptosPorAgrupador */
+/** @var int[]|null $selectedIdsConceptosCargo */
+/** @var string|null $cargoAccordionSuffix */
+/** @var string|null $urlAjaxConceptosCargoHtml */
 
 if (isset($areasForSelect)) {
     $areasList = $areasForSelect;
@@ -25,4 +29,8 @@ echo $this->render('_form_modal_fields', [
     'isEdit' => false,
     'areasList' => $areasList,
     'subAreasList' => [],
+    'conceptosPorAgrupador' => $conceptosPorAgrupador ?? [],
+    'selectedIdsConceptosCargo' => $selectedIdsConceptosCargo ?? [],
+    'cargoAccordionSuffix' => $cargoAccordionSuffix ?? 'new',
+    'urlAjaxConceptosCargoHtml' => $urlAjaxConceptosCargoHtml ?? \yii\helpers\Url::to(['/cargos/ajax-conceptos-cargo-html']),
 ]);
