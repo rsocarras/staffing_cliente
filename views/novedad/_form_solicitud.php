@@ -14,6 +14,7 @@ use yii\widgets\ActiveForm;
 /** @var NovedadSolicitudContextForm $ctx */
 /** @var app\models\Empresas|null $empresa */
 /** @var int|null $horasTipoId */
+/** @var int|null $ausentismosTipoId */
 /** @var bool $esContratoTipoHoras */
 /** @var app\models\EmpresaCliente[] $clientesEmpresa */
 /** @var app\models\EmpresaCliente|null $clienteUnico */
@@ -22,6 +23,7 @@ use yii\widgets\ActiveForm;
 
 $clienteUnico = $clienteUnico ?? null;
 $esContratoTipoHoras = $esContratoTipoHoras ?? false;
+$ausentismosTipoId = $ausentismosTipoId ?? null;
 $solicitudFormState = $solicitudFormState ?? [];
 $sinEmpresaCliente = $sinEmpresaCliente ?? false;
 $puedeEnviar = $empresa !== null && !$sinEmpresaCliente;
@@ -117,9 +119,13 @@ CSS
     <?php $form = ActiveForm::begin([
         'id' => $formId,
         'options' => [
-            'class' => 'needs-validation',
+            /* Sin `needs-validation`: el theme ejecuta checkValidity() en script.js y puede bloquear
+               el POST sin mensaje útil (campos en validación Yii, bloques ocultos o type=date). */
+            'class' => 'novedad-solicitud-activeform',
             'novalidate' => true,
+            'enctype' => 'multipart/form-data',
             'data-novedad-tipo-horas-id' => $horasTipoId !== null ? (string) $horasTipoId : '',
+            'data-novedad-tipo-ausentismos-id' => $ausentismosTipoId !== null ? (string) $ausentismosTipoId : '',
             'data-novedad-contrato-tipo-horas' => $esContratoTipoHoras ? '1' : '0',
             'data-novedad-conceptos-url' => $ajax['conceptos'],
             'data-novedad-tipo-campos-url' => $ajax['tipoCampos'],
@@ -301,21 +307,11 @@ CSS
             </span>
             <div>
                 <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Tipo y concepto') ?></h6>
-                <p class="text-muted small mb-0"><?= Yii::t('app', 'Fecha de aplicación, agrupador, concepto(s) y campos adicionales del tipo.') ?></p>
+                <p class="text-muted small mb-0"><?= Yii::t('app', 'Agrupador, concepto(s) y campos adicionales del tipo. La fecha de aplicación se indica al final de esta sección.') ?></p>
             </div>
         </div>
         <div class="row g-3 novedad-solicitud-row-campos">
-            <div class="col-12 col-md-6 col-lg-4">
-                <?= $form->field($model, 'fecha_novedad', $fldRow)
-                    ->label($txtReq(Yii::t('app', 'Fecha de aplicación')), array_merge($lblOpts, ['encode' => false]))
-                    ->textInput([
-                        'type' => 'date',
-                        'id' => 'novedad-fecha_novedad',
-                        'class' => 'form-control rounded-3',
-                        'required' => true,
-                    ])->hint(Yii::t('app', 'Fecha en que aplica la novedad para todas las líneas.'), ['class' => 'form-text mt-2']) ?>
-            </div>
-            <div class="col-12 col-md-6 col-lg-8">
+            <div class="col-12">
                 <?= $form->field($ctx, 'novedad_tipo_id', $fldRow)
                     ->label($txtReq(Yii::t('app', 'Tipo / agrupador')), array_merge($lblOpts, ['encode' => false]))
                     ->dropDownList([], [
@@ -345,7 +341,7 @@ CSS
                 </span>
                 <div>
                     <h6 class="fw-semibold mb-1"><?= Yii::t('app', 'Conceptos por horas') ?></h6>
-                    <p class="text-muted small mb-0"><?= Yii::t('app', 'Agregue uno o varios conceptos, cantidad, unidad y comentario por cada registro. La fecha de aplicación es la indicada arriba para todas las filas.') ?></p>
+                    <p class="text-muted small mb-0"><?= Yii::t('app', 'Agregue uno o varios conceptos, cantidad, unidad y comentario por cada registro. La fecha de aplicación es la indicada al final de esta sección para todas las filas.') ?></p>
                 </div>
             </div>
             <?php if ($model->hasErrors('horas_filas_error')): ?>
@@ -362,6 +358,21 @@ CSS
         </div>
 
         <div id="bloque-campos-dinamicos" class="row g-3 mt-1 pt-2 border-top border-opacity-25"></div>
+
+        <div id="bloque-fecha-aplicacion" class="mt-3 pt-3 border-top border-opacity-25">
+            <div class="row g-3 novedad-solicitud-row-campos">
+                <div class="col-12">
+                    <?= $form->field($model, 'fecha_novedad', $fldRow)
+                        ->label($txtReq(Yii::t('app', 'Fecha de aplicación')), array_merge($lblOpts, ['encode' => false]))
+                        ->textInput([
+                            'type' => 'date',
+                            'id' => 'novedad-fecha_novedad',
+                            'class' => 'form-control rounded-3',
+                            'required' => true,
+                        ])->hint(Yii::t('app', 'Fecha en que aplica la novedad para todas las líneas.'), ['class' => 'form-text mt-2']) ?>
+                </div>
+            </div>
+        </div>
     </div>
 
     <?= $form->field($model, 'datos')->hiddenInput(['id' => 'novedad-datos-json', 'value' => $model->datos ?: '{}'])->label(false) ?>
@@ -421,6 +432,7 @@ $jsTemplate = <<<'JS'
   }
   var conceptosUrl = $form.attr('data-novedad-conceptos-url') || '';
   var tipoCamposUrl = $form.attr('data-novedad-tipo-campos-url') || '';
+  var ausentismosTipoId = $form.attr('data-novedad-tipo-ausentismos-id') || '';
   var promptSel = ($form.attr('data-prompt-seleccionar') || 'Seleccionar…').trim();
   var placeholderDinamico = ($form.attr('data-placeholder-dinamico') || 'Ingrese el valor…').trim();
   var msgSeleccioneSede = ($form.attr('data-msg-seleccione-sede') || 'Se completará al seleccionar una sede…').trim();
@@ -818,6 +830,7 @@ $jsTemplate = <<<'JS'
       $c.empty().append($('<option/>').val('').text(promptSel));
       hideConceptosCargoAlert();
       lastConceptosRows = [];
+      $('#bloque-campos-dinamicos').empty();
       if (isHoras) { $('#horas-filas-container').empty(); }
       if (typeof done === 'function') { done(); }
       return;
@@ -851,6 +864,8 @@ $jsTemplate = <<<'JS'
         } else if ($('#horas-filas-container').children().length === 0) {
           addHorasFilaRow(null);
         }
+      } else {
+        loadTipoCampos($c.val() || '');
       }
       if (typeof done === 'function') { done(); }
     });
@@ -866,11 +881,10 @@ $jsTemplate = <<<'JS'
     return 'text';
   }
 
-  function loadTipoCampos(tipoId) {
-    var isHoras = horasTipoId !== null && String(tipoId) === String(horasTipoId);
+  function loadTipoCampos(conceptoId) {
     var $blk = $('#bloque-campos-dinamicos');
     $blk.empty();
-    if (!tipoId || isHoras || !tipoCamposUrl) { return; }
+    if (!conceptoId || !tipoCamposUrl) { return; }
     var persisted = {};
     try {
       var jo = JSON.parse($('#novedad-datos-json').val() || '{}');
@@ -878,7 +892,12 @@ $jsTemplate = <<<'JS'
         persisted = jo.campos_dinamicos;
       }
     } catch (e2) { persisted = {}; }
-    $.getJSON(tipoCamposUrl, { novedad_tipo_id: tipoId }, function (res) {
+    $.getJSON(tipoCamposUrl, {
+      concepto_id: conceptoId,
+      profile_id: $('#novedad-profile_id').val() || '',
+      fecha_novedad: $('#novedad-fecha_novedad').val() || '',
+      empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
+    }, function (res) {
       if (!res || !res.success || !res.items || !res.items.length) { return; }
       $.each(res.items, function (_, f) {
         var $wrap = $('<div class="col-md-6"/>');
@@ -886,7 +905,31 @@ $jsTemplate = <<<'JS'
           escapeHtml(f.label || '') + (f.requerido ? ' <span class="text-danger ms-1" aria-hidden="true">*</span>' : '')
         ));
         var $field;
-        if (f.opciones && f.opciones.length) {
+        var td0 = String(f.tipo_dato || '').trim().toLowerCase();
+        var meta = String(f.label || '') + ' ' + String(f.campo_id || '');
+        /* Opciones en BD + etiqueta PDF: forzar file (no usar select) */
+        var pareceAdjuntoPdf = /pdf|\(pdf\)|\.pdf\b/i.test(meta);
+        var esTipoFilePdf = (
+          td0 === 'file_pdf'
+          || td0 === 'pdf'
+          || td0 === 'archivo_pdf'
+          || td0 === 'adjunto_pdf'
+          || pareceAdjuntoPdf
+        );
+        var esTipoFile = td0 === 'file';
+        if (esTipoFilePdf) {
+          $field = $('<input class="form-control rounded-3"/>').attr({
+            type: 'file',
+            name: 'datos[' + f.campo_id + ']',
+            accept: 'application/pdf,.pdf'
+          });
+        } else if (esTipoFile) {
+          $field = $('<input class="form-control rounded-3"/>').attr({
+            type: 'file',
+            name: 'datos[' + f.campo_id + ']',
+            accept: '.pdf,.doc,.docx,.png,.jpg,.jpeg'
+          });
+        } else if (f.opciones && f.opciones.length) {
           $field = $('<select class="form-select rounded-3"/>').attr('data-ncampo', f.campo_id);
           $field.append($('<option value=""/>').text(promptSel));
           $.each(f.opciones, function (_, o) {
@@ -1018,10 +1061,24 @@ $jsTemplate = <<<'JS'
       $conc.prop({ disabled: false, required: true });
       $('#horas-filas-container').empty();
     }
-    if (!isHoras) {
-      loadTipoCampos(tipoId);
-    } else {
+    if (isHoras) {
       $('#bloque-campos-dinamicos').empty();
+    }
+    toggleFechaAplicacionSegunTipo(tipoId);
+  }
+
+  function esModoAusentismos(tipoId) {
+    return !!ausentismosTipoId && String(tipoId || '') === String(ausentismosTipoId);
+  }
+
+  function toggleFechaAplicacionSegunTipo(tipoId) {
+    var hide = esModoAusentismos(tipoId);
+    var $blk = $('#bloque-fecha-aplicacion');
+    var $fecha = $('#novedad-fecha_novedad');
+    $blk.toggle(!hide);
+    $fecha.prop('required', !hide);
+    if (hide) {
+      $fecha.removeClass('is-invalid');
     }
   }
 
@@ -1044,6 +1101,13 @@ $jsTemplate = <<<'JS'
     var id = $(this).val();
     toggleModoHoras(id);
     loadConceptos(id, null);
+  });
+
+  $('#novedad-concepto_id').on('change', function () {
+    var tid = $('#solicitudctx-novedad_tipo_id').val();
+    var isHoras = horasTipoId !== null && String(tid) === String(horasTipoId);
+    if (isHoras) { return; }
+    loadTipoCampos($(this).val() || '');
   });
 
   function recargarAgrupadoresYConceptosTrasCambioCliente() {
@@ -1128,7 +1192,7 @@ $jsTemplate = <<<'JS'
     var msgFecha = ($form.attr('data-msg-fecha-aplicacion') || '').trim();
     var msgFilas = ($form.attr('data-msg-horas-filas-vacio') || '').trim();
     var fd = ($('#novedad-fecha_novedad').val() || '').trim();
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(fd)) {
+    if (!esModoAusentismos(tipoId) && !/^\d{4}-\d{2}-\d{2}$/.test(fd)) {
       mostrarModalAlerta(msgFecha);
       e.preventDefault();
       return false;
@@ -1153,6 +1217,7 @@ $jsTemplate = <<<'JS'
   /* ── Arranque: cargar sedes → agrupadores → restaurar estado ── */
   loadSedes(function () {
     loadAgrupadores({ restore: true });
+    toggleFechaAplicacionSegunTipo($('#solicitudctx-novedad_tipo_id').val());
   });
 
 })(jQuery);

@@ -544,9 +544,7 @@ class Novedad extends ActiveRecord
             || $this->hora_inicio === null || $this->hora_inicio === ''
             || $this->hora_fin === null || $this->hora_fin === ''
         ) {
-            $this->cantidad = null;
-            $this->unidad = null;
-
+            /* Sin rango horario completo: no sobrescribir cantidad/unidad (p. ej. «cantidad» numérica solo en formulario). */
             return;
         }
 

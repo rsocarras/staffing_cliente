@@ -9,6 +9,7 @@ use yii\helpers\Html;
 /** @var app\models\Empresas|null $empresa */
 /** @var app\models\NovedadTipo|null $tipoSeleccionado */
 /** @var int|null $horasTipoId */
+/** @var int|null $ausentismosTipoId */
 /** @var bool $esContratoTipoHoras */
 /** @var app\models\EmpresaCliente[] $clientesEmpresa */
 /** @var app\models\EmpresaCliente|null $clienteUnico */
@@ -49,6 +50,7 @@ $clientesEmpresa = $clientesEmpresa ?? [];
                 'ctx' => $ctx,
                 'empresa' => $empresa,
                 'horasTipoId' => $horasTipoId,
+                'ausentismosTipoId' => $ausentismosTipoId ?? null,
                 'esContratoTipoHoras' => $esContratoTipoHoras ?? false,
                 'clientesEmpresa' => $clientesEmpresa,
                 'clienteUnico' => $clienteUnico,
