@@ -183,7 +183,7 @@ class NovedadConceptoEmpresaController extends Controller
     }
 
     /**
-     * Misma regla que en staffing_admin: valor sugerido solo para conceptos PE_* bajo pagos extralegales.
+     * Misma regla que en staffing_admin: PE_* (pagos extralegales) y PP_* (pagos prestacionales).
      */
     private function conceptoPermiteValorPorDefecto(NovedadConcepto $c): bool
     {
@@ -193,14 +193,18 @@ class NovedadConceptoEmpresaController extends Controller
         }
         $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
         $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
-        $esPagosExtralegales = $codigoTipo === 'pagos_extralegales'
-            || $nombreTipo === 'pagos extralegales';
-        if (!$esPagosExtralegales) {
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+        if ($codigoConcepto === '') {
             return false;
         }
-        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+        if ($codigoTipo === 'pagos_extralegales' || $nombreTipo === 'pagos extralegales') {
+            return str_starts_with($codigoConcepto, 'PE_');
+        }
+        if ($codigoTipo === 'pagos_prestacionales' || $nombreTipo === 'pagos prestacionales') {
+            return str_starts_with($codigoConcepto, 'PP_');
+        }
 
-        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PE_');
+        return false;
     }
 
     /**

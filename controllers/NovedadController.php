@@ -814,7 +814,7 @@ class NovedadController extends Controller
         $model->datos = $datosRaw;
         $model->estado = $estado;
 
-        $this->sincronizarImporteYValorUnitarioPagosExtralegalesPe($model, $concepto);
+        $this->sincronizarImporteYValorUnitarioPagosPeOPp($model, $concepto);
 
         if (!$model->save()) {
             return ['success' => false, 'errors' => $model->getErrors()];
@@ -1989,7 +1989,7 @@ class NovedadController extends Controller
         $fechaPlantilla = trim((string) ($model->fecha_novedad ?? ''));
         $codigo = strtoupper(trim((string) ($concepto->codigo ?? '')));
 
-        if ($this->sincronizarImporteYValorUnitarioPagosExtralegalesPe($model, $concepto)) {
+        if ($this->sincronizarImporteYValorUnitarioPagosPeOPp($model, $concepto)) {
             return;
         }
 
@@ -2091,13 +2091,14 @@ class NovedadController extends Controller
     }
 
     /**
-     * Importe y valor unitario para PE_* desde columna ya sincronizada o desde `datos.campos_dinamicos.valor`.
+     * Importe y valor unitario para PE_* / PP_* desde columna ya sincronizada o desde `datos.campos_dinamicos`.
+     * PP_*: mismo importe y valor unitario (sin fórmulas; horas/minutos solo en JSON).
      *
      * @return bool true si aplica esta rama (no debe ejecutarse la lógica de horas)
      */
-    private function sincronizarImporteYValorUnitarioPagosExtralegalesPe(Novedad $model, NovedadConcepto $concepto): bool
+    private function sincronizarImporteYValorUnitarioPagosPeOPp(Novedad $model, NovedadConcepto $concepto): bool
     {
-        if (!$this->esConceptoPagosExtralegalesPe($concepto)) {
+        if (!$this->esConceptoImporteDesdeValorPeOPp($concepto)) {
             return false;
         }
         $imp = $this->resolverImportePagosExtralegalesDesdeModelo($model);
@@ -2106,6 +2107,13 @@ class NovedadController extends Controller
         } else {
             $model->importe = 0;
         }
+
+        if ($this->esConceptoPagosPrestacionalesPp($concepto)) {
+            $model->valor_unitario = round((float) $model->importe, 4);
+
+            return true;
+        }
+
         $qtyPe = null;
         if ($model->cantidad !== null && $model->cantidad !== '') {
             $qs = str_replace(',', '.', (string) $model->cantidad);
@@ -2116,7 +2124,6 @@ class NovedadController extends Controller
         if ($qtyPe !== null && $qtyPe > 0.0) {
             $model->valor_unitario = round((float) $model->importe / $qtyPe, 6);
         } else {
-            // Sin cantidad positiva (caso frecuente en PE_*): mantener valor unitario = importe.
             $model->valor_unitario = round((float) $model->importe, 4);
         }
 
@@ -2124,8 +2131,13 @@ class NovedadController extends Controller
     }
 
     /**
-     * Pagos extralegales con código PE_*: el importe viene del campo dinámico {@see NovedadConceptoFormularioService::sincronizarAtributosNovedadDesdeCampos} `valor` (igual que admin).
+     * PE_* (pagos extralegales) o PP_* (pagos prestacionales): importe desde campo dinámico `valor`.
      */
+    private function esConceptoImporteDesdeValorPeOPp(NovedadConcepto $c): bool
+    {
+        return $this->esConceptoPagosExtralegalesPe($c) || $this->esConceptoPagosPrestacionalesPp($c);
+    }
+
     private function esConceptoPagosExtralegalesPe(NovedadConcepto $c): bool
     {
         if ($c->novedadTipo === null && $c->novedad_tipo_id) {
@@ -2137,14 +2149,33 @@ class NovedadController extends Controller
         }
         $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
         $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
-        $esPagosExtralegales = $codigoTipo === 'pagos_extralegales'
-            || $nombreTipo === 'pagos extralegales';
-        if (!$esPagosExtralegales) {
+        $esTipo = $codigoTipo === 'pagos_extralegales' || $nombreTipo === 'pagos extralegales';
+        if (!$esTipo) {
             return false;
         }
         $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
 
         return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PE_');
+    }
+
+    private function esConceptoPagosPrestacionalesPp(NovedadConcepto $c): bool
+    {
+        if ($c->novedadTipo === null && $c->novedad_tipo_id) {
+            $c->populateRelation('novedadTipo', NovedadTipo::findOne((int) $c->novedad_tipo_id));
+        }
+        $tipo = $c->novedadTipo;
+        if ($tipo === null) {
+            return false;
+        }
+        $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
+        $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
+        $esTipo = $codigoTipo === 'pagos_prestacionales' || $nombreTipo === 'pagos prestacionales';
+        if (!$esTipo) {
+            return false;
+        }
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+
+        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PP_');
     }
 
     private function resolverImportePagosExtralegalesDesdeModelo(Novedad $model): ?float

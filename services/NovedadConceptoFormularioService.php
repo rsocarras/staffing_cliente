@@ -395,6 +395,8 @@ final class NovedadConceptoFormularioService
             if (
                 $tipo === 'number'
                 && ($id === 'cantidad' || str_contains(strtolower($id), 'cantidad'))
+                && $id !== 'cantidad_horas'
+                && $id !== 'cantidad_minutos'
             ) {
                 $raw = $postedDatos[$id] ?? null;
                 $s = is_scalar($raw) ? trim((string) $raw) : '';
