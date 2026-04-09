@@ -883,15 +883,23 @@ $jsTemplate = <<<'JS'
 
   function loadTipoCampos(conceptoId) {
     var $blk = $('#bloque-campos-dinamicos');
-    $blk.empty();
     if (!conceptoId || !tipoCamposUrl) { return; }
     var persisted = {};
+    // Preservar lo que el usuario ya digitó/seleccionó antes de recargar por cambios de contexto
+    // (fecha, empresa cliente, etc.).
+    $blk.find('[data-ncampo]').each(function () {
+      var k = $(this).data('ncampo');
+      if (!k) { return; }
+      persisted[String(k)] = $(this).val();
+    });
     try {
       var jo = JSON.parse($('#novedad-datos-json').val() || '{}');
       if (jo && typeof jo === 'object' && jo.campos_dinamicos) {
-        persisted = jo.campos_dinamicos;
+        // El JSON oculto es respaldo; no debe pisar la edición en curso del DOM.
+        persisted = $.extend({}, jo.campos_dinamicos, persisted);
       }
     } catch (e2) { persisted = {}; }
+    $blk.empty();
     $.getJSON(tipoCamposUrl, {
       concepto_id: conceptoId,
       profile_id: $('#novedad-profile_id').val() || '',
@@ -899,6 +907,7 @@ $jsTemplate = <<<'JS'
       empresa_cliente_id: $('#solicitudctx-empresa_cliente_id').val() || ''
     }, function (res) {
       if (!res || !res.success || !res.items || !res.items.length) { return; }
+      var defecto = (res.datos_defecto && typeof res.datos_defecto === 'object') ? res.datos_defecto : {};
       $.each(res.items, function (_, f) {
         var $wrap = $('<div class="col-md-6"/>');
         $wrap.append($('<label class="form-label fw-semibold mb-2"/>').html(
@@ -946,6 +955,11 @@ $jsTemplate = <<<'JS'
         var pv = persisted[f.campo_id];
         if (pv !== undefined && pv !== null && String(pv) !== '') {
           $field.val(String(pv));
+        } else {
+          var dv = defecto[f.campo_id];
+          if (dv !== undefined && dv !== null && String(dv) !== '') {
+            $field.val(String(dv));
+          }
         }
         $wrap.append($field);
         $blk.append($wrap);

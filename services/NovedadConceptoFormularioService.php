@@ -379,6 +379,19 @@ final class NovedadConceptoFormularioService
                 continue;
             }
 
+            if ($id === 'valor') {
+                $raw = $postedDatos[$id] ?? null;
+                $s = is_scalar($raw) ? trim((string) $raw) : '';
+                if ($s !== '') {
+                    $norm = str_replace(',', '.', str_replace([' ', "\u{00A0}"], '', $s));
+                    if (is_numeric($norm)) {
+                        $model->importe = round((float) $norm, 2);
+                    }
+                }
+
+                continue;
+            }
+
             if (
                 $tipo === 'number'
                 && ($id === 'cantidad' || str_contains(strtolower($id), 'cantidad'))

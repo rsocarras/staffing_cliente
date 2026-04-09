@@ -105,8 +105,23 @@ class NovedadConceptoEmpresaController extends Controller
                     ])->execute();
                 }
 
+                if ($this->conceptoPermiteValorPorDefecto($concepto)) {
+                    $enc = EmpresaNovedadConcepto::findOne([
+                        'empresa_id' => $empresaId,
+                        'novedad_concepto_id' => (int) $concepto->id,
+                    ]);
+                    if ($enc !== null) {
+                        $raw = Yii::$app->request->post('valor_por_defecto');
+                        $valorDef = $this->normalizarMontoNullable($raw);
+                        $enc->valor_por_defecto = $valorDef;
+                        if (!$enc->save(false, ['valor_por_defecto'])) {
+                            throw new \RuntimeException('valor_por_defecto');
+                        }
+                    }
+                }
+
                 $tx->commit();
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Asignación de cargos guardada correctamente.'));
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Cambios guardados correctamente.'));
 
                 return $this->redirect(['view', 'id' => $concepto->id]);
             } catch (\Throwable $e) {
@@ -127,10 +142,24 @@ class NovedadConceptoEmpresaController extends Controller
             ->column();
         $asignados = array_map('intval', $asignados);
 
+        $permiteValorDefecto = $this->conceptoPermiteValorPorDefecto($concepto);
+        $valorPorDefecto = '';
+        if ($permiteValorDefecto) {
+            $enc = EmpresaNovedadConcepto::findOne([
+                'empresa_id' => $empresaId,
+                'novedad_concepto_id' => (int) $concepto->id,
+            ]);
+            if ($enc !== null && $enc->valor_por_defecto !== null && (string) $enc->valor_por_defecto !== '') {
+                $valorPorDefecto = (string) (float) $enc->valor_por_defecto;
+            }
+        }
+
         return $this->render('view', [
             'model' => $concepto,
             'cargos' => $cargos,
             'asignados' => $asignados,
+            'permiteValorDefecto' => $permiteValorDefecto,
+            'valorPorDefecto' => $valorPorDefecto,
         ]);
     }
 
@@ -151,5 +180,71 @@ class NovedadConceptoEmpresaController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'El concepto solicitado no existe para la empresa actual.'));
+    }
+
+    /**
+     * Misma regla que en staffing_admin: valor sugerido solo para conceptos PE_* bajo pagos extralegales.
+     */
+    private function conceptoPermiteValorPorDefecto(NovedadConcepto $c): bool
+    {
+        $tipo = $c->novedadTipo;
+        if ($tipo === null) {
+            return false;
+        }
+        $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
+        $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
+        $esPagosExtralegales = $codigoTipo === 'pagos_extralegales'
+            || $nombreTipo === 'pagos extralegales';
+        if (!$esPagosExtralegales) {
+            return false;
+        }
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+
+        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PE_');
+    }
+
+    /**
+     * Normaliza montos con formato local (p. ej. 1.234,56 o 1,234.56) a decimal.
+     */
+    private function normalizarMontoNullable(mixed $raw): ?float
+    {
+        if (!is_scalar($raw)) {
+            return null;
+        }
+        $s = trim((string) $raw);
+        if ($s === '') {
+            return null;
+        }
+
+        $s = str_replace([' ', "\u{00A0}"], '', $s);
+        $hasDot = str_contains($s, '.');
+        $hasComma = str_contains($s, ',');
+
+        if ($hasDot && $hasComma) {
+            $lastDot = strrpos($s, '.');
+            $lastComma = strrpos($s, ',');
+            if ($lastComma !== false && $lastDot !== false) {
+                if ($lastComma > $lastDot) {
+                    // Formato 1.234,56
+                    $s = str_replace('.', '', $s);
+                    $s = str_replace(',', '.', $s);
+                } else {
+                    // Formato 1,234.56
+                    $s = str_replace(',', '', $s);
+                }
+            }
+        } elseif ($hasComma && !$hasDot) {
+            // Formato 1234,56
+            $s = str_replace(',', '.', $s);
+        } else {
+            // Formato 1234.56 o 1234
+            $s = str_replace(',', '', $s);
+        }
+
+        if (!is_numeric($s)) {
+            return null;
+        }
+
+        return round((float) $s, 2);
     }
 }

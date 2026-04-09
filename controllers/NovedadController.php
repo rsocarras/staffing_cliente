@@ -814,6 +814,8 @@ class NovedadController extends Controller
         $model->datos = $datosRaw;
         $model->estado = $estado;
 
+        $this->sincronizarImporteYValorUnitarioPagosExtralegalesPe($model, $concepto);
+
         if (!$model->save()) {
             return ['success' => false, 'errors' => $model->getErrors()];
         }
@@ -1987,6 +1989,10 @@ class NovedadController extends Controller
         $fechaPlantilla = trim((string) ($model->fecha_novedad ?? ''));
         $codigo = strtoupper(trim((string) ($concepto->codigo ?? '')));
 
+        if ($this->sincronizarImporteYValorUnitarioPagosExtralegalesPe($model, $concepto)) {
+            return;
+        }
+
         $qty = null;
         if ($model->cantidad !== null && $model->cantidad !== '') {
             $qs = str_replace(',', '.', (string) $model->cantidad);
@@ -2082,6 +2088,100 @@ class NovedadController extends Controller
         $importeFila = round($qty * $valorHoraOrdinaria * $factorMult, 4);
         $model->importe = $importeFila;
         $model->valor_unitario = $qty > 0 ? round($importeFila / $qty, 6) : null;
+    }
+
+    /**
+     * Importe y valor unitario para PE_* desde columna ya sincronizada o desde `datos.campos_dinamicos.valor`.
+     *
+     * @return bool true si aplica esta rama (no debe ejecutarse la lógica de horas)
+     */
+    private function sincronizarImporteYValorUnitarioPagosExtralegalesPe(Novedad $model, NovedadConcepto $concepto): bool
+    {
+        if (!$this->esConceptoPagosExtralegalesPe($concepto)) {
+            return false;
+        }
+        $imp = $this->resolverImportePagosExtralegalesDesdeModelo($model);
+        if ($imp !== null && $imp > 0) {
+            $model->importe = round($imp, 2);
+        } else {
+            $model->importe = 0;
+        }
+        $qtyPe = null;
+        if ($model->cantidad !== null && $model->cantidad !== '') {
+            $qs = str_replace(',', '.', (string) $model->cantidad);
+            if (is_numeric($qs)) {
+                $qtyPe = (float) $qs;
+            }
+        }
+        if ($qtyPe !== null && $qtyPe > 0.0) {
+            $model->valor_unitario = round((float) $model->importe / $qtyPe, 6);
+        } else {
+            // Sin cantidad positiva (caso frecuente en PE_*): mantener valor unitario = importe.
+            $model->valor_unitario = round((float) $model->importe, 4);
+        }
+
+        return true;
+    }
+
+    /**
+     * Pagos extralegales con código PE_*: el importe viene del campo dinámico {@see NovedadConceptoFormularioService::sincronizarAtributosNovedadDesdeCampos} `valor` (igual que admin).
+     */
+    private function esConceptoPagosExtralegalesPe(NovedadConcepto $c): bool
+    {
+        if ($c->novedadTipo === null && $c->novedad_tipo_id) {
+            $c->populateRelation('novedadTipo', NovedadTipo::findOne((int) $c->novedad_tipo_id));
+        }
+        $tipo = $c->novedadTipo;
+        if ($tipo === null) {
+            return false;
+        }
+        $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
+        $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
+        $esPagosExtralegales = $codigoTipo === 'pagos_extralegales'
+            || $nombreTipo === 'pagos extralegales';
+        if (!$esPagosExtralegales) {
+            return false;
+        }
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+
+        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PE_');
+    }
+
+    private function resolverImportePagosExtralegalesDesdeModelo(Novedad $model): ?float
+    {
+        $rawImp = $model->importe;
+        if ($rawImp !== null && (string) $rawImp !== '') {
+            $s = str_replace(',', '.', trim((string) $rawImp));
+            if (is_numeric($s)) {
+                return (float) $s;
+            }
+        }
+        $datosStr = trim((string) ($model->datos ?? ''));
+        if ($datosStr === '') {
+            return null;
+        }
+        try {
+            $arr = json_decode($datosStr, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+        if (!is_array($arr)) {
+            return null;
+        }
+        $cd = $arr['campos_dinamicos'] ?? [];
+        if (!is_array($cd)) {
+            return null;
+        }
+        $v = $cd['valor'] ?? null;
+        if (!is_scalar($v)) {
+            return null;
+        }
+        $s = str_replace(',', '.', trim(str_replace([' ', "\u{00A0}"], '', (string) $v)));
+        if ($s === '' || !is_numeric($s)) {
+            return null;
+        }
+
+        return (float) $s;
     }
 
     private function validarReglasNovedad(Novedad $model): void
@@ -3152,7 +3252,16 @@ class NovedadController extends Controller
                 ];
             }
 
-            return ['success' => true, 'items' => $items];
+            $datosDefecto = [];
+            $enc = EmpresaNovedadConcepto::findOne([
+                'empresa_id' => $eid,
+                'novedad_concepto_id' => $conceptoId,
+            ]);
+            if ($enc !== null && $enc->valor_por_defecto !== null && (string) $enc->valor_por_defecto !== '') {
+                $datosDefecto['valor'] = (string) (float) $enc->valor_por_defecto;
+            }
+
+            return ['success' => true, 'items' => $items, 'datos_defecto' => $datosDefecto];
         }
         $tipoCond = ['id' => $novedad_tipo_id, 'activo' => 1];
         if ($this->novedadTipoTieneColumnaEmpresa()) {

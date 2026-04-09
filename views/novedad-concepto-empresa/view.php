@@ -9,6 +9,10 @@ use yii\helpers\Url;
 /** @var NovedadConcepto $model */
 /** @var Cargos[] $cargos */
 /** @var int[] $asignados */
+/** @var bool $permiteValorDefecto */
+/** @var string $valorPorDefecto */
+$permiteValorDefecto = (bool) ($permiteValorDefecto ?? false);
+$valorPorDefecto = (string) ($valorPorDefecto ?? '');
 
 $this->title = Yii::t('app', 'Detalle de concepto: {nombre}', ['nombre' => $model->nombre]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Novedades'), 'url' => Url::to(['/sistema/novedades'])];
@@ -95,11 +99,60 @@ $this->params['breadcrumbs'][] = $model->nombre;
             <small class="text-muted"><?= Html::encode(Yii::t('app', 'Selecciona los cargos de la empresa que pueden usar este concepto.')) ?></small>
         </div>
         <div class="card-body">
-            <?php if (empty($cargos)): ?>
+            <?php if (empty($cargos) && !$permiteValorDefecto): ?>
                 <div class="alert alert-warning mb-0"><?= Html::encode(Yii::t('app', 'No hay cargos disponibles para la empresa actual.')) ?></div>
+            <?php elseif (empty($cargos) && $permiteValorDefecto): ?>
+                <form method="post">
+                    <input type="hidden" name="<?= Yii::$app->request->csrfParam ?>" value="<?= Html::encode(Yii::$app->request->csrfToken) ?>">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium" for="valor-por-defecto-pe"><?= Html::encode(Yii::t('app', 'Valor por defecto')) ?></label>
+                        <input
+                            id="valor-por-defecto-pe"
+                            type="number"
+                            name="valor_por_defecto"
+                            class="form-control"
+                            style="max-width: 14rem;"
+                            step="0.01"
+                            min="0"
+                            value="<?= Html::encode($valorPorDefecto) ?>"
+                            placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>"
+                        >
+                        <small class="text-muted d-block mt-1">
+                            <?= Html::encode(Yii::t(
+                                'app',
+                                'Monto sugerido al crear la solicitud; el empleado puede cambiarlo. Solo aplica a conceptos extralegales PE_*.'
+                            )) ?>
+                        </small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <?= Html::encode(Yii::t('app', 'Guardar')) ?>
+                    </button>
+                </form>
             <?php else: ?>
                 <form method="post">
                     <input type="hidden" name="<?= Yii::$app->request->csrfParam ?>" value="<?= Html::encode(Yii::$app->request->csrfToken) ?>">
+                    <?php if ($permiteValorDefecto): ?>
+                        <div class="mb-4 pb-3 border-bottom">
+                            <label class="form-label fw-medium" for="valor-por-defecto-pe"><?= Html::encode(Yii::t('app', 'Valor por defecto')) ?></label>
+                            <input
+                                id="valor-por-defecto-pe"
+                                type="number"
+                                name="valor_por_defecto"
+                                class="form-control"
+                                style="max-width: 14rem;"
+                                step="0.01"
+                                min="0"
+                                value="<?= Html::encode($valorPorDefecto) ?>"
+                                placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>"
+                            >
+                            <small class="text-muted d-block mt-1">
+                                <?= Html::encode(Yii::t(
+                                    'app',
+                                    'Monto sugerido al crear la solicitud; el empleado puede cambiarlo. Igual que en la configuración del administrador para conceptos PE_*.'
+                                )) ?>
+                            </small>
+                        </div>
+                    <?php endif; ?>
                     <div class="row g-2">
                         <?php foreach ($cargos as $cargo): ?>
                             <div class="col-md-4 col-sm-6">
