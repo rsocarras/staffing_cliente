@@ -5,10 +5,8 @@ namespace app\controllers;
 use app\components\TenantContext;
 use app\models\Area;
 use app\models\Cargos;
-use app\models\Contrato;
 use app\models\EmpresaCliente;
 use app\models\Requisicion;
-use yii\db\Query;
 use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
 use app\models\Profile;
@@ -544,8 +542,8 @@ class RequisicionController extends Controller
     }
 
     /**
-     * Áreas raíz según empresa cliente (organización): prioriza áreas ya usadas con ese cliente
-     * (requisiciones/contratos); si no hay historial, devuelve todas las áreas raíz del tenant.
+     * Áreas raíz de la organización (tenant) al seleccionar empresa cliente.
+     * Único filtro: empresa cliente válida y activa para el tenant; se listan todas las áreas raíz del tenant.
      */
     public function actionAreasPorEmpresaCliente(): array
     {
@@ -563,66 +561,11 @@ class RequisicionController extends Controller
             return [];
         }
 
-        $idsReq = (new Query())
-            ->select('c.area_id')
-            ->distinct()
-            ->from(['c' => Cargos::tableName()])
-            ->innerJoin(['r' => Requisicion::tableName()], 'r.cargo_id = c.id')
-            ->where(['r.empresa_cliente_id' => $ecId, 'r.empresas_id' => $tenantId])
-            ->andWhere(['not', ['c.area_id' => null]])
-            ->column();
-
-        $idsCtr = (new Query())
-            ->select('c.area_id')
-            ->distinct()
-            ->from(['c' => Cargos::tableName()])
-            ->innerJoin(['ct' => Contrato::tableName()], 'ct.cargo_id = c.id')
-            ->where(['ct.empresa_cliente_id' => $ecId, 'ct.empresa_id' => $tenantId])
-            ->andWhere(['not', ['c.area_id' => null]])
-            ->column();
-
-        $candidate = array_unique(array_merge(
-            array_map('intval', $idsReq),
-            array_map('intval', $idsCtr)
-        ));
-        $candidate = array_values(array_filter($candidate, static function ($v): bool {
-            return (int) $v > 0;
-        }));
-
-        $rootIds = [];
-        foreach ($candidate as $aid) {
-            $ar = Area::findOne(['id' => $aid, 'empresas_id' => $tenantId]);
-            if ($ar === null) {
-                continue;
-            }
-            if (empty($ar->area_padre)) {
-                $rootIds[(int) $ar->id] = true;
-            } else {
-                $root = $this->resolveRootAreaId($ar, $tenantId);
-                if ($root !== null) {
-                    $rootIds[$root] = true;
-                }
-            }
-        }
-        $rootIdList = array_keys($rootIds);
-
-        $base = Area::find()
+        $areas = Area::find()
             ->where(['empresas_id' => $tenantId])
             ->andWhere(['or', ['area_padre' => null], ['area_padre' => 0]])
-            ->orderBy(['nombre' => SORT_ASC]);
-
-        if ($rootIdList !== []) {
-            $base->andWhere(['id' => $rootIdList]);
-        }
-
-        $areas = $base->all();
-        if ($areas === []) {
-            $areas = Area::find()
-                ->where(['empresas_id' => $tenantId])
-                ->andWhere(['or', ['area_padre' => null], ['area_padre' => 0]])
-                ->orderBy(['nombre' => SORT_ASC])
-                ->all();
-        }
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
 
         return array_map(static function (Area $a) {
             return ['id' => $a->id, 'nombre' => (string) $a->nombre];
@@ -699,19 +642,6 @@ class RequisicionController extends Controller
         return array_map(static function (Cargos $c) {
             return ['id' => $c->id, 'nombre' => $c->nombre];
         }, $rows);
-    }
-
-    private function resolveRootAreaId(Area $area, int $tenantId): ?int
-    {
-        $a = $area;
-        for ($i = 0; $i < 50 && $a !== null; $i++) {
-            if (empty($a->area_padre)) {
-                return (int) $a->id;
-            }
-            $a = Area::findOne(['id' => $a->area_padre, 'empresas_id' => $tenantId]);
-        }
-
-        return null;
     }
 
     protected function findModel($id)
