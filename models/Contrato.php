@@ -441,7 +441,11 @@ class Contrato extends ActiveRecord
         }
 
         $contratoTipo = $this->contratoTipo ?: ContratoTipos::findOne($this->contrato_tipo_id);
-        if ($contratoTipo !== null && $contratoTipo->empresa_id !== null
+        if ($contratoTipo === null || !$contratoTipo->hasAttribute('empresa_id')) {
+            return;
+        }
+
+        if ($contratoTipo->empresa_id !== null
             && (int) $contratoTipo->empresa_id !== (int) $this->empresa_id
         ) {
             $this->addError($attribute, 'El tipo de contrato debe pertenecer a la empresa actual.');
