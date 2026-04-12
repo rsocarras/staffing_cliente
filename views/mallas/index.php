@@ -137,7 +137,7 @@ $js = <<<JS
 $(document).ready(function() {
     var table = $('#mallas-table').DataTable({
         order: [[2, 'asc']],
-        pageLength: 25,
+        pageLength: 7,
         columnDefs: [{ orderable: false, targets: -1 }],
         language: {
             search: "Buscar:",

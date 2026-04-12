@@ -39,63 +39,64 @@ class PresupuestoController extends Controller
                     'reopen' => ['POST'],
                     'cancel' => ['POST'],
                     'clone' => ['POST'],
+                    'sedes-por-empresa-cliente' => ['GET'],
                 ],
             ],
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_index'],
-                        'actions' => ['index', 'pending', 'conceptos-json'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_view'],
-                        'actions' => ['view'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_create'],
-                        'actions' => ['create'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_update'],
-                        'actions' => ['update'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_submit'],
-                        'actions' => ['submit'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_approve'],
-                        'actions' => ['approve'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_reject'],
-                        'actions' => ['reject'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_reopen'],
-                        'actions' => ['reopen'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_cancel'],
-                        'actions' => ['cancel'],
-                    ],
-                    [
-                        'allow' => true,
-                        'roles' => ['presupuesto_clone'],
-                        'actions' => ['clone'],
-                    ],
-                ],
-            ],
+            // 'access' => [
+            //     'class' => AccessControl::class,
+            //     'rules' => [
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_index'],
+            //             'actions' => ['index', 'pending', 'conceptos-json'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_view'],
+            //             'actions' => ['view'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_create'],
+            //             'actions' => ['create'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_update'],
+            //             'actions' => ['update'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_submit'],
+            //             'actions' => ['submit'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_approve'],
+            //             'actions' => ['approve'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_reject'],
+            //             'actions' => ['reject'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_reopen'],
+            //             'actions' => ['reopen'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_cancel'],
+            //             'actions' => ['cancel'],
+            //         ],
+            //         [
+            //             'allow' => true,
+            //             'roles' => ['presupuesto_clone'],
+            //             'actions' => ['clone'],
+            //         ],
+            //     ],
+            // ],
         ]);
     }
 
@@ -300,6 +301,39 @@ class PresupuestoController extends Controller
         $out = [];
         foreach ($rows as $c) {
             $out[] = ['id' => $c->id, 'text' => $c->nombre];
+        }
+        return $out;
+    }
+
+    /**
+     * Sedes disponibles para el cliente empresa seleccionado (creación/edición de presupuesto).
+     *
+     * @return array<int, array{id: int, nombre: string}>
+     */
+    public function actionSedesPorEmpresaCliente()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $tenantId = $this->currentEmpresaId();
+        if ($tenantId === null) {
+            return [];
+        }
+        $ecId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        if ($ecId <= 0) {
+            return [];
+        }
+        $ec = EmpresaCliente::findOne(['id' => $ecId, 'empresas_id' => $tenantId, 'is_active' => 1]);
+        if ($ec === null) {
+            return [];
+        }
+        $preservar = Yii::$app->request->get('preservar_sede_id');
+        $preservar = ($preservar !== null && $preservar !== '' && is_numeric($preservar)) ? (int) $preservar : null;
+        if ($preservar !== null && $preservar <= 0) {
+            $preservar = null;
+        }
+        $models = LocationSedes::findSelectableForEmpresaCliente($ecId, $tenantId, $preservar);
+        $out = [];
+        foreach ($models as $m) {
+            $out[] = ['id' => (int) $m->id, 'nombre' => $m->nombre];
         }
         return $out;
     }

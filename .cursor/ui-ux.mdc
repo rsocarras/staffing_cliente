@@ -1,0 +1,30 @@
+---
+alwaysApply: false
+---
+- Ten en cuenta los estilos del modal views/user-management/_user_form_modal.php para generar los estilos de los formularios 
+
+- las confirmaciones siempre son con modales nunca alerts de js.
+
+- Los Label de los inputs deben estar en negrilla, ligeramente espaciados arriba y abajo.
+
+- Los inputs en una misma row deben estar perfectamente alineados.
+
+- Pon placeholders en español a los inputs.
+
+- Los inputs de moneda deben tener formato de moneda con separadores de mil.
+
+- Los inputs que pertenecen a una entidad, deben traer los elementos y no ser campo para poner id.
+
+- Los campos requeridos de un formulario deben estar marcados con un * de color rojo ligeramente espaciado del label.
+
+- Los textos deben ser en español LatinoAmerica
+
+- **Yii 2 / ActiveForm:** en `$form->field($model, $attr, $options)` **no** se puede pasar la clave `label` dentro de `$options` (provoca `UnknownPropertyException` en `ActiveField`). El texto de la etiqueta va encadenado: `->label($texto, ['class' => '…', 'encode' => false])` cuando el label incluye HTML (p. ej. asterisco obligatorio).
+
+- **Filas con dos columnas (Bootstrap):** para alinear etiquetas y controles desde arriba, usar **`align-items-start`** (o una clase equivalente), **no** `align-items-end`. Con `align-items-end`, si una columna crece (validación, ayuda, alturas distintas), la otra columna queda desfasada verticalmente. Si hace falta, cada `col-*` puede ser `d-flex flex-column` y reservar un bloque inferior común (ayuda / error) con altura mínima parecida en ambas columnas.
+
+- **Mezcla campo manual + `$form->field` en la misma fila:** repetir el mismo orden vertical (etiqueta → control → texto de ayuda o error) y mismas clases de label (`fw-semibold`, `mb-2`) para que el resultado sea homogéneo.
+
+- **Mensajes de validación:** deben estar en español (Latinoamérica): reglas del modelo, `attributeLabels()`, `Yii::t('app', …)` en mensajes custom; evitar textos por defecto en inglés de Yii visibles al usuario.
+
+- **Checkboxes / Bootstrap `.form-check` dentro de cajas con borde o padding:** el `.form-check-input` suele llevar **margen negativo** (y a veces `float`) para alinearlo con el label; eso puede **sacar el cuadrado del checkbox fuera del borde izquierdo** del contenedor. Preferir contenedor **`d-flex align-items-start gap-2` (o `gap-3`)** con `form-check-input` + `form-check-label` como hermanos, y en CSS scoped anular **`margin-left` / `margin-inline-start`**, `float` y `position` heredados del patrón clásico `.form-check` cuando el control va dentro de cards, bordes redondeados o `p-*` ajustado.

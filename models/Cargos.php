@@ -23,9 +23,16 @@ use Yii;
  * @property MallaCargoAsignacion[] $mallaCargoAsignacions
  * @property MallaDistribucionHoras[] $mallaDistribucionHoras
  * @property Profile[] $profiles
+ * @property NovedadConcepto[] $novedadConceptos conceptos de novedad asignados al cargo (vía pivote)
+ * @property int[] $novedadConceptoIds IDs seleccionados en formularios (no columna BD)
  */
 class Cargos extends \yii\db\ActiveRecord
 {
+    /**
+     * @var int[]
+     */
+    public $novedadConceptoIds = [];
+
     /**
      * {@inheritdoc}
      */
@@ -53,7 +60,53 @@ class Cargos extends \yii\db\ActiveRecord
             [['area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['area_id' => 'id']],
             [['sub_area_id'], 'exist', 'skipOnError' => true, 'targetClass' => Area::class, 'targetAttribute' => ['sub_area_id' => 'id']],
             [['sub_area_id'], 'validateSubArea'],
+            [['novedadConceptoIds'], 'each', 'rule' => ['integer', 'min' => 1]],
+            [['novedadConceptoIds'], 'default', 'value' => []],
+            [['novedadConceptoIds'], 'safe'],
+            [['novedadConceptoIds'], 'validateConceptosEmpresa'],
         ];
+    }
+
+    public function load($data, $formName = null)
+    {
+        $loaded = parent::load($data, $formName);
+        if (
+            $loaded
+            && $formName !== null
+            && is_array($data[$formName] ?? null)
+            && !array_key_exists('novedadConceptoIds', $data[$formName])
+        ) {
+            $this->novedadConceptoIds = [];
+        }
+
+        return $loaded;
+    }
+
+    public function validateConceptosEmpresa($attribute, $params = null)
+    {
+        if ($this->hasErrors()) {
+            return;
+        }
+        $eid = (int) $this->empresa_id;
+        if ($eid <= 0 || $this->novedadConceptoIds === []) {
+            return;
+        }
+        $allowed = EmpresaNovedadConcepto::find()
+            ->select('novedad_concepto_id')
+            ->where(['empresa_id' => $eid])
+            ->column();
+        $allowedInts = array_map('intval', $allowed);
+        foreach ($this->novedadConceptoIds as $id) {
+            $cid = (int) $id;
+            if (!in_array($cid, $allowedInts, true)) {
+                $this->addError(
+                    $attribute,
+                    Yii::t('app', 'Un concepto seleccionado no está habilitado para la organización.')
+                );
+
+                return;
+            }
+        }
     }
 
     /**
@@ -85,6 +138,7 @@ class Cargos extends \yii\db\ActiveRecord
             'activo' => 'Activo',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
+            'novedadConceptoIds' => Yii::t('app', 'Conceptos de novedad'),
         ];
     }
 
@@ -123,5 +177,15 @@ class Cargos extends \yii\db\ActiveRecord
     public function getProfiles()
     {
         return $this->hasMany(Profile::class, ['cargo_id' => 'id']);
+    }
+
+    /**
+     * Conceptos de novedad vinculados al cargo (tabla pivote).
+     */
+    public function getNovedadConceptos()
+    {
+        return $this->hasMany(NovedadConcepto::class, ['id' => 'novedad_concepto_id'])
+            ->viaTable(NovedadConceptoCargo::tableName(), ['cargo_id' => 'id'])
+            ->orderBy(['nombre' => SORT_ASC]);
     }
 }

@@ -8,7 +8,6 @@ use Yii;
  * This is the model class for table "contrato_tipos".
  *
  * @property int $id
- * @property int|null $empresa_id
  * @property string $code
  * @property string $nombre
  * @property string|null $descripcion
@@ -37,16 +36,16 @@ class ContratoTipos extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['empresa_id', 'descripcion', 'duracion_dias_default'], 'default', 'value' => null],
+            [['descripcion', 'duracion_dias_default'], 'default', 'value' => null],
             [['es_indefinido'], 'default', 'value' => 0],
             [['activo'], 'default', 'value' => 1],
-            [['empresa_id', 'requiere_fecha_fin', 'es_indefinido', 'duracion_dias_default', 'activo'], 'integer'],
+            [['requiere_fecha_fin', 'es_indefinido', 'duracion_dias_default', 'activo'], 'integer'],
             [['code', 'nombre'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['code'], 'string', 'max' => 50],
             [['nombre'], 'string', 'max' => 190],
             [['descripcion'], 'string', 'max' => 255],
-            [['empresa_id', 'code'], 'unique', 'targetAttribute' => ['empresa_id', 'code']],
+            [['code'], 'unique'],
         ];
     }
 
@@ -57,7 +56,6 @@ class ContratoTipos extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'empresa_id' => 'Empresa ID',
             'code' => 'Code',
             'nombre' => 'Nombre',
             'descripcion' => 'Descripcion',

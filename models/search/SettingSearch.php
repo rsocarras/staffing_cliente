@@ -7,7 +7,7 @@ use yii\data\ActiveDataProvider;
 use app\models\Setting;
 
 /**
- * SettingSearch represents the model behind the search form of `app\models\Setting`.
+ * SettingSearch representa el modelo detrás del formulario de búsqueda de `app\models\Setting`.
  */
 class SettingSearch extends Setting
 {
@@ -17,8 +17,8 @@ class SettingSearch extends Setting
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['key', 'value_json', 'descripcion', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'year', 'location_country_id'], 'integer'],
+            [['created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -27,23 +27,18 @@ class SettingSearch extends Setting
      */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
     /**
-     * Creates data provider instance with search query applied
-     *
      * @param array $params
-     * @param string|null $formName Form name to be used into `->load()` method.
+     * @param string|null $formName
      *
      * @return ActiveDataProvider
      */
     public function search($params, $formName = null)
     {
-        $query = Setting::find();
-
-        // add conditions that should always apply here
+        $query = Setting::find()->with(['locationCountry']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -52,21 +47,16 @@ class SettingSearch extends Setting
         $this->load($params, $formName);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
             return $dataProvider;
         }
 
-        // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'year' => $this->year,
+            'location_country_id' => $this->location_country_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
-
-        $query->andFilterWhere(['like', 'key', $this->key])
-            ->andFilterWhere(['like', 'value_json', $this->value_json])
-            ->andFilterWhere(['like', 'descripcion', $this->descripcion]);
 
         return $dataProvider;
     }

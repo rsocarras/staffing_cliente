@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\components\TenantContext;
+use app\models\Area;
 use app\models\Cargos;
+use app\models\EmpresaCliente;
 use app\models\Requisicion;
 use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
@@ -30,6 +32,7 @@ class RequisicionController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'sedes-por-ciudad' => ['GET'],
+                    'areas-por-empresa-cliente' => ['GET'],
                     'sub-areas-por-area' => ['GET'],
                     'cargos-por-sub-area' => ['GET'],
                     'create-ajax' => ['POST'],
@@ -48,7 +51,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'sub-areas-por-area', 'cargos-por-sub-area'],
+                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'areas-por-empresa-cliente', 'sub-areas-por-area', 'cargos-por-sub-area'],
                     ],
                     [
                         'allow' => true,
@@ -538,6 +541,37 @@ class RequisicionController extends Controller
         ]);
     }
 
+    /**
+     * Áreas raíz de la organización (tenant) al seleccionar empresa cliente.
+     * Único filtro: empresa cliente válida y activa para el tenant; se listan todas las áreas raíz del tenant.
+     */
+    public function actionAreasPorEmpresaCliente(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $tenantId = $this->currentEmpresaId();
+        if ($tenantId === null) {
+            return [];
+        }
+        $ecId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        if ($ecId <= 0) {
+            return [];
+        }
+        $ec = EmpresaCliente::findOne(['id' => $ecId, 'empresas_id' => $tenantId, 'is_active' => 1]);
+        if ($ec === null) {
+            return [];
+        }
+
+        $areas = Area::find()
+            ->where(['empresas_id' => $tenantId])
+            ->andWhere(['or', ['area_padre' => null], ['area_padre' => 0]])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
+
+        return array_map(static function (Area $a) {
+            return ['id' => $a->id, 'nombre' => (string) $a->nombre];
+        }, $areas);
+    }
+
     public function actionSedesPorCiudad($ciudad_id)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -555,30 +589,56 @@ class RequisicionController extends Controller
     public function actionSubAreasPorArea($area_id)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $subAreas = \app\models\Area::find()
-            ->where(['area_padre' => $area_id])
-            ->andWhere(['empresas_id' => $this->currentEmpresaId()])
+        $tenantId = $this->currentEmpresaId();
+        if ($tenantId === null || !$area_id) {
+            return [];
+        }
+        $parent = Area::findOne(['id' => (int) $area_id, 'empresas_id' => $tenantId]);
+        if ($parent === null) {
+            return [];
+        }
+        $subAreas = Area::find()
+            ->where(['area_padre' => (int) $area_id])
+            ->andWhere(['empresas_id' => $tenantId])
             ->orderBy('nombre')
             ->all();
-        return array_map(function ($a) {
+
+        return array_map(static function (Area $a) {
             return ['id' => $a->id, 'nombre' => $a->nombre];
         }, $subAreas);
     }
 
     /**
-     * Cargos activos filtrados por subárea (AJAX).
+     * Cargos activos por organización (tenant) y área; si llega subárea, también la aplica.
      */
-    public function actionCargosPorSubArea($sub_area_id)
+    public function actionCargosPorSubArea(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        if (!$sub_area_id) {
+        $areaId = (int) Yii::$app->request->get('area_id', 0);
+        $subAreaId = (int) Yii::$app->request->get('sub_area_id', 0);
+        $tenantId = $this->currentEmpresaId();
+        if ($areaId <= 0 || $tenantId === null) {
             return [];
         }
-        $query = Cargos::find()
-            ->where(['sub_area_id' => (int) $sub_area_id, 'activo' => 1])
-            ->orderBy(['nombre' => SORT_ASC]);
+        $area = Area::findOne(['id' => $areaId, 'empresas_id' => $tenantId]);
+        if ($area === null) {
+            return [];
+        }
+        $query = Cargos::find()->where([
+            'area_id' => $areaId,
+            'activo' => 1,
+        ]);
+        if ($subAreaId > 0) {
+            $sub = Area::findOne(['id' => $subAreaId, 'empresas_id' => $tenantId]);
+            if ($sub === null || (int) $sub->area_padre !== $areaId) {
+                return [];
+            }
+            $query->andWhere(['sub_area_id' => $subAreaId]);
+        }
+        $query->orderBy(['nombre' => SORT_ASC]);
         TenantContext::applyFilter($query, 'empresa_id');
         $rows = $query->all();
+
         return array_map(static function (Cargos $c) {
             return ['id' => $c->id, 'nombre' => $c->nombre];
         }, $rows);

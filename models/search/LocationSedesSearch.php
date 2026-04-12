@@ -19,6 +19,15 @@ class LocationSedesSearch extends LocationSedes
     {
         return [
             [['id', 'empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],
+            [[
+                'max_horas_clases_grupales',
+                'valor_hora_diurna',
+                'valor_hora_diurna_domingo_festivos',
+                'valor_hora_nocturna',
+                'valor_hora_nocturna_domingo_festiva',
+                'valor_movilizacion',
+                'valor_hora_especial',
+            ], 'number'],
             [['codigo', 'nombre', 'direccion', 'codigo_externo', 'tipo_sede', 'created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -64,6 +73,13 @@ class LocationSedesSearch extends LocationSedes
             'city_id' => $this->city_id,
             'centro_costo' => $this->centro_costo,
             'centro_costo_staffing' => $this->centro_costo_staffing,
+            'max_horas_clases_grupales' => $this->max_horas_clases_grupales,
+            'valor_hora_diurna' => $this->valor_hora_diurna,
+            'valor_hora_diurna_domingo_festivos' => $this->valor_hora_diurna_domingo_festivos,
+            'valor_hora_nocturna' => $this->valor_hora_nocturna,
+            'valor_hora_nocturna_domingo_festiva' => $this->valor_hora_nocturna_domingo_festiva,
+            'valor_movilizacion' => $this->valor_movilizacion,
+            'valor_hora_especial' => $this->valor_hora_especial,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);

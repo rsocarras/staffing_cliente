@@ -1,13 +1,23 @@
 <?php
 
+use yii\helpers\Html;
+
 /** @var yii\web\View $this */
 /** @var app\models\Cargos $model */
 /** @var yii\widgets\ActiveForm $form */
 /** @var bool $isEdit */
 /** @var array $areasList id => nombre */
 /** @var array $subAreasList id => nombre (sub-áreas del área seleccionada) */
+/** @var list<array{tipo: \app\models\NovedadTipo, conceptos: list<\app\models\NovedadConcepto>}> $conceptosPorAgrupador */
+/** @var int[] $selectedIdsConceptosCargo */
+/** @var string $cargoAccordionSuffix */
+/** @var string $urlAjaxConceptosCargoHtml */
 
 $isEdit = !empty($isEdit);
+$conceptosPorAgrupador = $conceptosPorAgrupador ?? [];
+$selectedIdsConceptosCargo = $selectedIdsConceptosCargo ?? [];
+$cargoAccordionSuffix = $cargoAccordionSuffix ?? ($model->isNewRecord ? 'new' : (string) (int) $model->id);
+$urlAjaxConceptosCargoHtml = $urlAjaxConceptosCargoHtml ?? '';
 $subAreasList = $subAreasList ?? [];
 $areaIdAttr = $isEdit ? 'cargos-edit-area_id' : 'cargos-area_id';
 $subAreaIdAttr = $isEdit ? 'cargos-edit-sub_area_id' : 'cargos-sub_area_id';
@@ -99,6 +109,27 @@ $activoId = $isEdit ? 'cargos-edit-activo' : 'cargos-add-activo';
                     'placeholder' => 'Descripción breve (opcional, máx. 255 caracteres)',
                 ]) ?>
             </div>
+        </div>
+    </div>
+
+    <!-- Conceptos de novedad (misma lógica que staffing_admin) -->
+    <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
+        <div class="d-flex align-items-start gap-3 mb-3">
+            <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                <i class="ti ti-list-check fs-20"></i>
+            </span>
+            <div>
+                <h6 class="fw-semibold mb-1">Conceptos de novedad</h6>
+                <p class="text-muted small mb-0">Indique qué conceptos de novedad aplican a este cargo.</p>
+            </div>
+        </div>
+        <div id="js-cargo-conceptos-wrap" data-url-ajax="<?= Html::encode($urlAjaxConceptosCargoHtml) ?>">
+            <?= $this->render('_conceptos_cargo', [
+                'conceptosPorAgrupador' => $conceptosPorAgrupador,
+                'selectedIds' => $selectedIdsConceptosCargo,
+                'formFieldPrefix' => 'Cargos',
+                'accordionSuffix' => $cargoAccordionSuffix,
+            ]) ?>
         </div>
     </div>
 

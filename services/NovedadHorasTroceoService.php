@@ -41,6 +41,50 @@ final class NovedadHorasTroceoService
 
     public const COD_REC_NOCT_DOM_FEST = 'RECARGO_NOCTURNO_DOMINICAL_FESTIVO';
 
+    /** Liquidación manual por tarifa en sede ({@see mapCodigoConceptoACampoTarifaLocationSedes}). */
+    public const COD_HORA_DIURNA = 'HORA_DIURNA';
+
+    public const COD_HORA_ESPECIAL = 'HORA_ESPECIAL';
+
+    public const COD_DOMINICAL_COMPENSATORIO = 'DOMINICAL_COMPENSATORIO';
+
+    /** Liquidación manual; misma tarifa sede que {@see COD_REC_NOCT}. */
+    public const COD_HORA_NOCTURNA = 'HORA_NOCTURNA';
+
+    /** Misma tarifa sede que {@see COD_REC_DOM_FEST}. */
+    public const COD_HORA_FESTIVA_DIURNA = 'HORA_FESTIVA_DIURNA';
+
+    /** Misma tarifa sede que {@see COD_REC_NOCT_FEST}. */
+    public const COD_HORA_FESTIVA_NOCTURNA = 'HORA_FESTIVA_NOCTURNA';
+
+    /**
+     * Mapeo código de concepto de novedad (mayúsculas) → atributo de tarifa en {@see \app\models\LocationSedes}.
+     *
+     * @return array<string, string>
+     */
+    public static function mapCodigoConceptoACampoTarifaLocationSedes(): array
+    {
+        return [
+            self::COD_HORA_DIURNA => 'valor_hora_diurna',
+            self::COD_HORA_ESPECIAL => 'valor_hora_especial',
+            self::COD_AUXILIO_MOVILIZACION => 'valor_movilizacion',
+            self::COD_HORA_NOCTURNA => 'valor_hora_nocturna',
+            self::COD_HORA_FESTIVA_DIURNA => 'valor_hora_diurna_domingo_festivos',
+            self::COD_HORA_FESTIVA_NOCTURNA => 'valor_hora_nocturna_domingo_festiva',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function codigosConceptoMapeadosTarifaLocationSedes(): array
+    {
+        $k = array_keys(self::mapCodigoConceptoACampoTarifaLocationSedes());
+        sort($k, SORT_STRING);
+
+        return $k;
+    }
+
     /**
      * @return list<Fragmento>
      */

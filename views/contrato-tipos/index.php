@@ -238,7 +238,7 @@ $(document).ready(function() {
             { data: 6, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
         ],
         order: [[3, 'asc']],
-        pageLength: 25,
+        pageLength: 7,
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",

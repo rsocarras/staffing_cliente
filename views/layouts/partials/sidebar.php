@@ -4,6 +4,7 @@ use yii\helpers\Url;
 
 $path = Yii::$app->request->getPathInfo();
 $homeUrl = Yii::$app->homeUrl;
+$isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === 'sistema/soporte/ticket';
 
 ?>
 
@@ -42,9 +43,19 @@ $homeUrl = Yii::$app->homeUrl;
                         <li><a href="<?= Url::to(['/administracion-planta/historial']) ?>" class="<?php echo ($path == 'administracion-planta/historial') ? 'active' : ''; ?>">Historial</a></li>
                     </ul>
                 </li>
-                <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0) ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Novedades</span></a></li>
+                <li class="submenu">
+                    <a href="javascript:void(0);">
+                        <i class="ti ti-list-details"></i><span>Novedades</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                    <ul>
+                        <li><a href="<?= Url::to(['/sistema/novedades']) ?>" class="<?php echo (strpos($path, 'sistema/novedades') === 0) ? 'active' : ''; ?>">Listado</a></li>
+                        <li><a href="<?= Url::to(['/sistema/novedad-conceptos']) ?>" class="<?php echo (strpos($path, 'sistema/novedad-conceptos') === 0) ? 'active' : ''; ?>">Mis conceptos</a></li>
+                    </ul>
+                </li>
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
+                <li><a href="<?= Url::to(['/support-ticket/index']) ?>" class="<?php echo $isSupportTicket ? 'active' : ''; ?>"><i class="ti ti-ticket"></i><span>Soporte / Tickets</span></a></li>
                 <li class="submenu">
                     <a href="javascript:void(0);">
                         <i class="ti ti-calculator"></i><span>Presupuestos</span>
@@ -99,6 +110,7 @@ $homeUrl = Yii::$app->homeUrl;
                 <li><a href="<?= Url::to(['/configuracion/cargos']) ?>" class="<?php echo ($path == 'configuracion/cargos') ? 'active' : ''; ?>"><i class="ti ti-briefcase"></i><span>Cargos</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/contratos']) ?>" class="<?php echo ($path == 'configuracion/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Tipos de Contratos</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/sedes']) ?>" class="<?php echo ($path == 'configuracion/sedes') ? 'active' : ''; ?>"><i class="ti ti-building"></i><span>Sedes</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/categoria-sedes']) ?>" class="<?php echo (strpos($path, 'configuracion/categoria-sedes') === 0) ? 'active' : ''; ?>"><i class="ti ti-category"></i><span>Categoría de sedes</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/novedad-flujo']) ?>" class="<?php echo (strpos($path, 'configuracion/novedad-flujo') === 0) ? 'active' : ''; ?>"><i class="ti ti-route"></i><span>Flujos de novedad</span></a></li>
             </ul>
         </div>

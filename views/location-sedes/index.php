@@ -119,9 +119,6 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                                 <th>Dirección</th>
                                 <th>Tipo Sede</th>
                                 <th>Ciudad</th>
-                                <th>Centro Costo</th>
-                                <th>Centro Costo Staffing</th>
-                                <th>Cód. Externo</th>
                                 <th>Activo</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
@@ -183,11 +180,11 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
     </div>
 </div>
 
-<!-- Modal Agregar Sede -->
-<div class="modal fade" id="add_sede">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+<!-- Modal Agregar Sede (scroll en .sede-add-scroll; sin modal-dialog-centered para respetar max-height) -->
+<div class="modal fade" id="add_sede" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg sede-add-dialog">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header border-0 pb-0 align-items-start">
+            <div class="modal-header border-0 pb-0 align-items-start flex-shrink-0">
                 <div class="me-3">
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="avatar avatar-sm bg-primary text-white rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
@@ -209,17 +206,19 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
                 'enableClientValidation' => false,
             ]);
             ?>
-            <div class="modal-body pt-3 px-4 pb-2">
-                <div id="sede-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
-                <?= $this->render('_form_add_modal_fields', [
-                    'model' => $modelSedeModal,
-                    'form' => $formSede,
-                    'countries' => $countries,
-                    'initialCountryId' => null,
-                    'initialCities' => [],
-                ]) ?>
+            <div class="modal-body p-0 d-flex flex-column sede-add-modal-body">
+                <div class="sede-add-scroll px-4 pt-3 pb-2">
+                    <div id="sede-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
+                    <?= $this->render('_form_add_modal_fields', [
+                        'model' => $modelSedeModal,
+                        'form' => $formSede,
+                        'countries' => $countries,
+                        'initialCountryId' => null,
+                        'initialCities' => [],
+                    ]) ?>
+                </div>
             </div>
-            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2">
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2 flex-shrink-0">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     <i class="ti ti-x me-1"></i>Cancelar
                 </button>
@@ -234,8 +233,82 @@ $countries = ArrayHelper::map(LocationCountry::find()->where(['is_active' => 1])
 </div>
 
 <?php
+$this->registerCss(<<<'CSS'
+/**
+ * Scroll del modal de nueva sede: tope en vh sobre .sede-add-scroll
+ * (modal-dialog-centered rompe la altura máxima y el scroll del body).
+ */
+#add_sede .sede-add-dialog {
+    max-width: min(800px, 96vw);
+    margin: 1rem auto;
+}
+#add_sede .sede-add-dialog .modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+}
+#add_sede .sede-add-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden !important;
+}
+#add_sede .sede-add-scroll {
+    max-height: min(72vh, calc(100vh - 200px));
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    position: relative;
+    z-index: 0;
+}
+@media (max-height: 700px) {
+    #add_sede .sede-add-scroll {
+        max-height: calc(100vh - 180px);
+    }
+}
+
+/* Evita que el dropdown de acciones se recorte dentro de la tabla responsive */
+#sedes-table_wrapper .table-responsive {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+#sedes-table_wrapper .dropdown-menu {
+    z-index: 1080;
+}
+CSS
+);
+
 $js = <<<JS
 $(document).ready(function() {
+    $(document).on('show.bs.dropdown', '.sede-actions-dropdown', function() {
+        var rect = this.getBoundingClientRect();
+        var menu = this.querySelector('.dropdown-menu');
+        var itemsCount = menu ? menu.querySelectorAll('.dropdown-item').length : 3;
+        var estimatedMenuHeight = Math.max((itemsCount * 56) + 16, 180);
+        var spaceBelow = window.innerHeight - rect.bottom;
+        var spaceAbove = rect.top;
+        if (spaceBelow < estimatedMenuHeight && spaceAbove > spaceBelow) {
+            this.classList.add('dropup');
+        } else {
+            this.classList.remove('dropup');
+        }
+    });
+
+    $(document).on('hidden.bs.dropdown', '.sede-actions-dropdown', function() {
+        this.classList.remove('dropup');
+    });
+
+    var addSedeModalEl = document.getElementById('add_sede');
+    if (addSedeModalEl) {
+        addSedeModalEl.addEventListener('show.bs.modal', function() {
+            if (this.parentElement !== document.body) {
+                document.body.appendChild(this);
+            }
+        });
+    }
+
     var table = $('#sedes-table').DataTable({
         processing: true,
         serverSide: true,
@@ -247,14 +320,11 @@ $(document).ready(function() {
             { data: 3, render: function(d) { return d || ''; } },
             { data: 4 },
             { data: 5, render: function(d) { return d || ''; } },
-            { data: 6 },
-            { data: 7 },
-            { data: 8, render: function(d) { return d || ''; } },
-            { data: 9, render: function(d) { return d || ''; } },
-            { data: 10, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
+            { data: 6, render: function(d) { return d || ''; } },
+            { data: 7, class: 'text-center', orderable: false, render: function(d) { return d || ''; } }
         ],
         order: [[2, 'asc']],
-        pageLength: 25,
+        pageLength: 7,
         language: {
             search: "Buscar:",
             lengthMenu: "Mostrar _MENU_ registros",

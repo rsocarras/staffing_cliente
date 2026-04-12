@@ -2,7 +2,6 @@
 
 namespace app\controllers;
 
-use app\components\TenantContext;
 use app\models\ContratoTipos;
 use Yii;
 use yii\web\Controller;
@@ -43,7 +42,6 @@ class ContratoTiposController extends Controller
     public function actionIndex()
     {
         $query = ContratoTipos::find();
-        TenantContext::applyFilter($query, 'empresa_id', true);
 
         $total = (int) (clone $query)->count();
         $activos = (int) (clone $query)->andWhere(['activo' => 1])->count();
@@ -74,10 +72,8 @@ class ContratoTiposController extends Controller
         $orderDir = ($request->get('order', [])[0]['dir'] ?? 'asc') === 'asc' ? SORT_ASC : SORT_DESC;
 
         $query = ContratoTipos::find();
-        TenantContext::applyFilter($query, 'empresa_id', true);
 
         $baseQuery = ContratoTipos::find();
-        TenantContext::applyFilter($baseQuery, 'empresa_id', true);
         $totalCount = (int) $baseQuery->count();
 
         if ($searchValue !== '') {
@@ -90,7 +86,7 @@ class ContratoTiposController extends Controller
         }
         $filteredCount = (int) (clone $query)->count();
 
-        $orderColumns = ['id', 'empresa_id', 'code', 'nombre', 'descripcion', 'activo', null];
+        $orderColumns = ['id', null, 'code', 'nombre', 'descripcion', 'activo', null];
         $orderBy = $orderColumns[$orderCol] ?? 'nombre';
         if ($orderBy) {
             $query->orderBy([$orderBy => $orderDir]);
@@ -102,7 +98,7 @@ class ContratoTiposController extends Controller
         foreach ($models as $model) {
             $data[] = [
                 $model->id,
-                $model->empresa_id !== null ? $model->empresa_id : '-',
+                '-',
                 \yii\helpers\Html::encode($model->code),
                 '<span class="fw-medium text-dark">' . \yii\helpers\Html::encode($model->nombre) . '</span>',
                 \yii\helpers\Html::encode($model->descripcion ?? '-'),
@@ -145,14 +141,12 @@ class ContratoTiposController extends Controller
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post())) {
-                $model->empresa_id = TenantContext::requireEmpresaId();
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);
                 }
             }
         } else {
             $model->loadDefaultValues();
-            $model->empresa_id = TenantContext::requireEmpresaId();
         }
 
         return $this->render('create', [
@@ -170,14 +164,13 @@ class ContratoTiposController extends Controller
         $model = new ContratoTipos();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->empresa_id = TenantContext::requireEmpresaId();
             if ($model->save()) {
                 return [
                     'success' => true,
                     'message' => Yii::t('app', 'Tipo de contrato creado correctamente.'),
                     'model' => [
                         'id' => $model->id,
-                        'empresa_id' => $model->empresa_id,
+                        'empresa_id' => null,
                         'code' => $model->code,
                         'nombre' => $model->nombre,
                         'descripcion' => $model->descripcion,
@@ -275,7 +268,7 @@ class ContratoTiposController extends Controller
                 'message' => Yii::t('app', 'Tipo de contrato actualizado correctamente.'),
                 'model' => [
                     'id' => $model->id,
-                    'empresa_id' => $model->empresa_id,
+                    'empresa_id' => null,
                     'code' => $model->code,
                     'nombre' => $model->nombre,
                     'descripcion' => $model->descripcion,
@@ -299,7 +292,7 @@ class ContratoTiposController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = ContratoTipos::findOne(['id' => $id])) !== null && TenantContext::matchesModel($model, 'empresa_id', true)) {
+        if (($model = ContratoTipos::findOne(['id' => $id])) !== null) {
             return $model;
         }
 

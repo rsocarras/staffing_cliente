@@ -539,12 +539,7 @@ class ContratoController extends Controller
     private function getContratoTipoOptions()
     {
         return ContratoTipos::find()
-            ->where([
-                'or',
-                ['empresa_id' => $this->scopeService->getCurrentEmpresaId()],
-                ['empresa_id' => null],
-            ])
-            ->andWhere(['activo' => 1])
+            ->where(['activo' => 1])
             ->orderBy(['nombre' => SORT_ASC])
             ->all();
     }

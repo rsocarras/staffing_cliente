@@ -132,6 +132,35 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
     </div>
 </div>
 
+<!-- Modal Confirmar envío a aprobación -->
+<div class="modal fade" id="modal-submit-requisicion" tabindex="-1" aria-labelledby="modal-submit-requisicion-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="avatar avatar-sm bg-soft-warning text-warning rounded d-inline-flex align-items-center justify-content-center">
+                        <i class="ti ti-send fs-16"></i>
+                    </span>
+                    <h5 class="modal-title fw-bold mb-0" id="modal-submit-requisicion-label">Enviar a aprobación</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="mb-2 text-muted">¿Desea enviar esta requisición a aprobación?</p>
+                <div id="submit-requisicion-resumen" class="border rounded-3 bg-light p-3 small"></div>
+            </div>
+            <div class="modal-footer border-0 bg-light bg-opacity-50">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-success" id="btn-confirm-submit-requisicion">
+                    <i class="ti ti-check me-1"></i>Enviar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 $modelRequisicionModal = new \app\models\Requisicion();
 $modelRequisicionModal->estado = \app\models\Requisicion::ESTADO_DRAFT;
@@ -223,6 +252,27 @@ CSS);
 
 $this->registerJs(<<<JS
 $(function() {
+    var submitActionUrl = '';
+    var submitModalEl = document.getElementById('modal-submit-requisicion');
+    var submitModal = submitModalEl ? bootstrap.Modal.getOrCreateInstance(submitModalEl) : null;
+
+    function escapeHtml(v) {
+        if (v == null) return '';
+        return String(v).replace(/[&<>"']/g, function(ch) {
+            return ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'})[ch];
+        });
+    }
+
+    function setSubmitResumen(data) {
+        var html = ''
+            + '<div class="fw-semibold mb-2">Requisición #' + escapeHtml(data.requisicion || '-') + '</div>'
+            + '<div><span class="text-muted">Empresa:</span> ' + escapeHtml(data.empresa || '-') + '</div>'
+            + '<div><span class="text-muted">Ciudad / Sede:</span> ' + escapeHtml(data.ciudad || '-') + ' / ' + escapeHtml(data.sede || '-') + '</div>'
+            + '<div><span class="text-muted">Área / Cargo:</span> ' + escapeHtml(data.area || '-') + ' / ' + escapeHtml(data.cargo || '-') + '</div>'
+            + '<div><span class="text-muted">Fecha ingreso:</span> ' + escapeHtml(data.fecha || '-') + '</div>';
+        $('#submit-requisicion-resumen').html(html);
+    }
+
     var addRequisicionModalEl = document.getElementById('add_requisicion');
     if (addRequisicionModalEl) {
         addRequisicionModalEl.addEventListener('show.bs.modal', function() {
@@ -261,7 +311,7 @@ $(function() {
             { data: 10, orderable: false, class: 'text-end', render: function(d) { return d || ''; } },
         ],
         order: [[0, 'desc']],
-        pageLength: 25,
+        pageLength: 7,
         columnDefs: [{ orderable: false, targets: -1 }],
         language: {
             search: 'Buscar:',
@@ -276,8 +326,9 @@ $(function() {
         if (form) form.reset();
         $('#requisicion-form-errors').addClass('d-none').empty();
         $('#requisicion-sede_id').html('<option value=\"\">Primero seleccione ciudad</option>').prop('disabled', true);
+        $('#requisicion-area_id').html('<option value=\"\">Primero seleccione empresa cliente</option>').prop('disabled', true);
         $('#requisicion-sub_area_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);
-        $('#requisicion-cargo_id').html('<option value=\"\">Primero seleccione subárea</option>').prop('disabled', true);
+        $('#requisicion-cargo_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);
     }
 
     function hasActiveServerFilters() {
@@ -390,6 +441,36 @@ $(function() {
                 }
             });
         });
+    });
+
+    $(document).on('click', '.btn-requisicion-submit', function() {
+        var \$btn = $(this);
+        submitActionUrl = (\$btn.data('url') || '').toString();
+        if (!submitActionUrl || !submitModal) return;
+        setSubmitResumen({
+            requisicion: (\$btn.data('requisicion') || '').toString(),
+            empresa: (\$btn.data('empresa') || '').toString(),
+            ciudad: (\$btn.data('ciudad') || '').toString(),
+            sede: (\$btn.data('sede') || '').toString(),
+            area: (\$btn.data('area') || '').toString(),
+            cargo: (\$btn.data('cargo') || '').toString(),
+            fecha: (\$btn.data('fecha') || '').toString()
+        });
+        submitModal.show();
+    });
+
+    $('#btn-confirm-submit-requisicion').on('click', function() {
+        if (!submitActionUrl) return;
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = submitActionUrl;
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '{$csrfParam}';
+        csrfInput.value = '{$csrfToken}';
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
     });
 
     $('#form-add-requisicion').on('submit', function(e) {

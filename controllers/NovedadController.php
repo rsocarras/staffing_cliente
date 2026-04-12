@@ -6,6 +6,8 @@ namespace app\controllers;
 
 use app\models\City;
 use app\models\Contrato;
+use app\models\ContratoDistribucionSede;
+use app\models\ProfileSede;
 use app\models\EmpresaCliente;
 use app\models\EmpresaNovedadConcepto;
 use app\models\Empresas;
@@ -15,12 +17,15 @@ use app\components\TenantContext;
 use app\models\Novedad;
 use app\models\NovedadConcepto;
 use app\models\NovedadConceptoCargo;
+use app\models\NovedadCentroCosto;
 use app\models\NovedadFlujo;
 use app\models\NovedadStep;
 use app\models\NovedadStepHistoryLog;
 use app\models\NovedadTipo;
 use app\models\NovedadTipoCampo;
+use app\models\Cargos;
 use app\models\Profile;
+use app\models\Setting;
 use app\services\NovedadAuxilioMovilizacionResolver;
 use app\services\NovedadConceptoFormularioService;
 use app\services\NovedadGuard;
@@ -47,10 +52,11 @@ class NovedadController extends Controller
     public function behaviors(): array
     {
         return array_merge(parent::behaviors(), [
-            'verbs' => [
+                'verbs' => [
                 'class' => VerbFilter::class,
-                'actions' => [
-                    'delete' => ['POST'],
+                    'actions' => [
+                        'delete' => ['POST'],
+                    'confirmar-novedad' => ['POST'],
                     'create-ajax' => ['POST'],
                     'update-ajax' => ['POST'],
                     'move-step' => ['POST'],
@@ -808,6 +814,8 @@ class NovedadController extends Controller
         $model->datos = $datosRaw;
         $model->estado = $estado;
 
+        $this->sincronizarImporteYValorUnitarioPagosPeOPp($model, $concepto);
+
         if (!$model->save()) {
             return ['success' => false, 'errors' => $model->getErrors()];
         }
@@ -982,9 +990,54 @@ class NovedadController extends Controller
      */
     public function actionView($id): string
     {
+        $model = $this->findModel($id);
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'puedeEditarSolicitud' => $model->isEstadoCargaBorrador(),
         ]);
+    }
+
+    /**
+     * Pasa una solicitud de borrador de flujo a pendiente o aprobada (igual criterio que staffing_admin).
+     */
+    public function actionConfirmarNovedad(int $id): Response
+    {
+        $model = $this->findModel($id);
+        if (!$model->isEstadoCargaBorrador()) {
+            Yii::$app->session->setFlash(
+                'warning',
+                Yii::t('app', 'Solo se pueden confirmar solicitudes cuya carga sigue en borrador.')
+            );
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        if ((string) $model->estado !== Novedad::ESTADO_BORRADOR) {
+            Yii::$app->session->setFlash(
+                'warning',
+                Yii::t('app', 'Solo se pueden confirmar solicitudes en borrador.')
+            );
+
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
+        $nuevoEstado = NovedadTipo::tipoTieneFlujoAprobacion((int) $model->novedad_tipo_id)
+            ? Novedad::ESTADO_PENDIENTE
+            : Novedad::ESTADO_APROBADA;
+        $model->estado = $nuevoEstado;
+        $model->estado_carga = Novedad::ESTADO_CARGA_CREADA;
+        if (!$model->save(false)) {
+            Yii::$app->session->setFlash('error', Yii::t('app', 'No se pudo confirmar el envío.'));
+        } else {
+            Yii::$app->session->setFlash(
+                'success',
+                $nuevoEstado === Novedad::ESTADO_APROBADA
+                    ? Yii::t('app', 'Solicitud registrada y aprobada automáticamente (este tipo no tiene flujo de aprobación).')
+                    : Yii::t('app', 'Solicitud enviada correctamente.')
+            );
+        }
+
+        return $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -1004,8 +1057,6 @@ class NovedadController extends Controller
         $model->loadDefaultValues();
 
         if ($tenantId === null) {
-            Yii::$app->session->setFlash('error', Yii::t('app', 'No tiene organización asignada en su perfil.'));
-
             return $this->render('create', $this->createViewParams($model, $ctx, $empresa, null));
         }
 
@@ -1020,12 +1071,14 @@ class NovedadController extends Controller
             );
         }
 
+        if (!$this->request->isPost) {
+            $this->aplicarPrefillSolicitudDesdeRequest($model, $ctx, $tenantId);
+        }
+
         if ($this->request->isPost) {
             $ctx->load($this->request->post());
             $model->load($this->request->post());
             $model->empresa_id = $tenantId;
-
-            $auxilioMovilizacion = (bool) $this->request->post('auxilio_movilizacion', false);
 
             $tipo = null;
             if ($ctx->novedad_tipo_id !== null) {
@@ -1040,9 +1093,25 @@ class NovedadController extends Controller
             }
 
             $this->mergeSolicitudDatos($model, $ctx);
+            $ausentismosTipoId = $this->resolveAusentismosNovedadTipoId($tenantId);
+            if (
+                $ausentismosTipoId > 0
+                && (int) ($ctx->novedad_tipo_id ?? 0) === $ausentismosTipoId
+            ) {
+                $fi = $this->extraerFechaInicialAusentismosDesdeDatosJson((string) ($model->datos ?? ''));
+                if ($fi !== null && $fi !== '') {
+                    $model->fecha_novedad = $fi;
+                }
+            }
+            $this->asignarContextoValidacionEmpresaCliente($ctx, $model);
 
             if (!$ctx->validate()) {
-                Yii::$app->session->setFlash('error', Yii::t('app', 'Revise el contexto de la solicitud.'));
+                $ctxErrs = $ctx->getFirstErrors();
+                $ctxMsg = $ctxErrs !== [] ? (string) reset($ctxErrs) : '';
+                Yii::$app->session->setFlash(
+                    'error',
+                    $ctxMsg !== '' ? $ctxMsg : Yii::t('app', 'Revise el contexto de la solicitud.')
+                );
 
                 return $this->render('create', $this->createViewParams($model, $ctx, $empresa, $tipo));
             }
@@ -1050,7 +1119,37 @@ class NovedadController extends Controller
             $model->novedad_tipo_id = (int) $ctx->novedad_tipo_id;
 
             if ($tipo !== null && $tipo->esTipoHoras()) {
-                return $this->procesarSolicitudHoras($model, $ctx, $tipo, $auxilioMovilizacion, $empresa);
+                return $this->procesarSolicitudHoras($model, $ctx, $tipo, $empresa);
+            }
+
+            $concepto = NovedadConcepto::findOne((int) ($model->concepto_id ?? 0));
+            if ($concepto !== null && (int) ($concepto->novedad_tipo_id ?? 0) > 0) {
+                $model->novedad_tipo_id = (int) $concepto->novedad_tipo_id;
+            }
+            if (
+                $concepto !== null
+                && (int) ($ctx->novedad_tipo_id ?? 0) > 0
+                && (int) $concepto->novedad_tipo_id !== (int) $ctx->novedad_tipo_id
+            ) {
+                $model->addError('concepto_id', Yii::t('app', 'El concepto no corresponde al agrupador indicado.'));
+            }
+            $this->validarReglasNovedad($model);
+            if (!$model->hasErrors()) {
+                $this->aplicarFormularioConceptoYSaveDatos(
+                    $model,
+                    $concepto,
+                    $this->extractDatosCamposDinamicosFromPost(),
+                    $ctx
+                );
+            }
+
+            if (!$model->hasErrors()) {
+                if ($concepto !== null) {
+                    $this->aplicarImporteYValorUnitarioSolicitudWeb($model, $concepto, $ctx);
+                } else {
+                    $model->importe = 0;
+                    $model->valor_unitario = null;
+                }
             }
 
             $model->scenario = Novedad::SCENARIO_SOLICITUD_WEB;
@@ -1058,6 +1157,13 @@ class NovedadController extends Controller
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Solicitud registrada en borrador.'));
 
                 return $this->redirect(['view', 'id' => $model->id]);
+            }
+            $this->setFlashFirstModelError($model);
+            if (!Yii::$app->session->hasFlash('error')) {
+                Yii::$app->session->setFlash(
+                    'error',
+                    Yii::t('app', 'No se pudo guardar la solicitud. Revise los datos marcados o intente de nuevo.')
+                );
             }
         }
 
@@ -1069,7 +1175,24 @@ class NovedadController extends Controller
      */
     public function actionResumenBorradorHoras(): string|Response
     {
-        $pack = $this->obtieneNovedadesBorradorHorasSesionValidadas();
+        $batchGet = trim((string) $this->request->get('batch', ''));
+        if ($batchGet === '') {
+            $batchGet = trim((string) $this->request->get('grupo', ''));
+        }
+        $pack = null;
+        if ($batchGet !== '') {
+            $pack = $this->obtienePackBorradorPorBatchId($batchGet);
+            if ($pack !== null) {
+                Yii::$app->session->set(self::SESSION_HORAS_BORRADOR, [
+                    'ids' => $pack['ids'],
+                    'origen_id' => $pack['origen_id'],
+                    'batch_id' => $pack['batch_id'],
+                ]);
+            }
+        }
+        if ($pack === null) {
+            $pack = $this->obtieneNovedadesBorradorHorasSesionValidadas();
+        }
         if ($pack === null) {
             Yii::$app->session->setFlash(
                 'warning',
@@ -1083,6 +1206,8 @@ class NovedadController extends Controller
             'novedades' => $pack['novedades'],
             'ids' => $pack['ids'],
             'origenId' => $pack['origen_id'],
+            'batchId' => $pack['batch_id'] ?? '',
+            'resumenContexto' => $this->buildResumenBorradorContexto($pack['novedades']),
         ]);
     }
 
@@ -1152,7 +1277,7 @@ class NovedadController extends Controller
                     Novedad::deleteAll(['id' => $hijas]);
                 }
                 Novedad::deleteAll(['id' => $origenId]);
-            } else {
+        } else {
                 Novedad::deleteAll(['id' => $ids]);
             }
             $tx->commit();
@@ -1170,14 +1295,46 @@ class NovedadController extends Controller
         return $this->redirect(['index']);
     }
 
+    /**
+     * Filas enviadas en POST como HorasFilas[i][concepto_id|cantidad|unidad|comentario].
+     *
+     * @return array<int, array{concepto_id: int, cantidad: string, unidad: string, comentario: string}>
+     */
+    private function normalizarHorasFilasDesdePost(): array
+    {
+        $raw = Yii::$app->request->post('HorasFilas', []);
+        if (!is_array($raw)) {
+            return [];
+        }
+        $out = [];
+        foreach ($raw as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $cid = (int) ($row['concepto_id'] ?? 0);
+            $cant = trim((string) ($row['cantidad'] ?? ''));
+            $uni = trim((string) ($row['unidad'] ?? ''));
+            $com = trim((string) ($row['comentario'] ?? ''));
+            if ($cid <= 0 && $cant === '' && $uni === '' && $com === '') {
+                continue;
+            }
+            $out[] = [
+                'concepto_id' => $cid,
+                'cantidad' => $cant,
+                'unidad' => $uni,
+                'comentario' => $com,
+            ];
+        }
+
+        return $out;
+    }
+
     private function procesarSolicitudHoras(
         Novedad $model,
         NovedadSolicitudContextForm $ctx,
         NovedadTipo $tipo,
-        bool $auxilioMovilizacion,
         ?Empresas $empresa
     ): string|Response {
-        $model->scenario = Novedad::SCENARIO_SOLICITUD_HORAS_AUTO;
         $model->concepto_id = null;
         $tenantId = (int) $model->empresa_id;
         $allowed = $this->empresasIdsDisponiblesParaSolicitud();
@@ -1185,6 +1342,14 @@ class NovedadController extends Controller
             Yii::$app->session->setFlash('error', Yii::t('app', 'Organización no permitida.'));
 
             return $this->render('create', $this->createViewParams($model, $ctx, $empresa, $tipo));
+        }
+
+        $fechaVal = trim((string) ($model->fecha_novedad ?? ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaVal)) {
+            $model->addError(
+                'fecha_novedad',
+                Yii::t('app', 'Indique la fecha de aplicación de la novedad.')
+            );
         }
 
         $empleado = Profile::findOne(['user_id' => $model->profile_id]);
@@ -1196,28 +1361,28 @@ class NovedadController extends Controller
             $model->addError('profile_id', Yii::t('app', 'Seleccione un empleado activo de la organización indicada.'));
         }
 
-        if (!$model->validate() || $model->hasErrors()) {
-            $this->setFlashFirstModelError($model);
-
-            return $this->render('create', $this->createViewParams($model, $ctx, $empresa, $tipo));
+        $filas = $this->normalizarHorasFilasDesdePost();
+        if ($filas === [] && !$model->hasErrors()) {
+            $model->addError(
+                'horas_filas_error',
+                Yii::t('app', 'Agregue al menos una fila con concepto, cantidad y unidad.')
+            );
         }
-
-        $eidCtx = $tenantId;
-        $pidModel = (int) $model->profile_id;
-        $fechaNovedad = (string) ($model->fecha_novedad ?? '');
-        $cargoAplicaClases = $this->empleadoAplicaConceptoClasesGrupales($eidCtx, $pidModel, $fechaNovedad);
-        $auxilioPost = $auxilioMovilizacion;
-        $importeAux = NovedadAuxilioMovilizacionResolver::importePredeterminado($eidCtx);
-        if ($auxilioPost) {
-            if (!$cargoAplicaClases) {
-                $auxilioPost = false;
-            } elseif ($importeAux === null || $importeAux < 0.01) {
-                $model->addError(
-                    'importe',
-                    Yii::t('app', 'No hay importe de auxilio de movilización configurado. Revise los parámetros de la aplicación o contacte al administrador.')
-                );
+        foreach ($filas as $i => $fila) {
+            $nLinea = (int) $i + 1;
+            if ((int) ($fila['concepto_id'] ?? 0) <= 0) {
+                $model->addError('horas_filas_error', Yii::t('app', 'Línea {n}: seleccione un concepto.', ['n' => $nLinea]));
+            }
+            if (($fila['cantidad'] ?? '') === '') {
+                $model->addError('horas_filas_error', Yii::t('app', 'Línea {n}: indique la cantidad.', ['n' => $nLinea]));
+            } elseif (!is_numeric(str_replace(',', '.', (string) $fila['cantidad'])) || (float) str_replace(',', '.', (string) $fila['cantidad']) <= 0) {
+                $model->addError('horas_filas_error', Yii::t('app', 'Línea {n}: la cantidad debe ser un número mayor que cero.', ['n' => $nLinea]));
+            }
+            if (($fila['unidad'] ?? '') === '') {
+                $model->addError('horas_filas_error', Yii::t('app', 'Línea {n}: indique la unidad (p. ej. horas).', ['n' => $nLinea]));
             }
         }
+
         if ($model->hasErrors()) {
             $this->setFlashFirstModelError($model);
 
@@ -1225,27 +1390,310 @@ class NovedadController extends Controller
         }
 
         $datosValores = $this->extractDatosCamposDinamicosFromPost();
-        $troceo = $this->guardarSolicitudTipoHorasTroceada(
+        foreach ($filas as $j => $fila) {
+            $filas[$j]['cantidad'] = (string) (float) str_replace(',', '.', (string) $fila['cantidad']);
+        }
+        $eidCtx = (int) $model->empresa_id;
+        $pidModel = (int) $model->profile_id;
+        $esContratoTipoHoras = false;
+        if ($eidCtx > 0 && $pidModel > 0) {
+            $esContratoTipoHoras = $this->esContratoTipoHorasActivo($eidCtx, $pidModel, $ctx);
+        }
+        $guardado = $this->guardarSolicitudTipoHorasFilas(
             $model,
             $ctx,
             $allowed,
+            $filas,
             $datosValores,
-            $auxilioPost,
-            $importeAux
+            $esContratoTipoHoras
         );
-        if (!$troceo['ok']) {
-            $model->addError('fecha_novedad', $troceo['error']);
-            Yii::$app->session->setFlash('error', $troceo['error']);
+        if (!$guardado['ok']) {
+            $model->addError('horas_filas_error', $guardado['error']);
+            $this->setFlashFirstModelError($model);
 
             return $this->render('create', $this->createViewParams($model, $ctx, $empresa, $tipo));
         }
 
+        $batchId = (string) ($guardado['batch_id'] ?? '');
         Yii::$app->session->set(self::SESSION_HORAS_BORRADOR, [
-            'ids' => $troceo['ids'],
-            'origen_id' => $troceo['origen_id'],
+            'ids' => $guardado['ids'],
+            'origen_id' => $guardado['origen_id'],
+            'batch_id' => $batchId,
         ]);
+        Yii::$app->session->setFlash(
+            'success',
+            Yii::t('app', 'Solicitud tipo horas registrada en borrador. Revisá el resumen para confirmar el envío.')
+        );
 
-        return $this->redirect(['resumen-borrador-horas']);
+        return $this->redirect(
+            $batchId !== ''
+                ? ['resumen-borrador-horas', 'batch' => $batchId]
+                : ['resumen-borrador-horas']
+        );
+    }
+
+    /**
+     * @param array<int, array{concepto_id: int, cantidad: string, unidad: string, comentario: string}> $filas
+     *
+     * @return array{ok: bool, error: string, ids: int[], origen_id: int, batch_id: string}
+     */
+    private function guardarSolicitudTipoHorasFilas(
+        Novedad $plantilla,
+        NovedadSolicitudContextForm $ctx,
+        array $allowed,
+        array $filas,
+        array $datosValores,
+        bool $esContratoTipoHoras
+    ): array {
+        $fail = static function (string $msg): array {
+            return ['ok' => false, 'error' => $msg, 'ids' => [], 'origen_id' => 0, 'batch_id' => ''];
+        };
+
+        $empresaId = (int) $plantilla->empresa_id;
+        $profileId = (int) $plantilla->profile_id;
+        if (!in_array($empresaId, $allowed, true)) {
+            return $fail(Yii::t('app', 'Organización no permitida.'));
+        }
+
+        $fechaPlantilla = trim((string) ($plantilla->fecha_novedad ?? ''));
+        if ($fechaPlantilla === '') {
+            return $fail(Yii::t('app', 'Indique la fecha de la novedad.'));
+        }
+
+        $sede = null;
+        $tarifasPorConcepto = null;
+        $setting = null;
+        $valorHoraOrdinaria = null;
+
+        if ($esContratoTipoHoras) {
+            $sede = $this->resolveSedeContratoActivo($empresaId, $profileId, $ctx);
+            if ($sede === null) {
+                return $fail(Yii::t('app', 'No se encontró la sede del contrato activo para calcular valores por concepto.'));
+            }
+            $tarifasPorConcepto = $this->resolveTarifasHorasPorConcepto($empresaId, $profileId, $ctx);
+            if ($tarifasPorConcepto === null) {
+                return $fail(Yii::t('app', 'No se pudo resolver tarifas por concepto para la sede seleccionada.'));
+            }
+        } else {
+            try {
+                $setting = NovedadSettingResolver::resolveForEmpresaYFecha($empresaId, $fechaPlantilla);
+            } catch (\Throwable $e) {
+                return $fail($e->getMessage());
+            }
+            $contratoLiquidacion = $this->resolveContratoActivoContexto($empresaId, $profileId, $ctx);
+            if ($contratoLiquidacion === null) {
+                return $fail(Yii::t('app', 'No se encontró un contrato activo para calcular el importe por hora.'));
+            }
+            $valorHoraOrdinaria = $this->resolveValorHoraOrdinariaContrato($contratoLiquidacion);
+            if ($valorHoraOrdinaria === null) {
+                return $fail(Yii::t(
+                    'app',
+                    'El contrato activo debe tener salario y jornada mayores a cero para calcular el valor hora (salario ÷ jornada).'
+                ));
+            }
+        }
+
+        $ecidPorConc = (int) ($ctx->empresa_cliente_id ?? 0);
+        $aplicables = $this->conceptosAplicablesParaSolicitud(
+            $empresaId,
+            $profileId,
+            (int) $plantilla->novedad_tipo_id,
+            $fechaPlantilla,
+            $ecidPorConc > 0 ? $ecidPorConc : null
+        );
+        $aplicableIds = [];
+        foreach ($aplicables as $c) {
+            $aplicableIds[(int) $c->id] = true;
+        }
+
+        $conceptosPorId = NovedadConcepto::find()
+            ->where([
+                'id' => array_values(array_unique(array_map(static fn(array $f): int => (int) ($f['concepto_id'] ?? 0), $filas))),
+                'activo' => 1,
+            ])
+            ->indexBy('id')
+            ->all();
+
+        foreach ($filas as $i => $fila) {
+            $cid = (int) ($fila['concepto_id'] ?? 0);
+            if ($cid <= 0 || !isset($aplicableIds[$cid])) {
+                return $fail(Yii::t('app', 'Línea {n}: el concepto no está habilitado para el cargo del empleado.', ['n' => $i + 1]));
+            }
+            if (!isset($conceptosPorId[$cid])) {
+                return $fail(Yii::t('app', 'Concepto no válido.'));
+            }
+        }
+
+        foreach ($filas as $fila) {
+            /** @var NovedadConcepto $concepto */
+            $concepto = $conceptosPorId[(int) $fila['concepto_id']];
+            $codigo = strtoupper(trim((string) ($concepto->codigo ?? '')));
+            $qty = (float) str_replace(',', '.', (string) ($fila['cantidad'] ?? '0'));
+            if ($codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION) {
+                $qty = 1.0;
+            }
+            if ($qty <= 0) {
+                return $fail(Yii::t('app', 'Línea con concepto «{c}»: indique una cantidad mayor a 0.', ['c' => (string) $concepto->nombre]));
+            }
+            if ($esContratoTipoHoras) {
+                [$campoTarifa, $campoLabel] = $this->tarifaFieldByConceptoCodigo($codigo);
+                if ($campoTarifa === null) {
+                    return $fail(Yii::t(
+                        'app',
+                        'El concepto «{nombre}» no puede usarse con contrato por horas: el código del concepto en catálogo («{codigo}») no corresponde a ninguna tarifa horaria de la sede (tabla location_sedes / modelo LocationSedes). Códigos de concepto admitidos: {lista}.',
+                        [
+                            'nombre' => (string) $concepto->nombre,
+                            'codigo' => $codigo !== '' ? $codigo : Yii::t('app', '(vacío o inválido)'),
+                            'lista' => implode(', ', NovedadHorasTroceoService::codigosConceptoMapeadosTarifaLocationSedes()),
+                        ]
+                    ));
+                }
+                $valorTarifa = (float) ($sede->$campoTarifa ?? 0);
+                if ($valorTarifa <= 0) {
+                    $sedeNombre = trim((string) ($sede->nombre ?? ('#' . $sede->id)));
+
+                    return $fail(Yii::t(
+                        'app',
+                        'En la sede «{sede}» debe configurarse «{etiqueta}» (campo {campo} en LocationSedes) con un valor mayor a cero para liquidar el concepto «{concepto}».',
+                        [
+                            'sede' => $sedeNombre,
+                            'etiqueta' => $campoLabel,
+                            'campo' => $campoTarifa,
+                            'concepto' => (string) $concepto->nombre,
+                        ]
+                    ));
+                }
+                if ($tarifasPorConcepto === null || !isset($tarifasPorConcepto[$codigo]) || (float) $tarifasPorConcepto[$codigo] <= 0) {
+                    return $fail(Yii::t(
+                        'app',
+                        'No hay tarifa válida en sede para el concepto «{c}» (revisión interna de tarifas por código).',
+                        ['c' => (string) $concepto->nombre]
+                    ));
+                }
+            } else {
+                if ($setting === null) {
+                    return $fail(Yii::t('app', 'No se pudo resolver parámetros laborales (setting) para la fecha indicada.'));
+                }
+                if ($codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION) {
+                    $auxImp = $this->resolveImporteAuxilioMovilizacion($empresaId, $profileId, $ctx);
+                    if ($auxImp === null || $auxImp < 0.01) {
+                        return $fail(Yii::t(
+                            'app',
+                            'Configure el valor de movilización en la sede o el importe predeterminado de auxilio para liquidar «{c}».',
+                            ['c' => (string) $concepto->nombre]
+                        ));
+                    }
+                } else {
+                    $factorMult = $this->factorMultiplicadorSettingHorasPorCodigo($setting, $codigo);
+                    if ($factorMult <= 0.0) {
+                        return $fail(Yii::t(
+                            'app',
+                            'No hay parámetro de recargo (setting) configurado para el concepto «{c}» (código «{code}»).',
+                            [
+                                'c' => (string) $concepto->nombre,
+                                'code' => $codigo !== '' ? $codigo : '—',
+                            ]
+                        ));
+                    }
+                }
+            }
+        }
+
+        $batchUuid = $this->nuevoBatchUuid();
+
+        $tx = Yii::$app->db->beginTransaction();
+        try {
+            $primeraId = null;
+            $idsCreados = [];
+            foreach ($filas as $fila) {
+                /** @var NovedadConcepto $concObj */
+                $concObj = $conceptosPorId[(int) $fila['concepto_id']];
+                $codigo = strtoupper(trim((string) ($concObj->codigo ?? '')));
+                $qty = (float) str_replace(',', '.', (string) ($fila['cantidad'] ?? '0'));
+                if ($codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION) {
+                    $qty = 1.0;
+                }
+
+                $importeFila = 0.0;
+                if ($esContratoTipoHoras && $tarifasPorConcepto !== null) {
+                    $tarifa = (float) ($tarifasPorConcepto[$codigo] ?? 0);
+                    $importeFila = round($qty * $tarifa, 4);
+                } elseif ($codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION) {
+                    $auxImp = $this->resolveImporteAuxilioMovilizacion($empresaId, $profileId, $ctx);
+                    $importeFila = round((float) ($auxImp ?? 0.0), 4);
+                } elseif ($setting !== null && $valorHoraOrdinaria !== null) {
+                    $factorMult = $this->factorMultiplicadorSettingHorasPorCodigo($setting, $codigo);
+                    $importeFila = round($qty * $valorHoraOrdinaria * $factorMult, 4);
+                }
+
+                $vu = null;
+                if ($importeFila > 0.0 && $qty > 0.0) {
+                    $vu = round($importeFila / $qty, 6);
+                }
+
+                $n = new Novedad();
+                $n->setScenario(Novedad::SCENARIO_SOLICITUD_HORAS_FILAS);
+                $n->batch_id = $batchUuid;
+                $n->empresa_id = $plantilla->empresa_id;
+                $n->profile_id = $plantilla->profile_id;
+                $n->novedad_tipo_id = $plantilla->novedad_tipo_id;
+                $n->concepto_id = (int) $concObj->id;
+                $n->fecha_novedad = $fechaPlantilla;
+                $n->hora_inicio = null;
+                $n->hora_fin = null;
+                $n->cantidad = (string) $qty;
+                $n->unidad = $codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION
+                    ? Yii::t('app', 'Unidad')
+                    : (trim((string) ($fila['unidad'] ?? '')) !== '' ? trim((string) $fila['unidad']) : Yii::t('app', 'Hora'));
+                $com = trim((string) ($fila['comentario'] ?? ''));
+                $n->descripcion = $com !== '' ? $com : null;
+                $n->novedad_origen_id = $primeraId;
+                $n->estado = Novedad::ESTADO_BORRADOR;
+                $n->estado_carga = Novedad::ESTADO_CARGA_CREADA;
+                $n->importe = $importeFila;
+                $n->valor_unitario = $vu;
+
+                $this->validarReglasNovedad($n);
+                if ($n->hasErrors()) {
+                    $tx->rollBack();
+
+                    return $fail(implode(' ', $n->getFirstErrors()));
+                }
+
+                $this->aplicarFormularioConceptoYSaveDatos($n, $concObj, $datosValores, $ctx);
+                if ($n->hasErrors()) {
+                    $tx->rollBack();
+
+                    return $fail(implode(' ', $n->getFirstErrors()));
+                }
+
+                if (!$n->save()) {
+                    $tx->rollBack();
+
+                    return $fail(implode(' ', $n->getFirstErrors()));
+                }
+
+                $idsCreados[] = (int) $n->id;
+                if ($primeraId === null) {
+                    $primeraId = (int) $n->id;
+                }
+            }
+
+            $tx->commit();
+
+            return [
+                'ok' => true,
+                'error' => '',
+                'ids' => $idsCreados,
+                'origen_id' => $primeraId ?? 0,
+                'batch_id' => $batchUuid,
+            ];
+        } catch (Throwable $e) {
+            $tx->rollBack();
+            Yii::error($e, __METHOD__);
+
+            return $fail(Yii::t('app', 'Error al guardar las novedades.'));
+        }
     }
 
     private function setFlashFirstModelError(Novedad $model): void
@@ -1270,6 +1718,25 @@ class NovedadController extends Controller
      */
     private function extractDatosCamposDinamicosFromPost(): array
     {
+        $decoded = $this->decodeNovedadDatosArrayFromPost();
+        $campos = $decoded['campos_dinamicos'] ?? null;
+        if (is_array($campos)) {
+            return $campos;
+        }
+        if ($decoded !== []) {
+            unset($decoded['solicitud']);
+
+            return $decoded;
+        }
+
+        return [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeNovedadDatosArrayFromPost(): array
+    {
         $novedadPosted = $this->request->post('Novedad', []);
         $raw = $novedadPosted['datos'] ?? null;
         if (is_array($raw)) {
@@ -1280,15 +1747,39 @@ class NovedadController extends Controller
         }
         try {
             $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
-            if (!is_array($decoded)) {
-                return [];
-            }
-            $campos = $decoded['campos_dinamicos'] ?? [];
 
-            return is_array($campos) ? $campos : [];
+            return is_array($decoded) ? $decoded : [];
         } catch (\JsonException $e) {
             return [];
         }
+    }
+
+    private function extraerFechaInicialAusentismosDesdeDatosJson(string $datosJson): ?string
+    {
+        if ($datosJson === '') {
+            return null;
+        }
+        try {
+            $arr = json_decode($datosJson, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+        if (!is_array($arr)) {
+            return null;
+        }
+        $fi = $arr['fecha_inicial'] ?? null;
+        if (!is_scalar($fi) || trim((string) $fi) === '') {
+            $cd = $arr['campos_dinamicos'] ?? [];
+            if (is_array($cd)) {
+                $fi = $cd['fecha_inicial'] ?? null;
+            }
+        }
+        if (!is_scalar($fi)) {
+            return null;
+        }
+        $s = trim((string) $fi);
+
+        return $s !== '' ? $s : null;
     }
 
     /**
@@ -1315,6 +1806,7 @@ class NovedadController extends Controller
      * @param int|null $empleadoProfileUserId user_id del empleado (profile)
      * @param int|null $novedadTipoId si se indica (>0), solo conceptos de ese tipo
      * @param string|null $fechaContratoYmd si se indica, contrato según {@see Contrato::findOccupyingAt} (no solo estado activo)
+     * @param int|null $empresaClienteId filtra el contrato activo como en la solicitud (opcional)
      *
      * @return NovedadConcepto[]
      */
@@ -1322,7 +1814,8 @@ class NovedadController extends Controller
         int $empresaId,
         ?int $empleadoProfileUserId = null,
         ?int $novedadTipoId = null,
-        ?string $fechaContratoYmd = null
+        ?string $fechaContratoYmd = null,
+        ?int $empresaClienteId = null
     ): array {
         $ids = EmpresaNovedadConcepto::find()
             ->select('novedad_concepto_id')
@@ -1370,6 +1863,17 @@ class NovedadController extends Controller
                 )) {
                     continue;
                 }
+                $codigoUpper = strtoupper(trim((string) ($c->codigo ?? '')));
+                $tipoNt = $c->novedadTipo;
+                if (
+                    $tipoNt !== null
+                    && (string) $tipoNt->codigo === 'horas'
+                    && ($codigoUpper === NovedadHorasTroceoService::COD_HORA_ESPECIAL
+                        || $codigoUpper === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION)
+                    && !$this->esContratoTipoHorasParaEmpleado($empresaId, (int) $empleadoProfileUserId, $empresaClienteId)
+                ) {
+                    continue;
+                }
             }
             $out[] = $c;
         }
@@ -1390,31 +1894,21 @@ class NovedadController extends Controller
             return;
         }
 
-        $mergeCtx = static function (array $datos, ?NovedadSolicitudContextForm $c): array {
-            if ($c === null) {
-                return $datos;
-            }
-            $datos['empresa_cliente_id'] = (string) $c->empresa_cliente_id;
-            $datos['ciudad_id'] = (string) $c->ciudad_id;
-            $datos['sede_id'] = (string) $c->sede_id;
-
-            return $datos;
-        };
-
         $campos = NovedadConceptoFormularioService::camposOrdenados($concepto);
         if ($campos === []) {
             if ($ctx === null) {
                 return;
             }
             $datosMin = [];
-            if ($model->horas_calculadas !== null) {
-                $datosMin['horas_cantidad'] = (string) $model->horas_calculadas;
+            if ($model->cantidad !== null) {
+                $datosMin['horas_cantidad'] = (string) $model->cantidad;
             }
             if (!empty($model->fecha_novedad)) {
                 $datosMin['fecha_novedad'] = (string) $model->fecha_novedad;
             }
             try {
-                $model->datos = json_encode($mergeCtx($datosMin, $ctx), JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+                $pack = NovedadConceptoFormularioService::empaquetarDatosJsonSolicitud($datosMin, $ctx);
+                $model->datos = json_encode($pack, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
                 $model->addError('datos', Yii::t('app', 'Error al serializar los datos del formulario.'));
             }
@@ -1422,15 +1916,15 @@ class NovedadController extends Controller
             return;
         }
 
-        $adjunto = UploadedFile::getInstanceByName('datos[adjunto_pdf]');
-        NovedadConceptoFormularioService::validarCampos($model, $concepto, $postedDatos, $adjunto);
+        NovedadConceptoFormularioService::validarCampos($model, $concepto, $postedDatos);
 
         if ($model->hasErrors()) {
             return;
         }
 
+        NovedadConceptoFormularioService::sincronizarAtributosNovedadDesdeCampos($model, $concepto, $postedDatos);
+
         $datosLimpios = NovedadConceptoFormularioService::datosLimpiosParaJson($postedDatos, $concepto);
-        $datosLimpios = $mergeCtx($datosLimpios, $ctx);
 
         $cod = strtoupper((string) $concepto->codigo);
         $codigosHorasJson = [
@@ -1443,31 +1937,282 @@ class NovedadController extends Controller
         ];
         if (in_array($cod, $codigosHorasJson, true)) {
             $model->normalizarHorasYCalcular();
-            if ($model->horas_calculadas !== null) {
-                $datosLimpios['horas_cantidad'] = (string) $model->horas_calculadas;
+            if ($model->cantidad !== null) {
+                $datosLimpios['horas_cantidad'] = (string) $model->cantidad;
             }
             if (!empty($model->fecha_novedad)) {
                 $datosLimpios['fecha_novedad'] = (string) $model->fecha_novedad;
             }
         }
 
-        if ($adjunto instanceof UploadedFile && $adjunto->error === UPLOAD_ERR_OK) {
-            $path = NovedadConceptoFormularioService::guardarAdjuntoPdf($adjunto, (int) $model->empresa_id);
+        foreach ($campos as $campoArchivo) {
+            $tipoArch = NovedadConceptoFormularioService::tipoDatoFormularioArchivo($campoArchivo);
+            if ($tipoArch === null) {
+                continue;
+            }
+            $file = UploadedFile::getInstanceByName('datos[' . $campoArchivo->campo_id . ']');
+            if (!$file instanceof UploadedFile || $file->error !== UPLOAD_ERR_OK) {
+                continue;
+            }
+            if ($tipoArch === 'file_pdf') {
+                $path = NovedadConceptoFormularioService::guardarAdjuntoPdf($file, (int) $model->empresa_id);
+            } else {
+                $path = NovedadConceptoFormularioService::guardarAdjuntoDocumento($file, (int) $model->empresa_id);
+            }
             if ($path === null) {
-                $model->addError('datos', Yii::t('app', 'No se pudo guardar el archivo PDF.'));
+                $model->addError('datos', Yii::t('app', 'No se pudo guardar el archivo.'));
 
                 return;
             }
-            $datosLimpios['adjunto_pdf'] = $path;
+            $datosLimpios[(string) $campoArchivo->campo_id] = $path;
         }
 
         try {
-            $model->datos = $datosLimpios === []
-                ? '{}'
-                : json_encode($datosLimpios, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+            $pack = NovedadConceptoFormularioService::empaquetarDatosJsonSolicitud($datosLimpios, $ctx);
+            $model->datos = json_encode($pack, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             $model->addError('datos', Yii::t('app', 'Error al serializar los datos del formulario.'));
         }
+    }
+
+    /**
+     * Completa {@see Novedad::$importe} y {@see Novedad::$valor_unitario} cuando hay cantidad y reglas de horas/settlement;
+     * si no aplica cálculo, importe 0 (misma línea que admin).
+     */
+    private function aplicarImporteYValorUnitarioSolicitudWeb(
+        Novedad $model,
+        NovedadConcepto $concepto,
+        NovedadSolicitudContextForm $ctx
+    ): void {
+        $empresaId = (int) $model->empresa_id;
+        $profileId = (int) $model->profile_id;
+        $fechaPlantilla = trim((string) ($model->fecha_novedad ?? ''));
+        $codigo = strtoupper(trim((string) ($concepto->codigo ?? '')));
+
+        if ($this->sincronizarImporteYValorUnitarioPagosPeOPp($model, $concepto)) {
+            return;
+        }
+
+        $qty = null;
+        if ($model->cantidad !== null && $model->cantidad !== '') {
+            $qs = str_replace(',', '.', (string) $model->cantidad);
+            if (is_numeric($qs)) {
+                $qty = (float) $qs;
+            }
+        }
+        if ($qty === null || $qty <= 0.0) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaPlantilla)) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+
+        $esContratoTipoHoras = $this->esContratoTipoHorasActivo($empresaId, $profileId, $ctx);
+
+        if ($esContratoTipoHoras) {
+            $tarifasPorConcepto = $this->resolveTarifasHorasPorConcepto($empresaId, $profileId, $ctx);
+            if ($tarifasPorConcepto === null) {
+                $model->importe = 0;
+                $model->valor_unitario = null;
+
+                return;
+            }
+            $tarifa = (float) ($tarifasPorConcepto[$codigo] ?? 0.0);
+            if ($tarifa <= 0.0) {
+                $model->importe = 0;
+                $model->valor_unitario = null;
+
+                return;
+            }
+            $importeFila = round($qty * $tarifa, 4);
+            $model->importe = $importeFila;
+            $model->valor_unitario = $qty > 0 ? round($importeFila / $qty, 6) : null;
+
+            return;
+        }
+
+        if ($codigo === NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION) {
+            $auxImp = $this->resolveImporteAuxilioMovilizacion($empresaId, $profileId, $ctx);
+            if ($auxImp === null || $auxImp < 0.01) {
+                $model->importe = 0;
+                $model->valor_unitario = null;
+
+                return;
+            }
+            $imp = round((float) $auxImp, 4);
+            $model->importe = $imp;
+            $model->valor_unitario = $qty > 0 ? round($imp / $qty, 6) : null;
+
+            return;
+        }
+
+        try {
+            $setting = NovedadSettingResolver::resolveForEmpresaYFecha($empresaId, $fechaPlantilla);
+        } catch (Throwable $e) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+
+        $contratoLiquidacion = $this->resolveContratoActivoContexto($empresaId, $profileId, $ctx);
+        if ($contratoLiquidacion === null) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+
+        $valorHoraOrdinaria = $this->resolveValorHoraOrdinariaContrato($contratoLiquidacion);
+        if ($valorHoraOrdinaria === null) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+
+        $factorMult = $this->factorMultiplicadorSettingHorasPorCodigo($setting, $codigo);
+        if ($factorMult <= 0.0) {
+            $model->importe = 0;
+            $model->valor_unitario = null;
+
+            return;
+        }
+
+        $importeFila = round($qty * $valorHoraOrdinaria * $factorMult, 4);
+        $model->importe = $importeFila;
+        $model->valor_unitario = $qty > 0 ? round($importeFila / $qty, 6) : null;
+    }
+
+    /**
+     * Importe y valor unitario para PE_* / PP_* desde columna ya sincronizada o desde `datos.campos_dinamicos`.
+     * PP_*: mismo importe y valor unitario (sin fórmulas; horas/minutos solo en JSON).
+     *
+     * @return bool true si aplica esta rama (no debe ejecutarse la lógica de horas)
+     */
+    private function sincronizarImporteYValorUnitarioPagosPeOPp(Novedad $model, NovedadConcepto $concepto): bool
+    {
+        if (!$this->esConceptoImporteDesdeValorPeOPp($concepto)) {
+            return false;
+        }
+        $imp = $this->resolverImportePagosExtralegalesDesdeModelo($model);
+        if ($imp !== null && $imp > 0) {
+            $model->importe = round($imp, 2);
+        } else {
+            $model->importe = 0;
+        }
+
+        if ($this->esConceptoPagosPrestacionalesPp($concepto)) {
+            $model->valor_unitario = round((float) $model->importe, 4);
+
+            return true;
+        }
+
+        $qtyPe = null;
+        if ($model->cantidad !== null && $model->cantidad !== '') {
+            $qs = str_replace(',', '.', (string) $model->cantidad);
+            if (is_numeric($qs)) {
+                $qtyPe = (float) $qs;
+            }
+        }
+        if ($qtyPe !== null && $qtyPe > 0.0) {
+            $model->valor_unitario = round((float) $model->importe / $qtyPe, 6);
+        } else {
+            $model->valor_unitario = round((float) $model->importe, 4);
+        }
+
+        return true;
+    }
+
+    /**
+     * PE_* (pagos extralegales) o PP_* (pagos prestacionales): importe desde campo dinámico `valor`.
+     */
+    private function esConceptoImporteDesdeValorPeOPp(NovedadConcepto $c): bool
+    {
+        return $this->esConceptoPagosExtralegalesPe($c) || $this->esConceptoPagosPrestacionalesPp($c);
+    }
+
+    private function esConceptoPagosExtralegalesPe(NovedadConcepto $c): bool
+    {
+        if ($c->novedadTipo === null && $c->novedad_tipo_id) {
+            $c->populateRelation('novedadTipo', NovedadTipo::findOne((int) $c->novedad_tipo_id));
+        }
+        $tipo = $c->novedadTipo;
+        if ($tipo === null) {
+            return false;
+        }
+        $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
+        $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
+        $esTipo = $codigoTipo === 'pagos_extralegales' || $nombreTipo === 'pagos extralegales';
+        if (!$esTipo) {
+            return false;
+        }
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+
+        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PE_');
+    }
+
+    private function esConceptoPagosPrestacionalesPp(NovedadConcepto $c): bool
+    {
+        if ($c->novedadTipo === null && $c->novedad_tipo_id) {
+            $c->populateRelation('novedadTipo', NovedadTipo::findOne((int) $c->novedad_tipo_id));
+        }
+        $tipo = $c->novedadTipo;
+        if ($tipo === null) {
+            return false;
+        }
+        $codigoTipo = strtolower(trim((string) ($tipo->codigo ?? '')));
+        $nombreTipo = strtolower(trim((string) ($tipo->nombre ?? '')));
+        $esTipo = $codigoTipo === 'pagos_prestacionales' || $nombreTipo === 'pagos prestacionales';
+        if (!$esTipo) {
+            return false;
+        }
+        $codigoConcepto = strtoupper(trim((string) ($c->codigo ?? '')));
+
+        return $codigoConcepto !== '' && str_starts_with($codigoConcepto, 'PP_');
+    }
+
+    private function resolverImportePagosExtralegalesDesdeModelo(Novedad $model): ?float
+    {
+        $rawImp = $model->importe;
+        if ($rawImp !== null && (string) $rawImp !== '') {
+            $s = str_replace(',', '.', trim((string) $rawImp));
+            if (is_numeric($s)) {
+                return (float) $s;
+            }
+        }
+        $datosStr = trim((string) ($model->datos ?? ''));
+        if ($datosStr === '') {
+            return null;
+        }
+        try {
+            $arr = json_decode($datosStr, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return null;
+        }
+        if (!is_array($arr)) {
+            return null;
+        }
+        $cd = $arr['campos_dinamicos'] ?? [];
+        if (!is_array($cd)) {
+            return null;
+        }
+        $v = $cd['valor'] ?? null;
+        if (!is_scalar($v)) {
+            return null;
+        }
+        $s = str_replace(',', '.', trim(str_replace([' ', "\u{00A0}"], '', (string) $v)));
+        if ($s === '' || !is_numeric($s)) {
+            return null;
+        }
+
+        return (float) $s;
     }
 
     private function validarReglasNovedad(Novedad $model): void
@@ -1510,205 +2255,22 @@ class NovedadController extends Controller
         )) {
             $model->addError('profile_id', Yii::t('app', 'El cargo del contrato vigente del empleado no está habilitado para este concepto.'));
         }
-        if (!Yii::$app->user->isGuest && !NovedadGuard::gerenteSedePuedeParaEmpleado((int) Yii::$app->user->id, (int) $model->profile_id)) {
-            $model->addError('profile_id', 'Solo puede registrar novedades para empleados de su misma sede (location_sede).');
-        }
-    }
-
-    /**
-     * @param int[] $allowed
-     * @param array<string, mixed> $datosValores
-     *
-     * @return array{ok: bool, error: string, ids: int[], origen_id: int}
-     */
-    private function guardarSolicitudTipoHorasTroceada(
-        Novedad $plantilla,
-        NovedadSolicitudContextForm $ctx,
-        array $allowed,
-        array $datosValores,
-        bool $solicitarAuxilioMovilizacion = false,
-        ?float $importeAuxilioMovilizacion = null
-    ): array {
-        $fail = static function (string $msg): array {
-            return ['ok' => false, 'error' => $msg, 'ids' => [], 'origen_id' => 0];
-        };
-
-        $empresaId = (int) $plantilla->empresa_id;
-        $profileId = (int) $plantilla->profile_id;
-        if (!in_array($empresaId, $allowed, true)) {
-            return $fail(Yii::t('app', 'Organización no permitida.'));
-        }
-
-        try {
-            $setting = NovedadSettingResolver::resolveForEmpresaYFecha($empresaId, (string) $plantilla->fecha_novedad);
-        } catch (Throwable $e) {
-            return $fail($e->getMessage());
-        }
-
-        try {
-            $fragmentos = NovedadHorasTroceoService::trocear(
-                (string) $plantilla->fecha_novedad,
-                (string) $plantilla->hora_inicio,
-                (string) $plantilla->hora_fin,
-                $setting
+        if (
+            !Yii::$app->user->isGuest
+            && !NovedadGuard::gerenteSedePuedeParaEmpleado(
+                (int) Yii::$app->user->id,
+                (int) $model->profile_id,
+                (int) $model->empresa_id,
+                $fechaContratoOk ? $fechaContrato : null
+            )
+        ) {
+            $model->addError(
+                'profile_id',
+                Yii::t(
+                    'app',
+                    'Solo puede registrar novedades para empleados de una sede que tenga asignada o cuando su contrato y el del empleado son en la misma empresa y sede.'
+                )
             );
-        } catch (Throwable $e) {
-            return $fail($e->getMessage());
-        }
-
-        if ($fragmentos === []) {
-            return $fail(Yii::t('app', 'No se generó ningún fragmento de horas; revise el rango.'));
-        }
-
-        $fechaPlantilla = (string) $plantilla->fecha_novedad;
-        $cargoAplicaClases = $this->empleadoAplicaConceptoClasesGrupales($empresaId, $profileId, $fechaPlantilla);
-        foreach ($fragmentos as $i => $frag) {
-            if ($frag['codigo'] === NovedadHorasTroceoService::COD_CLASES_GRUPALES && !$cargoAplicaClases) {
-                $fragmentos[$i]['codigo'] = NovedadHorasTroceoService::COD_HORAS_EXTRAS;
-            }
-        }
-
-        $codigos = array_values(array_unique(array_column($fragmentos, 'codigo')));
-        /** @var array<string, NovedadConcepto> $conceptosPorCodigo */
-        $conceptosPorCodigo = NovedadConcepto::find()
-            ->where(['codigo' => $codigos, 'activo' => 1])
-            ->indexBy('codigo')
-            ->all();
-        foreach ($codigos as $cod) {
-            if (!isset($conceptosPorCodigo[$cod])) {
-                return $fail(Yii::t('app', 'Falta el concepto con código «{c}» en el catálogo.', ['c' => $cod]));
-            }
-        }
-
-        $aplicables = $this->conceptosAplicablesParaSolicitud($empresaId, $profileId, null, $fechaPlantilla);
-        $aplicableIds = [];
-        foreach ($aplicables as $c) {
-            $aplicableIds[(int) $c->id] = true;
-        }
-        foreach ($fragmentos as $frag) {
-            $cid = (int) $conceptosPorCodigo[$frag['codigo']]->id;
-            if (!isset($aplicableIds[$cid])) {
-                return $fail(Yii::t('app', 'El concepto «{c}» no aplica a este empleado o no está habilitado.', ['c' => $frag['codigo']]));
-            }
-        }
-
-        $tx = Yii::$app->db->beginTransaction();
-        try {
-            $primeraId = null;
-            $idsCreados = [];
-            foreach ($fragmentos as $frag) {
-                $concObj = $conceptosPorCodigo[$frag['codigo']];
-                $n = new Novedad();
-                $n->setScenario(Novedad::SCENARIO_SOLICITUD_WEB);
-                $n->empresa_id = $plantilla->empresa_id;
-                $n->profile_id = $plantilla->profile_id;
-                $n->novedad_tipo_id = $plantilla->novedad_tipo_id;
-                $n->concepto_id = (int) $concObj->id;
-                $n->fecha_novedad = $frag['fecha_novedad'];
-                $n->hora_inicio = $frag['hora_inicio'];
-                $n->hora_fin = $frag['hora_fin'];
-                $n->descripcion = $plantilla->descripcion;
-                $n->novedad_origen_id = $primeraId;
-                $n->estado = Novedad::ESTADO_BORRADOR;
-                $n->estado_carga = Novedad::ESTADO_CARGA_CREADA;
-                $n->importe = 0;
-
-                $this->validarReglasNovedad($n);
-                if ($n->hasErrors()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $n->getFirstErrors()));
-                }
-
-                $this->aplicarFormularioConceptoYSaveDatos($n, $concObj, $datosValores, $ctx);
-                if ($n->hasErrors()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $n->getFirstErrors()));
-                }
-
-                if (!$n->save()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $n->getFirstErrors()));
-                }
-
-                $idsCreados[] = (int) $n->id;
-                if ($primeraId === null) {
-                    $primeraId = (int) $n->id;
-                }
-            }
-
-            if (
-                $solicitarAuxilioMovilizacion
-                && $cargoAplicaClases
-                && $importeAuxilioMovilizacion !== null
-                && $importeAuxilioMovilizacion >= 0.01
-                && $primeraId !== null
-            ) {
-                $concAux = NovedadConcepto::find()
-                    ->where(['codigo' => NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION, 'activo' => 1])
-                    ->one();
-                if ($concAux === null) {
-                    $tx->rollBack();
-
-                    return $fail(Yii::t('app', 'No está configurado el concepto de auxilio de movilización.'));
-                }
-                $auxId = (int) $concAux->id;
-                if (!isset($aplicableIds[$auxId])) {
-                    $tx->rollBack();
-
-                    return $fail(Yii::t('app', 'El auxilio de movilización no aplica a este empleado o no está habilitado.'));
-                }
-                $na = new Novedad();
-                $na->setScenario(Novedad::SCENARIO_AUXILIO_MOVILIZACION);
-                $na->empresa_id = $plantilla->empresa_id;
-                $na->profile_id = $plantilla->profile_id;
-                $na->novedad_tipo_id = $plantilla->novedad_tipo_id;
-                $na->concepto_id = $auxId;
-                $na->fecha_novedad = (string) $plantilla->fecha_novedad;
-                $na->hora_inicio = null;
-                $na->hora_fin = null;
-                $na->horas_calculadas = null;
-                $na->importe = (string) $importeAuxilioMovilizacion;
-                $na->novedad_origen_id = $primeraId;
-                $na->descripcion = $plantilla->descripcion;
-                $na->estado = Novedad::ESTADO_BORRADOR;
-                $na->estado_carga = Novedad::ESTADO_CARGA_CREADA;
-
-                $this->validarReglasNovedad($na);
-                if ($na->hasErrors()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $na->getFirstErrors()));
-                }
-                $this->aplicarFormularioConceptoYSaveDatos($na, $concAux, $datosValores, $ctx);
-                if ($na->hasErrors()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $na->getFirstErrors()));
-                }
-                if (!$na->save()) {
-                    $tx->rollBack();
-
-                    return $fail(implode(' ', $na->getFirstErrors()));
-                }
-                $idsCreados[] = (int) $na->id;
-            }
-
-            $tx->commit();
-
-            return [
-                'ok' => true,
-                'error' => '',
-                'ids' => $idsCreados,
-                'origen_id' => $primeraId ?? 0,
-            ];
-        } catch (Throwable $e) {
-            $tx->rollBack();
-            Yii::error($e, __METHOD__);
-
-            return $fail(Yii::t('app', 'Error al guardar las novedades.'));
         }
     }
 
@@ -1767,7 +2329,7 @@ class NovedadController extends Controller
     }
 
     /**
-     * @return array{novedades: Novedad[], ids: int[], origen_id: int}|null
+     * @return array{novedades: Novedad[], ids: int[], origen_id: int, batch_id: string}|null
      */
     private function obtieneNovedadesBorradorHorasSesionValidadas(): ?array
     {
@@ -1776,23 +2338,49 @@ class NovedadController extends Controller
             return null;
         }
         $ids = array_values(array_unique(array_map('intval', $pack['ids'])));
-        $origenId = (int) ($pack['origen_id'] ?? 0);
-
-        $allowed = $this->empresasIdsDisponiblesParaSolicitud();
-        if ($allowed === []) {
-            return null;
-        }
 
         /** @var Novedad[] $novedades */
         $novedades = Novedad::find()
             ->where(['id' => $ids])
-            ->with(['concepto', 'novedadTipo', 'profile', 'empresa'])
+            ->with(['concepto', 'novedadTipo', 'profile.cargo', 'empresa'])
             ->all();
 
         if (count($novedades) !== count($ids)) {
             return null;
         }
 
+        return $this->validaYOrdenaPackBorradorHoras($novedades);
+    }
+
+    /**
+     * @param Novedad[] $novedades
+     */
+    private function resuelveOrigenIdTroceo(array $novedades): int
+    {
+        $ids = array_map(static fn(Novedad $n): int => (int) $n->id, $novedades);
+        foreach ($novedades as $n) {
+            if ($n->novedad_origen_id === null) {
+                return (int) $n->id;
+            }
+        }
+
+        return min($ids);
+    }
+
+    /**
+     * @param Novedad[] $novedades
+     *
+     * @return array{novedades: Novedad[], ids: int[], origen_id: int, batch_id: string}|null
+     */
+    private function validaYOrdenaPackBorradorHoras(array $novedades): ?array
+    {
+        if ($novedades === []) {
+            return null;
+        }
+        $allowed = $this->empresasIdsDisponiblesParaSolicitud();
+        if ($allowed === []) {
+            return null;
+        }
         foreach ($novedades as $n) {
             if ((string) $n->estado !== Novedad::ESTADO_BORRADOR) {
                 return null;
@@ -1803,7 +2391,17 @@ class NovedadController extends Controller
             if (!$this->esNovedadTipoHoras((int) $n->novedad_tipo_id)) {
                 return null;
             }
-            if (!Yii::$app->user->isGuest && !NovedadGuard::gerenteSedePuedeParaEmpleado((int) Yii::$app->user->id, (int) $n->profile_id)) {
+            $fn = ($n->fecha_novedad !== null && $n->fecha_novedad !== '') ? (string) $n->fecha_novedad : null;
+            $fnOk = $fn !== null && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fn);
+            if (
+                !Yii::$app->user->isGuest
+                && !NovedadGuard::gerenteSedePuedeParaEmpleado(
+                    (int) Yii::$app->user->id,
+                    (int) $n->profile_id,
+                    (int) $n->empresa_id,
+                    $fnOk ? $fn : null
+                )
+            ) {
                 return null;
             }
         }
@@ -1815,11 +2413,331 @@ class NovedadController extends Controller
             return $fa <=> $fb;
         });
 
+        $ids = array_map(static fn(Novedad $n): int => (int) $n->id, $novedades);
+        $origenId = $this->resuelveOrigenIdTroceo($novedades);
+        $batchId = '';
+        foreach ($novedades as $n) {
+            $g = trim((string) ($n->batch_id ?? ''));
+            if ($g !== '') {
+                $batchId = $g;
+                break;
+            }
+        }
+
         return [
             'novedades' => $novedades,
             'ids' => $ids,
             'origen_id' => $origenId,
+            'batch_id' => $batchId,
         ];
+    }
+
+    private function obtienePackBorradorPorBatchId(string $uuid): ?array
+    {
+        $uuid = trim($uuid);
+        if ($uuid === '' || !$this->esUuidV4Formato($uuid)) {
+            return null;
+        }
+
+        /** @var Novedad[] $novedades */
+        $novedades = Novedad::find()
+            ->where(['batch_id' => $uuid, 'estado' => Novedad::ESTADO_BORRADOR])
+            ->with(['concepto', 'novedadTipo', 'profile.cargo', 'empresa'])
+            ->all();
+
+        return $this->validaYOrdenaPackBorradorHoras($novedades);
+    }
+
+    private function nuevoBatchUuid(): string
+    {
+        $b = random_bytes(16);
+        $b[6] = chr((ord($b[6]) & 0x0f) | 0x40);
+        $b[8] = chr((ord($b[8]) & 0x3f) | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($b), 4));
+    }
+
+    private function esUuidV4Formato(string $uuid): bool
+    {
+        return (bool) preg_match(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
+            $uuid
+        );
+    }
+
+    /**
+     * Datos de lectura para el recuadro de contexto en el resumen del borrador (primera solicitud del pack).
+     *
+     * @param Novedad[] $novedades
+     *
+     * @return array{nombre: string, documento: string, cargo: string, organizacion: string, empresaCliente: string}
+     */
+    private function buildResumenBorradorContexto(array $novedades): array
+    {
+        $defaults = [
+            'nombre' => '—',
+            'documento' => '—',
+            'cargo' => '—',
+            'organizacion' => '—',
+            'empresaCliente' => '—',
+        ];
+        if ($novedades === []) {
+            return $defaults;
+        }
+
+        $n = $novedades[0];
+        $profile = $n->profile;
+
+        $nombre = '—';
+        if ($profile !== null) {
+            $nombre = trim((string) $profile->name);
+            $nombre = $nombre !== '' ? $nombre : '—';
+        }
+
+        $documento = '—';
+        if ($profile !== null) {
+            $tipo = trim((string) ($profile->tipo_doc ?? ''));
+            $num = trim((string) ($profile->num_doc ?? ''));
+            if ($tipo !== '' && $num !== '') {
+                $documento = $tipo . ' ' . $num;
+            } elseif ($num !== '') {
+                $documento = $num;
+            }
+        }
+
+        $cargo = '—';
+        if ($profile !== null) {
+            $contrato = NovedadGuard::contratoActivoEnEmpresa((int) $n->empresa_id, (int) $n->profile_id);
+            if ($contrato !== null) {
+                $cargoContrato = $contrato->cargo;
+                if ($cargoContrato !== null) {
+                    $cn = trim((string) $cargoContrato->nombre);
+                    if ($cn !== '') {
+                        $cargo = $cn;
+                    }
+                }
+            }
+            if ($cargo === '—' && (int) ($profile->cargo_id ?? 0) > 0) {
+                $cPerfil = $profile->cargo;
+                if ($cPerfil === null) {
+                    $cPerfil = Cargos::findOne((int) $profile->cargo_id);
+                }
+                if ($cPerfil !== null) {
+                    $cn = trim((string) $cPerfil->nombre);
+                    if ($cn !== '') {
+                        $cargo = $cn;
+                    }
+                }
+            }
+            if ($cargo === '—') {
+                $pos = trim((string) ($profile->position ?? ''));
+                if ($pos !== '') {
+                    $cargo = $pos;
+                }
+            }
+        }
+
+        $organizacion = '—';
+        if ($n->empresa !== null) {
+            $on = trim((string) ($n->empresa->name ?? $n->empresa->social_name ?? ''));
+            $organizacion = $on !== '' ? $on : '—';
+        }
+
+        $empresaCliente = '—';
+        $datos = [];
+        try {
+            $datos = json_decode((string) ($n->datos ?? '{}'), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $datos = [];
+        }
+        $ecId = isset($datos['empresa_cliente_id']) ? (int) $datos['empresa_cliente_id'] : 0;
+        if ($ecId > 0) {
+            $ec = EmpresaCliente::findOne($ecId);
+            if ($ec !== null) {
+                $ecn = trim((string) $ec->nombre);
+                $empresaCliente = $ecn !== '' ? $ecn : '—';
+            }
+        }
+
+        return [
+            'nombre' => $nombre,
+            'documento' => $documento,
+            'cargo' => $cargo,
+            'organizacion' => $organizacion,
+            'empresaCliente' => $empresaCliente,
+        ];
+    }
+
+    /**
+     * @return array{0:?string,1:string}
+     */
+    private function tarifaFieldByConceptoCodigo(string $codigo): array
+    {
+        $map = NovedadHorasTroceoService::mapCodigoConceptoACampoTarifaLocationSedes();
+        $campo = $map[$codigo] ?? null;
+        $etiquetasPorCampo = [
+            'valor_hora_diurna' => Yii::t('app', 'Valor hora diurna'),
+            'valor_hora_especial' => Yii::t('app', 'Valor hora especial'),
+            'valor_movilizacion' => Yii::t('app', 'Valor movilización'),
+            'valor_hora_nocturna' => Yii::t('app', 'Valor hora nocturna'),
+            'valor_hora_diurna_domingo_festivos' => Yii::t('app', 'Valor hora diurna domingo/festivos'),
+            'valor_hora_nocturna_domingo_festiva' => Yii::t('app', 'Valor hora nocturna domingo/festivo'),
+        ];
+        $label = $campo !== null ? ($etiquetasPorCampo[$campo] ?? Yii::t('app', 'Tarifa sede')) : Yii::t('app', 'Sin tarifa en sede');
+
+        return [$campo, $label];
+    }
+
+    private function esContratoTipoHorasActivo(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): bool
+    {
+        $contrato = $this->resolveContratoActivoContexto($empresaId, $profileId, $ctx);
+        if ($contrato === null || $contrato->contratoTipo === null) {
+            return false;
+        }
+
+        return strtoupper(trim((string) ($contrato->contratoTipo->code ?? ''))) === 'HORAS';
+    }
+
+    private function esContratoTipoHorasParaEmpleado(int $empresaId, int $profileUserId, ?int $empresaClienteId): bool
+    {
+        $ctx = new NovedadSolicitudContextForm();
+        if ($empresaClienteId !== null && $empresaClienteId > 0) {
+            $ctx->empresa_cliente_id = $empresaClienteId;
+        }
+
+        return $this->esContratoTipoHorasActivo($empresaId, $profileUserId, $ctx);
+    }
+
+    private function resolveContratoActivoContexto(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?Contrato
+    {
+        if ($empresaId <= 0 || $profileId <= 0) {
+            return null;
+        }
+
+        $q = Contrato::find()
+            ->where([
+                'empresa_id' => $empresaId,
+                'profile_id' => $profileId,
+                'estado' => Contrato::ESTADO_ACTIVO,
+            ])
+            ->with(['contratoTipo', 'cargo']);
+
+        if ((int) ($ctx->empresa_cliente_id ?? 0) > 0) {
+            $q->andWhere(['empresa_cliente_id' => (int) $ctx->empresa_cliente_id]);
+        }
+
+        return $q->orderBy(['fecha_inicio' => SORT_DESC, 'id' => SORT_DESC])->one();
+    }
+
+    /**
+     * Valor hora ordinaria del contrato: salario base ÷ jornada (contratos distintos de tipo HORAS).
+     */
+    private function resolveValorHoraOrdinariaContrato(Contrato $contrato): ?float
+    {
+        $salario = (float) ($contrato->salario ?? 0);
+        $jornada = (float) ($contrato->jornada ?? 0);
+        if ($salario <= 0.0 || $jornada <= 0.0) {
+            return null;
+        }
+
+        return $salario / $jornada;
+    }
+
+    /**
+     * @return array<string, float>|null
+     */
+    private function resolveTarifasHorasPorConcepto(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?array
+    {
+        $sede = $this->resolveSedeContratoActivo($empresaId, $profileId, $ctx);
+        if ($sede === null) {
+            return null;
+        }
+
+        $diurna = (float) ($sede->valor_hora_diurna ?? 0);
+        $domFest = (float) ($sede->valor_hora_diurna_domingo_festivos ?? 0);
+        $noct = (float) ($sede->valor_hora_nocturna ?? 0);
+        $noctDomFest = (float) ($sede->valor_hora_nocturna_domingo_festiva ?? 0);
+
+        return [
+            NovedadHorasTroceoService::COD_HORA_DIURNA => $diurna,
+            NovedadHorasTroceoService::COD_HORA_ESPECIAL => (float) ($sede->valor_hora_especial ?? 0),
+            NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION => (float) ($sede->valor_movilizacion ?? 0),
+            NovedadHorasTroceoService::COD_REC_DOM_FEST => $domFest,
+            NovedadHorasTroceoService::COD_HORA_FESTIVA_DIURNA => $domFest,
+            NovedadHorasTroceoService::COD_REC_NOCT => $noct,
+            NovedadHorasTroceoService::COD_HORA_NOCTURNA => $noct,
+            NovedadHorasTroceoService::COD_REC_NOCT_FEST => $noct,
+            NovedadHorasTroceoService::COD_HORA_FESTIVA_NOCTURNA => $noctDomFest,
+            NovedadHorasTroceoService::COD_DOMINICAL_COMPENSATORIO => $noctDomFest,
+        ];
+    }
+
+    /**
+     * Factores multiplicadores por código de concepto (setting año/país) para contrato distinto de tipo HORAS.
+     *
+     * @return array<string, float>
+     */
+    private function resolveTarifasHorasPorConceptoDesdeSetting(Setting $setting): array
+    {
+        $diurna = (float) ($setting->valor_hora_extra_diurna ?? 0);
+        $domFest = (float) ($setting->valor_hora_extra_dia_festivo ?? 0);
+        $noct = (float) ($setting->recargo_nocturno ?? 0);
+        if ($noct <= 0.0 && $setting->valor_hora_extra_nocturna !== null && $setting->valor_hora_extra_nocturna !== '') {
+            $noct = (float) $setting->valor_hora_extra_nocturna;
+        }
+        $noctFest = (float) ($setting->valor_hora_extra_nocturno_festivo ?? 0);
+        $domComp = (float) ($setting->valor_dominical_compensatorio ?? 0);
+        if ($domComp <= 0.0 && $setting->recargo_nocturno_dominical_festivo !== null && $setting->recargo_nocturno_dominical_festivo !== '') {
+            $domComp = (float) $setting->recargo_nocturno_dominical_festivo;
+        }
+
+        return [
+            NovedadHorasTroceoService::COD_HORA_DIURNA => $diurna,
+            NovedadHorasTroceoService::COD_HORA_ESPECIAL => $diurna,
+            NovedadHorasTroceoService::COD_REC_DOM_FEST => $domFest,
+            NovedadHorasTroceoService::COD_HORA_FESTIVA_DIURNA => $domFest,
+            NovedadHorasTroceoService::COD_REC_NOCT => $noct,
+            NovedadHorasTroceoService::COD_HORA_NOCTURNA => $noct,
+            NovedadHorasTroceoService::COD_REC_NOCT_FEST => $noctFest,
+            NovedadHorasTroceoService::COD_HORA_FESTIVA_NOCTURNA => $noctFest,
+            NovedadHorasTroceoService::COD_DOMINICAL_COMPENSATORIO => $domComp,
+        ];
+    }
+
+    private function factorMultiplicadorSettingHorasPorCodigo(Setting $setting, string $codigo): float
+    {
+        $map = $this->resolveTarifasHorasPorConceptoDesdeSetting($setting);
+
+        return (float) ($map[$codigo] ?? 0.0);
+    }
+
+    private function resolveImporteAuxilioMovilizacion(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?float
+    {
+        $sede = $this->resolveSedeContratoActivo($empresaId, $profileId, $ctx);
+        if ($sede !== null && $sede->valor_movilizacion !== null) {
+            return (float) $sede->valor_movilizacion;
+        }
+
+        return NovedadAuxilioMovilizacionResolver::importePredeterminado($empresaId);
+    }
+
+    private function resolveSedeContratoActivo(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?LocationSedes
+    {
+        if ($empresaId <= 0 || $profileId <= 0) {
+            return null;
+        }
+
+        $sedeId = (int) ($ctx->sede_id ?? 0);
+        if ($sedeId > 0) {
+            return LocationSedes::findOne(['id' => $sedeId, 'empresa_id' => $empresaId]);
+        }
+
+        $contrato = $this->resolveContratoActivoContexto($empresaId, $profileId, $ctx);
+        if ($contrato === null || (int) ($contrato->sede_id ?? 0) <= 0) {
+            return null;
+        }
+
+        return LocationSedes::findOne(['id' => (int) $contrato->sede_id, 'empresa_id' => $empresaId]);
     }
 
     public static function cargoAplicaClasesGrupales(int $cargoId): bool
@@ -1861,6 +2779,83 @@ class NovedadController extends Controller
         }
     }
 
+    private function asignarContextoValidacionEmpresaCliente(NovedadSolicitudContextForm $ctx, Novedad $model): void
+    {
+        $ctx->profileUserIdParaEmpresaCliente = (int) ($model->profile_id ?: 0);
+        $fechaVal = (string) ($model->fecha_novedad ?? '');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaVal)) {
+            $fechaVal = date('Y-m-d');
+        }
+        $ctx->fechaNovedadParaEmpresaCliente = $fechaVal;
+    }
+
+    /**
+     * Precarga empleado y contexto en GET (/novedad/create?profile_id=…&fecha_novedad=…).
+     */
+    private function aplicarPrefillSolicitudDesdeRequest(Novedad $model, NovedadSolicitudContextForm $ctx, int $tenantId): void
+    {
+        $pid = (int) Yii::$app->request->get('profile_id', 0);
+        if ($pid <= 0) {
+            return;
+        }
+
+        $profile = Profile::findOne([
+            'user_id' => $pid,
+            'empresas_id' => $tenantId,
+        ]);
+        if ($profile === null) {
+            Yii::$app->session->setFlash(
+                'warning',
+                Yii::t('app', 'No se pudo precargar el colaborador indicado (no encontrado en su organización).')
+            );
+
+            return;
+        }
+
+        if (Yii::$app->user->can('gerente_sede')) {
+            $identity = Yii::$app->user->identity;
+            $op = $identity && $identity->profile ? $identity->profile : null;
+            if ($op !== null && !empty($op->sede_id) && (int) $profile->sede_id !== (int) $op->sede_id) {
+                Yii::$app->session->setFlash(
+                    'warning',
+                    Yii::t('app', 'No se pudo precargar el colaborador indicado (no corresponde a su sede).')
+                );
+
+                return;
+            }
+        }
+
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+
+        $model->profile_id = $pid;
+        $model->fecha_novedad = $fecha;
+
+        $ctx->profileUserIdParaEmpresaCliente = $pid;
+        $ctx->fechaNovedadParaEmpresaCliente = $fecha;
+
+        $clientes = EmpresaCliente::activosPorPerfilYContratoVigente($tenantId, $pid, $fecha);
+        if (count($clientes) === 1) {
+            $ctx->empresa_cliente_id = (int) $clientes[0]->id;
+        }
+
+        if ($profile->sede_id !== null) {
+            $sede = LocationSedes::findOne([
+                'id' => (int) $profile->sede_id,
+                'empresa_id' => $tenantId,
+                'activo' => 1,
+            ]);
+            if ($sede !== null) {
+                $ctx->sede_id = (int) $sede->id;
+                if ($sede->city_id !== null) {
+                    $ctx->ciudad_id = (int) $sede->city_id;
+                }
+            }
+        }
+    }
+
     /**
      * @param int $id ID
      * @return string|\yii\web\Response
@@ -1882,14 +2877,15 @@ class NovedadController extends Controller
             }
             $horasTipo = $hq->one();
         }
+        $ausentismosTipoId = $this->resolveAusentismosNovedadTipoId($tenantId);
 
-        $clientesEmpresa = $tenantId ? EmpresaCliente::getActivos($tenantId) : [];
-        $clienteUnico = count($clientesEmpresa) === 1 ? $clientesEmpresa[0] : null;
-        if (
-            $clienteUnico !== null
-            && ($ctx->empresa_cliente_id === null || (int) $ctx->empresa_cliente_id <= 0)
-        ) {
-            $ctx->empresa_cliente_id = (int) $clienteUnico->id;
+        $clientesGlobales = $tenantId ? EmpresaCliente::getActivos($tenantId) : [];
+
+        $esContratoTipoHorasForm = false;
+        $eidForm = (int) ($model->empresa_id ?? 0);
+        $pidForm = (int) ($model->profile_id ?? 0);
+        if ($eidForm > 0 && $pidForm > 0) {
+            $esContratoTipoHorasForm = $this->esContratoTipoHorasActivo($eidForm, $pidForm, $ctx);
         }
 
         return [
@@ -1898,15 +2894,47 @@ class NovedadController extends Controller
             'empresa' => $empresa,
             'tipoSeleccionado' => $tipoSeleccionado,
             'horasTipoId' => $horasTipo ? (int) $horasTipo->id : null,
-            'clientesEmpresa' => $clientesEmpresa,
-            'clienteUnico' => $clienteUnico,
-            'sinEmpresaCliente' => $tenantId !== null && $clientesEmpresa === [],
-            'msgHorasRangoInvalido' => Yii::t(
-                'app',
-                'La hora final debe ser posterior a la hora inicial (mismo día; no puede ser anterior ni igual).'
-            ),
+            'ausentismosTipoId' => $ausentismosTipoId > 0 ? $ausentismosTipoId : null,
+            'esContratoTipoHoras' => $esContratoTipoHorasForm,
+            'clientesEmpresa' => [],
+            'clienteUnico' => null,
+            'sinEmpresaCliente' => $tenantId !== null && $clientesGlobales === [],
             'solicitudFormState' => $this->buildSolicitudFormStateForView($model, $ctx),
         ];
+    }
+
+    /**
+     * Id del agrupador Ausentismos (por código).
+     */
+    private function resolveAusentismosNovedadTipoId(?int $tenantId): int
+    {
+        $q = NovedadTipo::find()
+            ->select('id')
+            ->where(['codigo' => 'ausentismos', 'activo' => 1]);
+        if ($this->novedadTipoTieneColumnaEmpresa() && $tenantId !== null) {
+            $q->andWhere(['empresa_id' => (int) $tenantId]);
+        }
+
+        return (int) ($q->scalar() ?: 0);
+    }
+
+    /**
+     * @return array<string, string> id => etiqueta (misma convención que staffing_admin)
+     */
+    private function mapaCentrosCostoNovedad(): array
+    {
+        $rows = NovedadCentroCosto::find()
+            ->where(['activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
+        $out = [];
+        foreach ($rows as $r) {
+            $cod = trim((string) $r->codigo);
+            $nom = (string) $r->nombre;
+            $out[(string) $r->id] = $cod !== '' ? $cod . ' — ' . $nom : $nom;
+        }
+
+        return $out;
     }
 
     /**
@@ -1916,36 +2944,93 @@ class NovedadController extends Controller
      */
     private function buildSolicitudFormStateForView(Novedad $model, NovedadSolicitudContextForm $ctx): array
     {
+        $tenantId = $this->currentEmpresaId();
+
         $state = [
+            'horas_filas' => Yii::$app->request->isPost ? $this->normalizarHorasFilasDesdePost() : [],
             'novedad_tipo_id' => $ctx->novedad_tipo_id !== null ? (int) $ctx->novedad_tipo_id : null,
+            'empresa_cliente_id' => $ctx->empresa_cliente_id !== null ? (int) $ctx->empresa_cliente_id : null,
             'ciudad_id' => $ctx->ciudad_id !== null ? (int) $ctx->ciudad_id : null,
             'sede_id' => $ctx->sede_id !== null ? (int) $ctx->sede_id : null,
             'profile_id' => $model->profile_id !== null ? (int) $model->profile_id : null,
             'concepto_id' => $model->concepto_id !== null ? (int) $model->concepto_id : null,
             'num_doc' => null,
             'cargo_id' => null,
-            'auxilio_movilizacion' => (int) Yii::$app->request->post('auxilio_movilizacion', 0) === 1,
+            'empleado_display_name' => null,
+            'empleado_cargo_nombre' => null,
+            'ciudad_nombre' => null,
         ];
+        $fecha = (string) ($model->fecha_novedad ?? '');
+        $ctrVigente = null;
         if ($model->profile_id !== null && (int) $model->profile_id > 0) {
-            $pf = Profile::findOne(['user_id' => (int) $model->profile_id]);
-            if ($pf !== null && $pf->num_doc !== null && trim((string) $pf->num_doc) !== '') {
-                $state['num_doc'] = trim((string) $pf->num_doc);
+            $pfCond = ['user_id' => (int) $model->profile_id];
+            if ($tenantId !== null) {
+                $pfCond['empresas_id'] = (int) $tenantId;
+            }
+            $pf = Profile::findOne($pfCond);
+            if ($pf !== null) {
+                if (
+                    $pf->num_doc !== null
+                    && trim((string) $pf->num_doc) !== ''
+                    && $pf->estado === Profile::ESTADO_ACTIVO
+                ) {
+                    $state['num_doc'] = trim((string) $pf->num_doc);
+                }
+                $nom = trim((string) ($pf->name ?? ''));
+                if ($nom !== '') {
+                    $state['empleado_display_name'] = $nom;
+                }
+                if (
+                    $tenantId !== null
+                    && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)
+                ) {
+                    $q = Contrato::findOccupyingAt($fecha)
+                        ->andWhere([
+                            'contrato.profile_id' => (int) $model->profile_id,
+                            'contrato.empresa_id' => (int) $tenantId,
+                        ]);
+                    if ((int) ($ctx->empresa_cliente_id ?? 0) > 0) {
+                        $ctrVigente = (clone $q)->andWhere(['contrato.empresa_cliente_id' => (int) $ctx->empresa_cliente_id])->one();
+                    }
+                    if ($ctrVigente === null) {
+                        $ctrVigente = $q->one();
+                    }
+                    if ($ctrVigente !== null) {
+                        $state['cargo_id'] = (int) $ctrVigente->cargo_id;
+                        if ($ctrVigente->cargo !== null) {
+                            $cn = trim((string) $ctrVigente->cargo->nombre);
+                            if ($cn !== '') {
+                                $state['empleado_cargo_nombre'] = $cn;
+                            }
+                        }
+                    }
+                }
+                if ($state['empleado_cargo_nombre'] === null || $state['empleado_cargo_nombre'] === '') {
+                    if ($pf->cargo_id !== null && (int) $pf->cargo_id > 0) {
+                        $cPerfil = $pf->cargo ?? Cargos::findOne((int) $pf->cargo_id);
+                        if ($cPerfil !== null) {
+                            $cn = trim((string) $cPerfil->nombre);
+                            if ($cn !== '') {
+                                $state['empleado_cargo_nombre'] = $cn;
+                            }
+                        }
+                    }
+                }
+                if ($state['empleado_cargo_nombre'] === null || $state['empleado_cargo_nombre'] === '') {
+                    $pos = trim((string) ($pf->position ?? ''));
+                    if ($pos !== '') {
+                        $state['empleado_cargo_nombre'] = $pos;
+                    }
+                }
             }
         }
-        $tenantId = $this->currentEmpresaId();
-        $fecha = (string) ($model->fecha_novedad ?? '');
-        if (
-            $tenantId !== null && $model->profile_id !== null
-            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)
-        ) {
-            $ctr = Contrato::findOccupyingAt($fecha)
-                ->andWhere([
-                    'contrato.profile_id' => (int) $model->profile_id,
-                    'contrato.empresa_id' => (int) $tenantId,
-                ])
-                ->one();
-            if ($ctr !== null) {
-                $state['cargo_id'] = (int) $ctr->cargo_id;
+        if ($ctx->ciudad_id !== null && (int) $ctx->ciudad_id > 0) {
+            $city = City::findOne((int) $ctx->ciudad_id);
+            if ($city !== null) {
+                $cn = trim((string) ($city->name ?? ''));
+                if ($cn !== '') {
+                    $state['ciudad_nombre'] = $cn;
+                }
             }
         }
 
@@ -2007,12 +3092,41 @@ class NovedadController extends Controller
 
             return $this->redirect(['index']);
         }
-        $model->delete();
+        $idModel = (int) $model->id;
+        $empresaId = (int) $model->empresa_id;
+
+        $tx = Yii::$app->db->beginTransaction();
+        try {
+            $childIds = Novedad::find()
+                ->select('id')
+                ->where(['novedad_origen_id' => $idModel, 'empresa_id' => $empresaId])
+                ->column();
+            if ($childIds !== []) {
+                Novedad::deleteAll(['id' => $childIds, 'empresa_id' => $empresaId]);
+            }
+            Novedad::deleteAll(['id' => $idModel, 'empresa_id' => $empresaId]);
+            $tx->commit();
+        } catch (Throwable $e) {
+            $tx->rollBack();
+            Yii::error($e, __METHOD__);
+            Yii::$app->session->setFlash('error', Yii::t('app', 'No se pudo eliminar la solicitud.'));
+
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                Yii::$app->response->statusCode = 500;
+
+                return ['success' => false, 'message' => Yii::t('app', 'No se pudo eliminar la solicitud.')];
+            }
+
+            return $this->redirect(['view', 'id' => $idModel]);
+        }
 
         if (Yii::$app->request->isAjax) {
             Yii::$app->response->format = Response::FORMAT_JSON;
+
             return ['success' => true];
         }
+        Yii::$app->session->setFlash('info', Yii::t('app', 'Solicitud eliminada.'));
 
         return $this->redirect(['index']);
     }
@@ -2057,6 +3171,19 @@ class NovedadController extends Controller
         if ($eid === null) {
             return [];
         }
+        $profileUserId = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        [$cargoId] = $this->resolveCargoContext(
+            $eid,
+            $profileUserId,
+            $fecha,
+            $empresaClienteId > 0 ? $empresaClienteId : null
+        );
+
         $tq = NovedadTipo::find()->where(['activo' => 1]);
         if ($this->novedadTipoTieneColumnaEmpresa()) {
             $tq->andWhere(['empresa_id' => $eid]);
@@ -2066,6 +3193,11 @@ class NovedadController extends Controller
             $tipos,
             fn(NovedadTipo $t): bool => $this->usuarioPuedeCrearTipo($t)
         ));
+        if ($profileUserId > 0) {
+            $tipos = array_values(array_filter($tipos, function (NovedadTipo $t) use ($eid, $cargoId): bool {
+                return !empty($this->conceptosPermitidosPorTipo($eid, (int) $t->id, $cargoId));
+            }));
+        }
 
         return array_map(static function (NovedadTipo $t) {
             return [
@@ -2079,12 +3211,88 @@ class NovedadController extends Controller
     /**
      * Campos dinámicos del agrupador (para el formulario web de solicitud).
      */
-    public function actionTipoCampos(int $novedad_tipo_id): array
+    public function actionTipoCampos(int $novedad_tipo_id = 0): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $eid = $this->currentEmpresaId();
         if ($eid === null) {
             return ['success' => false, 'items' => []];
+        }
+        $conceptoId = (int) Yii::$app->request->get('concepto_id', 0);
+        if ($conceptoId > 0) {
+            $concepto = NovedadConcepto::findOne(['id' => $conceptoId, 'activo' => 1]);
+            if ($concepto === null) {
+                return ['success' => false, 'items' => []];
+            }
+            $tipoCond = ['id' => (int) $concepto->novedad_tipo_id, 'activo' => 1];
+            if ($this->novedadTipoTieneColumnaEmpresa()) {
+                $tipoCond['empresa_id'] = $eid;
+            }
+            $tipo = NovedadTipo::findOne($tipoCond);
+            if ($tipo === null || !$this->usuarioPuedeCrearTipo($tipo)) {
+                return ['success' => false, 'items' => []];
+            }
+            $profileUserId = (int) Yii::$app->request->get('profile_id', 0);
+            if ($profileUserId > 0) {
+                $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+                    $fecha = date('Y-m-d');
+                }
+                $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+                [$cargoId] = $this->resolveCargoContext(
+                    $eid,
+                    $profileUserId,
+                    $fecha,
+                    $empresaClienteId > 0 ? $empresaClienteId : null
+                );
+                $permitidos = $this->conceptosPermitidosPorTipo($eid, (int) $tipo->id, $cargoId);
+                $permitidosIds = array_map(static fn(NovedadConcepto $c): int => (int) $c->id, $permitidos);
+                if (!in_array($conceptoId, $permitidosIds, true)) {
+                    return ['success' => false, 'items' => []];
+                }
+            }
+            $campos = NovedadConceptoFormularioService::camposOrdenados($concepto);
+            $items = [];
+            foreach ($campos as $c) {
+                $fuente = trim((string) ($c->fuente_opciones ?? ''));
+                $opciones = array_map(static function ($op) {
+                    return [
+                        'valor' => $op->valor,
+                        'etiqueta' => $op->etiqueta !== null && $op->etiqueta !== '' ? $op->etiqueta : $op->valor,
+                    ];
+                }, $c->opciones ?? []);
+                if ((string) $c->tipo_dato === 'select' && $fuente === 'novedad_centro_costo') {
+                    $opciones = [];
+                    foreach ($this->mapaCentrosCostoNovedad() as $id => $etiqueta) {
+                        $opciones[] = ['valor' => (string) $id, 'etiqueta' => $etiqueta];
+                    }
+                }
+                $tipoUi = (string) $c->tipo_dato;
+                $archUi = NovedadConceptoFormularioService::tipoDatoFormularioArchivo($c);
+                if ($archUi !== null) {
+                    $tipoUi = $archUi;
+                    $opciones = [];
+                }
+                $items[] = [
+                    'campo_id' => (string) $c->campo_id,
+                    'label' => (string) $c->label,
+                    'tipo_dato' => $tipoUi,
+                    'requerido' => (int) $c->requerido === 1,
+                    'fuente_opciones' => $fuente,
+                    'opciones' => $opciones,
+                ];
+            }
+
+            $datosDefecto = [];
+            $enc = EmpresaNovedadConcepto::findOne([
+                'empresa_id' => $eid,
+                'novedad_concepto_id' => $conceptoId,
+            ]);
+            if ($enc !== null && $enc->valor_por_defecto !== null && (string) $enc->valor_por_defecto !== '') {
+                $datosDefecto['valor'] = (string) (float) $enc->valor_por_defecto;
+            }
+
+            return ['success' => true, 'items' => $items, 'datos_defecto' => $datosDefecto];
         }
         $tipoCond = ['id' => $novedad_tipo_id, 'activo' => 1];
         if ($this->novedadTipoTieneColumnaEmpresa()) {
@@ -2129,7 +3337,7 @@ class NovedadController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $eid = $this->currentEmpresaId();
         if ($eid === null) {
-            return [];
+            return ['success' => false, 'items' => []];
         }
         $tipoCond = ['id' => $novedad_tipo_id, 'activo' => 1];
         if ($this->novedadTipoTieneColumnaEmpresa()) {
@@ -2137,40 +3345,154 @@ class NovedadController extends Controller
         }
         $tipo = NovedadTipo::findOne($tipoCond);
         if ($tipo === null || !$this->usuarioPuedeCrearTipo($tipo)) {
-            return [];
+            return ['success' => false, 'items' => []];
         }
-
-        $q = NovedadConcepto::find()
-            ->where(['novedad_tipo_id' => $tipo->id, 'activo' => 1])
-            ->orderBy(['nombre' => SORT_ASC]);
-
-        $hayEnc = EmpresaNovedadConcepto::find()->where(['empresa_id' => $eid])->exists();
-        if ($hayEnc) {
-            $q->innerJoin(
-                'empresa_novedad_concepto enc',
-                'enc.novedad_concepto_id = novedad_concepto.id AND enc.empresa_id = ' . (int) $eid
-            );
-        }
-
-        /** @var NovedadConcepto[] $conceptos */
-        $conceptos = $q->all();
 
         $profileUserId = (int) Yii::$app->request->get('profile_id', 0);
         $fecha = (string) Yii::$app->request->get('fecha_novedad', '');
-        if (
-            $profileUserId > 0
-            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)
-        ) {
-            $contrato = Contrato::findOccupyingAt($fecha)
-                ->andWhere(['contrato.profile_id' => $profileUserId, 'contrato.empresa_id' => $eid])
-                ->one();
-            $cargoId = $contrato !== null ? (int) $contrato->cargo_id : null;
-            $conceptos = $this->filtrarConceptosPorCargoAplicabilidad($conceptos, $cargoId);
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        [$cargoId, $cargoNombre] = $this->resolveCargoContext(
+            $eid,
+            $profileUserId,
+            $fecha,
+            $empresaClienteId > 0 ? $empresaClienteId : null
+        );
+        $conceptos = $this->conceptosPermitidosPorTipo($eid, (int) $tipo->id, $cargoId);
+
+        if ($tipo->esTipoHoras()) {
+            $ecid = $empresaClienteId > 0 ? $empresaClienteId : null;
+            $esH = $this->esContratoTipoHorasParaEmpleado($eid, $profileUserId, $ecid);
+            if (!$esH) {
+                $conceptos = array_values(array_filter($conceptos, static function (NovedadConcepto $c): bool {
+                    $cod = strtoupper(trim((string) ($c->codigo ?? '')));
+
+                    return $cod !== NovedadHorasTroceoService::COD_HORA_ESPECIAL
+                        && $cod !== NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION;
+                }));
+            }
         }
 
-        return array_map(static function (NovedadConcepto $c) {
+        $items = array_map(static function (NovedadConcepto $c) {
             return ['id' => (int) $c->id, 'nombre' => $c->nombre, 'codigo' => $c->codigo];
         }, $conceptos);
+
+        $emptyMessage = null;
+        if ($profileUserId > 0 && $items === []) {
+            $emptyMessage = Yii::t('app', 'Deben configurarse los conceptos para el cargo {cargo} del empleado.', [
+                'cargo' => $cargoNombre !== null && $cargoNombre !== '' ? $cargoNombre : '—',
+            ]);
+        }
+
+        return [
+            'success' => true,
+            'items' => $items,
+            'empty_message' => $emptyMessage,
+        ];
+    }
+
+    public function actionSedes(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $eid = $this->currentEmpresaId();
+        if ($eid === null) {
+            return [];
+        }
+
+        $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        $profileId        = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha            = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+
+        /**
+         * Cascada de filtrado (cuando hay empleado):
+         * 1) Contrato vigente (preferiblemente del cliente seleccionado) → sede/ciudad preferida.
+         * 2) Si no hay sede en contrato, distribución del contrato.
+         * 3) Si no hay contrato aplicable, profile_sedes.
+         * 4) Fallback: sedes del contrato vigente (distribución).
+         * 5) Último fallback: todas las sedes activas del tenant.
+         */
+        $sedeIds = null; // null = sin filtro por IDs
+        $preferredSedeId = null;
+        $preferredCityId = null;
+
+        if ($profileId > 0) {
+            $contratoQuery = Contrato::findOccupyingAt($fecha)
+                ->andWhere(['contrato.profile_id' => $profileId, 'contrato.empresa_id' => $eid]);
+
+            $contrato = null;
+            if ($empresaClienteId > 0) {
+                $contrato = (clone $contratoQuery)
+                    ->andWhere(['contrato.empresa_cliente_id' => $empresaClienteId])
+                    ->orderBy(['contrato.id' => SORT_DESC])
+                    ->one();
+            }
+            if ($contrato === null) {
+                $contrato = (clone $contratoQuery)
+                    ->orderBy(['contrato.id' => SORT_DESC])
+                    ->one();
+            }
+
+            if ($contrato !== null) {
+                if (!empty($contrato->sede_id)) {
+                    $preferredSedeId = (int) $contrato->sede_id;
+                    $sedeIds = [$preferredSedeId];
+                }
+                if (!empty($contrato->ciudad_id)) {
+                    $preferredCityId = (int) $contrato->ciudad_id;
+                }
+                if ($sedeIds === null) {
+                    $distribIds = ContratoDistribucionSede::find()
+                        ->select('sede_id')
+                        ->where(['contrato_id' => $contrato->id])
+                        ->column();
+                    $distribIds = array_map('intval', $distribIds);
+                    if (!empty($distribIds)) {
+                        $sedeIds = $distribIds;
+                    }
+                }
+            }
+
+            if ($sedeIds === null) {
+                $profile = Profile::findOne(['user_id' => $profileId]);
+                if ($profile !== null) {
+                    $profileSedeIds = ProfileSede::locationSedeIdsForProfileModel($profile);
+                    if (!empty($profileSedeIds)) {
+                        $sedeIds = $profileSedeIds;
+                    }
+                }
+            }
+        }
+
+        $query = LocationSedes::find()
+            ->with('city')
+            ->where(['empresa_id' => $eid, 'activo' => 1])
+            ->orderBy('nombre');
+
+        if ($sedeIds !== null) {
+            $query->andWhere(['id' => $sedeIds]);
+        }
+
+        return array_map(static function (LocationSedes $s) use ($preferredSedeId, $preferredCityId): array {
+            $cityId = $s->city_id !== null ? (int) $s->city_id : null;
+            $preferida = false;
+            if ($preferredSedeId !== null && $preferredSedeId > 0) {
+                $preferida = ((int) $s->id === (int) $preferredSedeId);
+            } elseif ($preferredCityId !== null && $preferredCityId > 0 && $cityId !== null) {
+                $preferida = ($cityId === (int) $preferredCityId);
+            }
+            return [
+                'id'          => (int) $s->id,
+                'nombre'      => (string) $s->nombre,
+                'city_id'     => $cityId,
+                'city_nombre' => $s->city ? (string) $s->city->name : null,
+                'preferida'   => $preferida,
+            ];
+        }, $query->all());
     }
 
     public function actionSedesPorCiudad(int $ciudad_id): array
@@ -2199,6 +3521,31 @@ class NovedadController extends Controller
         return array_map(static function (City $c) {
             return ['id' => $c->id, 'nombre' => $c->name];
         }, $rows);
+    }
+
+    /**
+     * Empresas cliente permitidas para la solicitud: activas del tenant y ligadas al empleado por contrato vigente a la fecha.
+     */
+    public function actionEmpresasClientePorEmpleado(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $eid = $this->currentEmpresaId();
+        $pid = (int) Yii::$app->request->get('profile_id', 0);
+        $fecha = trim((string) Yii::$app->request->get('fecha_novedad', ''));
+        if ($eid === null || $pid <= 0) {
+            return ['success' => true, 'items' => []];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+            $fecha = date('Y-m-d');
+        }
+        $rows = EmpresaCliente::activosPorPerfilYContratoVigente((int) $eid, $pid, $fecha);
+
+        return [
+            'success' => true,
+            'items' => array_map(static function (EmpresaCliente $e): array {
+                return ['id' => (int) $e->id, 'nombre' => (string) $e->nombre];
+            }, $rows),
+        ];
     }
 
     public function actionBuscarEmpleado(): array
@@ -2232,23 +3579,19 @@ class NovedadController extends Controller
 
         $profiles = $q->limit(10)->all();
 
+        $empresaClienteFiltro = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        $empresaClienteFiltro = $empresaClienteFiltro > 0 ? $empresaClienteFiltro : null;
+
         return [
-            'results' => array_map(function (Profile $p) use ($eid, $fecha) {
-                $c = Contrato::findOccupyingAt($fecha)
-                    ->with('cargo')
-                    ->andWhere(['contrato.profile_id' => $p->user_id, 'contrato.empresa_id' => $eid])
-                    ->one();
-                $cargoNombre = null;
-                if ($c !== null && $c->cargo !== null) {
-                    $cargoNombre = (string) $c->cargo->nombre;
-                }
+            'results' => array_map(function (Profile $p) use ($eid, $fecha, $empresaClienteFiltro) {
+                [$cargoId, $cargoNombre] = $this->resolveCargoContext($eid, $p->user_id, $fecha, $empresaClienteFiltro);
 
                 return [
                     'id' => $p->user_id,
                     'text' => ($p->name ?: Yii::t('app', 'Sin nombre')) . ' — ' . $p->num_doc,
                     'name' => $p->name,
                     'num_doc' => $p->num_doc,
-                    'cargo_id' => $c !== null ? (int) $c->cargo_id : null,
+                    'cargo_id' => $cargoId,
                     'cargo_nombre' => $cargoNombre,
                 ];
             }, $profiles),
@@ -2338,6 +3681,65 @@ class NovedadController extends Controller
                 'cargo_id' => $cargoId,
             ])->exists();
         }));
+    }
+
+    /**
+     * Contrato vigente del empleado; si se indica empresa cliente, se prioriza el de ese cliente (misma regla que {@see actionSedes}).
+     *
+     * @return array{0: ?int, 1: ?string}
+     */
+    private function resolveCargoContext(int $empresaId, int $profileUserId, string $fechaYmd, ?int $empresaClienteId = null): array
+    {
+        if ($profileUserId <= 0) {
+            return [null, null];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaYmd)) {
+            $fechaYmd = date('Y-m-d');
+        }
+        $base = Contrato::findOccupyingAt($fechaYmd)
+            ->with('cargo')
+            ->andWhere(['contrato.profile_id' => $profileUserId, 'contrato.empresa_id' => $empresaId]);
+
+        $contrato = null;
+        if ($empresaClienteId !== null && $empresaClienteId > 0) {
+            $contrato = (clone $base)
+                ->andWhere(['contrato.empresa_cliente_id' => $empresaClienteId])
+                ->orderBy(['contrato.id' => SORT_DESC])
+                ->one();
+        }
+        if ($contrato === null) {
+            $contrato = (clone $base)
+                ->orderBy(['contrato.id' => SORT_DESC])
+                ->one();
+        }
+        if ($contrato === null || $contrato->cargo_id === null) {
+            return [null, null];
+        }
+        $cargoNombre = $contrato->cargo ? (string) $contrato->cargo->nombre : null;
+
+        return [(int) $contrato->cargo_id, $cargoNombre];
+    }
+
+    /**
+     * @return NovedadConcepto[]
+     */
+    private function conceptosPermitidosPorTipo(int $empresaId, int $tipoId, ?int $cargoId): array
+    {
+        $q = NovedadConcepto::find()
+            ->where(['novedad_tipo_id' => $tipoId, 'activo' => 1])
+            ->orderBy(['nombre' => SORT_ASC]);
+
+        $hayEnc = EmpresaNovedadConcepto::find()->where(['empresa_id' => $empresaId])->exists();
+        if ($hayEnc) {
+            $q->innerJoin(
+                'empresa_novedad_concepto enc',
+                'enc.novedad_concepto_id = novedad_concepto.id AND enc.empresa_id = ' . (int) $empresaId
+            );
+        }
+
+        /** @var NovedadConcepto[] $conceptos */
+        $conceptos = $q->all();
+        return $this->filtrarConceptosPorCargoAplicabilidad($conceptos, $cargoId);
     }
 
     private function currentEmpresaId(): ?int

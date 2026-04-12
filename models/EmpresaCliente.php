@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 /**
  * Empresa cliente/solicitante (con NIT) para requisiciones
@@ -59,5 +60,71 @@ class EmpresaCliente extends ActiveRecord
             $query->andWhere(['empresas_id' => $empresasId]);
         }
         return $query->orderBy('nombre')->all();
+    }
+
+    /**
+     * Empresas cliente activas del tenant asociadas al empleado por contrato vigente a la fecha
+     * ({@see Contrato::empresa_cliente_id}). Si el contrato no tiene cliente, se usa respaldo por
+     * {@see Requisicion} con el mismo perfil y organización.
+     *
+     * @return static[]
+     */
+    public static function activosPorPerfilYContratoVigente(int $empresasId, int $profileUserId, string $fechaYmd): array
+    {
+        if ($empresasId <= 0 || $profileUserId <= 0) {
+            return [];
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaYmd)) {
+            $fechaYmd = date('Y-m-d');
+        }
+
+        $ids = [];
+        $conContratoCliente = Contrato::findOccupyingAt($fechaYmd)
+            ->andWhere([
+                'contrato.profile_id' => $profileUserId,
+                'contrato.empresa_id' => $empresasId,
+            ])
+            ->andWhere(['not', ['contrato.empresa_cliente_id' => null]]);
+
+        foreach ($conContratoCliente->each(100) as $c) {
+            /** @var Contrato $c */
+            $ids[(int) $c->empresa_cliente_id] = true;
+        }
+
+        $tieneContrato = Contrato::findOccupyingAt($fechaYmd)
+            ->andWhere([
+                'contrato.profile_id' => $profileUserId,
+                'contrato.empresa_id' => $empresasId,
+            ])
+            ->exists();
+
+        if ($ids === [] && $tieneContrato) {
+            $reqIds = (new Query())
+                ->select('empresa_cliente_id')
+                ->distinct()
+                ->from('requisicion')
+                ->where([
+                    'profile_id' => $profileUserId,
+                    'empresas_id' => $empresasId,
+                ])
+                ->andWhere(['not', ['empresa_cliente_id' => null]])
+                ->column();
+            foreach ($reqIds as $rid) {
+                $i = (int) $rid;
+                if ($i > 0) {
+                    $ids[$i] = true;
+                }
+            }
+        }
+
+        $idList = array_keys($ids);
+        if ($idList === []) {
+            return [];
+        }
+
+        return static::find()
+            ->where(['id' => $idList, 'is_active' => 1, 'empresas_id' => $empresasId])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
     }
 }

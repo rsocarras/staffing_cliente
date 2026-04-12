@@ -63,6 +63,8 @@ class User extends BaseUser
         return array_merge(parent::rules(), [
             [['new_password'], 'string', 'min' => 6, 'max' => 72, 'skipOnEmpty' => true],
             [['new_password', 'roleNames'], 'safe'],
+            [['phone'], 'string', 'max' => 45, 'skipOnEmpty' => true],
+            [['phone'], 'safe', 'on' => ['create', 'update']],
         ]);
     }
 
@@ -91,24 +93,29 @@ class User extends BaseUser
         $profile = new Profile();
         $profile->user_id = $this->id;
 
-        $raw = $this->pendingProfileData['empresas_id'] ?? null;
-        $empresasId = ($raw !== null && $raw !== '' && (int) $raw > 0)
-            ? (int) $raw
-            : $this->resolveDefaultEmpresasId();
-        $numDoc = $this->pendingProfileData['num_doc'] ?? '0000000';
-        $name = $this->pendingProfileData['name'] ?? $this->username;
+        $data = is_array($this->pendingProfileData) ? $this->pendingProfileData : [];
 
-        $profile->empresas_id = (int) $empresasId;
-        $profile->num_doc = (string) $numDoc;
-        $profile->name = $name;
-        $profile->tipo_doc = $this->pendingProfileData['tipo_doc'] ?? Profile::TIPO_DOC_CC;
-        $profile->estado = $this->pendingProfileData['estado'] ?? Profile::ESTADO_ACTIVO;
-
-        if (isset($this->pendingProfileData['telefono'])) {
-            $profile->telefono = $this->pendingProfileData['telefono'];
+        foreach (Profile::persistableAttributeNames() as $attr) {
+            if (!array_key_exists($attr, $data)) {
+                continue;
+            }
+            $profile->setAttribute($attr, $data[$attr]);
         }
-        if (isset($this->pendingProfileData['position'])) {
-            $profile->position = $this->pendingProfileData['position'];
+
+        if ($profile->empresas_id === null || (int) $profile->empresas_id <= 0) {
+            $profile->empresas_id = (int) $this->resolveDefaultEmpresasId();
+        }
+        if ($profile->num_doc === null || $profile->num_doc === '') {
+            $profile->num_doc = '0000000';
+        }
+        if ($profile->name === null || $profile->name === '') {
+            $profile->name = $this->username;
+        }
+        if ($profile->tipo_doc === null || $profile->tipo_doc === '') {
+            $profile->tipo_doc = Profile::TIPO_DOC_CC;
+        }
+        if ($profile->estado === null || $profile->estado === '') {
+            $profile->estado = Profile::ESTADO_ACTIVO;
         }
 
         return $profile;

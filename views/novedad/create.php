@@ -9,11 +9,11 @@ use yii\helpers\Html;
 /** @var app\models\Empresas|null $empresa */
 /** @var app\models\NovedadTipo|null $tipoSeleccionado */
 /** @var int|null $horasTipoId */
+/** @var int|null $ausentismosTipoId */
+/** @var bool $esContratoTipoHoras */
 /** @var app\models\EmpresaCliente[] $clientesEmpresa */
 /** @var app\models\EmpresaCliente|null $clienteUnico */
 /** @var bool $sinEmpresaCliente */
-/** @var string $msgHorasRangoInvalido */
-
 $clienteUnico = $clienteUnico ?? null;
 $sinEmpresaCliente = $sinEmpresaCliente ?? false;
 
@@ -24,11 +24,17 @@ $this->params['breadcrumbs'][] = $this->title;
 $clientesEmpresa = $clientesEmpresa ?? [];
 ?>
 <div class="novedad-create">
-    <div class="card">
-        <div class="card-header">
-            <h4 class="card-title mb-0"><?= Html::encode($this->title) ?></h4>
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom py-3 px-4">
+            <h4 class="card-title mb-0 fw-semibold"><?= Html::encode($this->title) ?></h4>
+            <p class="text-muted small mb-0 mt-2">
+                <?= Html::encode(Yii::t(
+                    'app',
+                    'Complete los datos para registrar la solicitud. El asterisco rojo (*) junto a la etiqueta indica campo obligatorio.'
+                )) ?>
+            </p>
         </div>
-        <div class="card-body">
+        <div class="card-body p-3 p-md-4">
             <?php
             $flashError = Yii::$app->session->getFlash('error');
             if ($flashError !== null && $flashError !== '') {
@@ -44,10 +50,11 @@ $clientesEmpresa = $clientesEmpresa ?? [];
                 'ctx' => $ctx,
                 'empresa' => $empresa,
                 'horasTipoId' => $horasTipoId,
+                'ausentismosTipoId' => $ausentismosTipoId ?? null,
+                'esContratoTipoHoras' => $esContratoTipoHoras ?? false,
                 'clientesEmpresa' => $clientesEmpresa,
                 'clienteUnico' => $clienteUnico,
                 'sinEmpresaCliente' => $sinEmpresaCliente,
-                'msgHorasRangoInvalido' => $msgHorasRangoInvalido,
                 'solicitudFormState' => $solicitudFormState ?? [],
             ]) ?>
         </div>

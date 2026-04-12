@@ -1883,13 +1883,7 @@ $this->registerJs($js, View::POS_READY);
 
             <div class="scheduler-hero">
                 <div class="scheduler-hero__copy">
-                    <div class="scheduler-hero__eyebrow">Planificador semanal tipo kanban</div>
                     <h1><?= Html::encode($this->title) ?></h1>
-                    <p>
-                        <?= $readOnly
-                            ? 'Consulta la malla en el tablero semanal en modo solo lectura.'
-                            : 'Configura bloques por día y guarda la malla por AJAX.' ?>
-                    </p>
                 </div>
                 <div class="scheduler-actions">
                     <button type="button" class="btn btn-light" id="kanban-cancel">Cancelar</button>
@@ -1930,9 +1924,7 @@ $this->registerJs($js, View::POS_READY);
 
             <div class="scheduler-calendar__hintbar">
                 <div class="scheduler-calendar__hint">
-                    <?= $readOnly
-                        ? 'Vista de solo lectura. Esta malla se muestra con el mismo tablero kanban del editor.'
-                        : 'Haz clic sobre una franja horaria para crear un bloque. Haz clic sobre un bloque existente para editarlo.' ?>
+                    <?= $readOnly ? 'Solo lectura' : 'Clic en franja para crear &middot; Clic en bloque para editar' ?>
                 </div>
                 <div class="scheduler-calendar__toolbar">
                     <div class="scheduler-week-filter">
@@ -1953,28 +1945,24 @@ $this->registerJs($js, View::POS_READY);
                     <strong id="summary-ordinary-day">00h 00m</strong>
                     <div class="scheduler-special-summary__body">
                         <small>Ordinaria diurna</small>
-                        <p>Trabajo diurno</p>
                     </div>
                 </div>
                 <div class="scheduler-special-summary__card">
                     <strong id="summary-ordinary-night">00h 00m</strong>
                     <div class="scheduler-special-summary__body">
                         <small>Ordinaria nocturna</small>
-                        <p>Trabajo nocturno</p>
                     </div>
                 </div>
                 <div class="scheduler-special-summary__card">
                     <strong id="summary-special-day">00h 00m</strong>
                     <div class="scheduler-special-summary__body">
                         <small>Dom/Fest diurna</small>
-                        <p>Especial diurna</p>
                     </div>
                 </div>
                 <div class="scheduler-special-summary__card">
                     <strong id="summary-special-night">00h 00m</strong>
                     <div class="scheduler-special-summary__body">
                         <small>Dom/Fest nocturna</small>
-                        <p>Especial nocturna</p>
                     </div>
                 </div>
             </div>
@@ -2043,21 +2031,18 @@ $this->registerJs($js, View::POS_READY);
                     <strong id="summary-work">00h 00m</strong>
                     <div class="scheduler-summary__body">
                         <small>Trabajo</small>
-                        <p>Total productivo</p>
                     </div>
                 </div>
                 <div class="scheduler-summary__card">
                     <strong id="summary-breaks">00h 00m</strong>
                     <div class="scheduler-summary__body">
                         <small>Descansos</small>
-                        <p>Bloques BREAK</p>
                     </div>
                 </div>
                 <div class="scheduler-summary__card">
                     <strong id="summary-days">0/7</strong>
                     <div class="scheduler-summary__body">
                         <small>Días activos</small>
-                        <p>Con trabajo</p>
                     </div>
                 </div>
                 <div class="scheduler-summary__alerts scheduler-summary__alerts--empty" id="scheduler-alerts">
@@ -2069,7 +2054,6 @@ $this->registerJs($js, View::POS_READY);
             </div>
         </div>
     </div>
-    <?= $this->render('//layouts/partials/footer') ?>
 </div>
 
 <div class="modal fade" id="scheduler-block-modal" tabindex="-1" aria-hidden="true">

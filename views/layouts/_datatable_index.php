@@ -104,7 +104,7 @@ $(document).ready(function() {
     if (typeof $.fn.DataTable !== 'undefined' && $('#{$tableId}').length) {
         $('#{$tableId}').DataTable({
             order: [[0, 'asc']],
-            pageLength: 25,
+            pageLength: 7,
             columnDefs: [{ orderable: false, targets: -1 }],
             language: {
                 search: "Buscar:",

@@ -1,4 +1,5 @@
 <?php
+
 use app\models\MaestrosConceptos;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -65,24 +66,24 @@ $baseDeleteUrl = Url::to(['maestros-conceptos/delete']);
                         </thead>
                         <tbody>
                             <?php foreach ($dataProvider->getModels() as $model): ?>
-                            <tr>
-                                <td><?= Html::encode($model->id) ?></td>
-                                <td><?= Html::encode($model->code ?? '-') ?></td>
-                                <td class="fw-medium text-dark"><?= Html::encode($model->name) ?></td>
-                                <td><?= Html::encode($model->displayCategory()) ?></td>
-                                <td><?= $model->active ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>' ?></td>
-                                <td>
-                                    <div class="d-inline-flex gap-2">
-                                        <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
-                                        <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
-                                        <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
-                                            'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
-                                            'title' => 'Eliminar',
-                                            'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
-                                        ]) ?>
-                                    </div>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td><?= Html::encode($model->id) ?></td>
+                                    <td><?= Html::encode($model->code ?? '-') ?></td>
+                                    <td class="fw-medium text-dark"><?= Html::encode($model->name) ?></td>
+                                    <td><?= Html::encode($model->displayCategory()) ?></td>
+                                    <td><?= $model->active ? '<span class="badge badge-soft-success">Sí</span>' : '<span class="badge badge-soft-danger">No</span>' ?></td>
+                                    <td>
+                                        <div class="d-inline-flex gap-2">
+                                            <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Ver']) ?>
+                                            <?= Html::a('<i class="ti ti-edit"></i>', ['update', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-primary fs-16', 'title' => 'Editar']) ?>
+                                            <?= Html::a('<i class="ti ti-trash"></i>', ['delete', 'id' => $model->id], [
+                                                'class' => 'btn btn-icon btn-sm btn-outline-light rounded-pill text-danger fs-16',
+                                                'title' => 'Eliminar',
+                                                'data' => ['confirm' => '¿Está seguro que desea eliminar este registro?', 'method' => 'post'],
+                                            ]) ?>
+                                        </div>
+                                    </td>
+                                </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -136,7 +137,7 @@ $js = <<<JS
 $(document).ready(function() {
     var table = $('#maestros-conceptos-table').DataTable({
         order: [[2, 'asc']],
-        pageLength: 25,
+        pageLength: 7,
         columnDefs: [{ orderable: false, targets: -1 }],
         language: {
             search: "Buscar:",

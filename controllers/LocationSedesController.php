@@ -91,11 +91,18 @@ class LocationSedesController extends Controller
                 ['like', 'sede.direccion', $searchValue],
                 ['like', 'sede.codigo_externo', $searchValue],
                 ['like', 'sede.tipo_sede', $searchValue],
+                ['like', 'CAST(sede.max_horas_clases_grupales AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_diurna AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_diurna_domingo_festivos AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna_domingo_festiva AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_especial AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_movilizacion AS CHAR)', $searchValue],
             ]);
         }
         $filteredCount = (int) (clone $query)->count();
 
-        $orderColumns = ['sede.id', 'sede.codigo', 'sede.nombre', 'sede.direccion', 'sede.tipo_sede', null, 'sede.centro_costo', 'sede.centro_costo_staffing', 'sede.codigo_externo', 'sede.activo', null];
+        $orderColumns = ['sede.id', 'sede.codigo', 'sede.nombre', 'sede.direccion', 'sede.tipo_sede', null, 'sede.activo', null];
         $orderBy = $orderColumns[$orderCol] ?? 'sede.nombre';
         if ($orderBy) {
             $query->orderBy([$orderBy => $orderDir]);
@@ -112,9 +119,6 @@ class LocationSedesController extends Controller
                 \yii\helpers\Html::encode($model->direccion ?? '-'),
                 \yii\helpers\Html::encode($model->getTipoSedeLabel()),
                 $model->city ? \yii\helpers\Html::encode($model->city->name) : '-',
-                $model->centro_costo !== null ? $model->centro_costo : '-',
-                $model->centro_costo_staffing !== null ? $model->centro_costo_staffing : '-',
-                \yii\helpers\Html::encode($model->codigo_externo ?? '-'),
                 $model->activo
                     ? '<span class="badge badge-soft-success">Sí</span>'
                     : '<span class="badge badge-soft-danger">No</span>',
@@ -208,6 +212,13 @@ class LocationSedesController extends Controller
                         'centro_costo' => $model->centro_costo,
                         'centro_costo_staffing' => $model->centro_costo_staffing,
                         'codigo_externo' => $model->codigo_externo,
+                        'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
+                        'valor_hora_diurna' => $model->valor_hora_diurna,
+                        'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
+                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
+                        'valor_hora_nocturna_domingo_festiva' => $model->valor_hora_nocturna_domingo_festiva,
+                        'valor_hora_especial' => $model->valor_hora_especial,
+                        'valor_movilizacion' => $model->valor_movilizacion,
                     ],
                 ];
             }
@@ -361,6 +372,13 @@ class LocationSedesController extends Controller
                         'centro_costo' => $model->centro_costo,
                         'centro_costo_staffing' => $model->centro_costo_staffing,
                         'codigo_externo' => $model->codigo_externo,
+                        'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
+                        'valor_hora_diurna' => $model->valor_hora_diurna,
+                        'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
+                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
+                        'valor_hora_nocturna_domingo_festiva' => $model->valor_hora_nocturna_domingo_festiva,
+                        'valor_hora_especial' => $model->valor_hora_especial,
+                        'valor_movilizacion' => $model->valor_movilizacion,
                     ],
                 ];
             }

@@ -5,10 +5,14 @@ namespace app\controllers;
 use app\components\TenantContext;
 use app\models\Area;
 use app\models\Cargos;
+use app\models\NovedadConceptoCargo;
 use app\models\search\CargosSearch;
 use app\services\AdministracionPlantaService;
+use app\services\CargoNovedadConceptoService;
+use Throwable;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -34,6 +38,7 @@ class CargosController extends Controller
                         'create-ajax' => ['POST'],
                         'update-ajax' => ['POST'],
                         'get-sub-areas' => ['GET'],
+                        'ajax-conceptos-cargo-html' => ['GET'],
                     ],
                 ],
             ]
@@ -47,6 +52,8 @@ class CargosController extends Controller
      */
     public function actionIndex()
     {
+        $empresaId = TenantContext::requireEmpresaId();
+        $conceptosPorAgrupador = CargoNovedadConceptoService::conceptosAgrupadosPorTipoParaEmpresa($empresaId);
         $baseQuery = Cargos::find()->alias('cargos');
         TenantContext::applyFilter($baseQuery, 'cargos.empresa_id');
         $summaryCounts = [
@@ -55,7 +62,12 @@ class CargosController extends Controller
             'inactivos' => (int) (clone $baseQuery)->andWhere(['cargos.activo' => 0])->count(),
         ];
 
-        return $this->render('index', ['summaryCounts' => $summaryCounts]);
+        return $this->render('index', [
+            'summaryCounts' => $summaryCounts,
+            'conceptosPorAgrupador' => $conceptosPorAgrupador,
+            'urlAjaxConceptosCargoHtml' => Url::to(['/cargos/ajax-conceptos-cargo-html']),
+            'cargoAccordionSuffixNew' => 'new',
+        ]);
     }
 
     /**
@@ -171,7 +183,8 @@ class CargosController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->empresa_id = TenantContext::requireEmpresaId();
-            if ($model->save()) {
+            $this->filtrarConceptosPermitidosCargo($model);
+            if ($this->guardarCargoConConceptos($model)) {
                 $areaNombre = $model->area ? $model->area->nombre : null;
                 $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
                 return [
@@ -199,6 +212,37 @@ class CargosController extends Controller
     /**
      * Retorna sub-áreas por área (JSON). Misma lógica que contratos (getSubAreaOptions).
      */
+    /**
+     * HTML del bloque de conceptos por cargo (AJAX; mismo criterio que staffing_admin).
+     */
+    public function actionAjaxConceptosCargoHtml(int $empresa_id = 0, int $cargo_id = 0): string
+    {
+        $this->layout = false;
+        $eid = $empresa_id > 0 ? $empresa_id : (int) TenantContext::requireEmpresaId();
+        $allowedSet = array_fill_keys(CargoNovedadConceptoService::idsConceptosAsignadosOrganizacion($eid), true);
+        $selected = [];
+        if ($cargo_id > 0) {
+            $selected = array_map(
+                'intval',
+                NovedadConceptoCargo::find()
+                    ->select('novedad_concepto_id')
+                    ->where(['cargo_id' => $cargo_id])
+                    ->column()
+            );
+            $selected = array_values(array_filter($selected, static function (int $cid) use ($allowedSet): bool {
+                return $cid > 0 && isset($allowedSet[$cid]);
+            }));
+        }
+        $groups = CargoNovedadConceptoService::conceptosAgrupadosPorTipoParaEmpresa($eid);
+
+        return $this->renderPartial('_conceptos_cargo', [
+            'conceptosPorAgrupador' => $groups,
+            'selectedIds' => $selected,
+            'formFieldPrefix' => 'Cargos',
+            'accordionSuffix' => $cargo_id > 0 ? (string) $cargo_id : 'new',
+        ]);
+    }
+
     public function actionGetSubAreas()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
@@ -282,6 +326,15 @@ class CargosController extends Controller
     {
         $model = $this->findModel($id);
         $empresaId = TenantContext::requireEmpresaId();
+        if (!Yii::$app->request->isPost) {
+            $model->novedadConceptoIds = array_map(
+                'intval',
+                NovedadConceptoCargo::find()
+                    ->select('novedad_concepto_id')
+                    ->where(['cargo_id' => $model->id])
+                    ->column()
+            );
+        }
         $service = new AdministracionPlantaService();
         $areasList = ArrayHelper::map(
             Area::find()
@@ -299,11 +352,13 @@ class CargosController extends Controller
             )
             : [];
 
+        $conceptosOpts = $this->opcionesConceptosCargoForm($model);
+
         return $this->renderPartial('_form_modal', [
             'model' => $model,
             'areasList' => $areasList,
             'subAreasList' => $subAreasList,
-        ]);
+        ] + $conceptosOpts);
     }
 
     /**
@@ -319,7 +374,8 @@ class CargosController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->empresa_id = TenantContext::requireEmpresaId();
-            if ($model->save()) {
+            $this->filtrarConceptosPermitidosCargo($model);
+            if ($this->guardarCargoConConceptos($model)) {
                 $areaNombre = $model->area ? $model->area->nombre : null;
                 $subAreaNombre = $model->subArea ? $model->subArea->nombre : null;
                 return [
@@ -357,5 +413,68 @@ class CargosController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * @return array{
+     *     conceptosPorAgrupador: list<array{tipo: \app\models\NovedadTipo, conceptos: list<\app\models\NovedadConcepto>}>,
+     *     selectedIdsConceptosCargo: int[],
+     *     cargoAccordionSuffix: string,
+     *     urlAjaxConceptosCargoHtml: string
+     * }
+     */
+    private function opcionesConceptosCargoForm(Cargos $model): array
+    {
+        $eid = (int) $model->empresa_id;
+        $conceptosPorAgrupador = CargoNovedadConceptoService::conceptosAgrupadosPorTipoParaEmpresa($eid);
+        $allowedSet = array_fill_keys(CargoNovedadConceptoService::idsConceptosAsignadosOrganizacion($eid), true);
+        $selectedIdsConceptosCargo = array_values(array_filter(
+            array_map('intval', $model->novedadConceptoIds),
+            static fn (int $cid): bool => $cid > 0 && isset($allowedSet[$cid])
+        ));
+        $model->novedadConceptoIds = $selectedIdsConceptosCargo;
+
+        return [
+            'conceptosPorAgrupador' => $conceptosPorAgrupador,
+            'selectedIdsConceptosCargo' => $selectedIdsConceptosCargo,
+            'cargoAccordionSuffix' => $model->isNewRecord ? 'new' : (string) (int) $model->id,
+            'urlAjaxConceptosCargoHtml' => Url::to(['/cargos/ajax-conceptos-cargo-html']),
+        ];
+    }
+
+    private function filtrarConceptosPermitidosCargo(Cargos $model): void
+    {
+        $eid = (int) $model->empresa_id;
+        $allowedSet = array_fill_keys(CargoNovedadConceptoService::idsConceptosAsignadosOrganizacion($eid), true);
+        $model->novedadConceptoIds = array_values(array_filter(
+            array_map('intval', $model->novedadConceptoIds),
+            static fn (int $cid): bool => $cid > 0 && isset($allowedSet[$cid])
+        ));
+    }
+
+    private function guardarCargoConConceptos(Cargos $model): bool
+    {
+        if (!$model->validate()) {
+            return false;
+        }
+
+        $tx = Yii::$app->db->beginTransaction();
+        try {
+            if (!$model->save(false)) {
+                $tx->rollBack();
+
+                return false;
+            }
+            CargoNovedadConceptoService::sync($model, $model->novedadConceptoIds);
+            $tx->commit();
+        } catch (Throwable $e) {
+            if ($tx->isActive) {
+                $tx->rollBack();
+            }
+            Yii::error($e, __METHOD__);
+            throw $e;
+        }
+
+        return true;
     }
 }

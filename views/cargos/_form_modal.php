@@ -6,9 +6,17 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var array $areasList id => nombre */
 /** @var array $subAreasList id => nombre */
+/** @var list<array{tipo: \app\models\NovedadTipo, conceptos: list<\app\models\NovedadConcepto>}> $conceptosPorAgrupador */
+/** @var int[]|null $selectedIdsConceptosCargo */
+/** @var string|null $cargoAccordionSuffix */
+/** @var string|null $urlAjaxConceptosCargoHtml */
 
 $areasList = $areasList ?? [];
 $subAreasList = $subAreasList ?? [];
+$conceptosPorAgrupador = $conceptosPorAgrupador ?? [];
+$selectedIdsConceptosCargo = $selectedIdsConceptosCargo ?? [];
+$cargoAccordionSuffix = $cargoAccordionSuffix ?? ($model->isNewRecord ? 'new' : (string) (int) $model->id);
+$urlAjaxConceptosCargoHtml = $urlAjaxConceptosCargoHtml ?? \yii\helpers\Url::to(['/cargos/ajax-conceptos-cargo-html']);
 
 $form = ActiveForm::begin([
     'id' => 'form-edit-cargo-modal',
@@ -25,6 +33,10 @@ $form = ActiveForm::begin([
     'isEdit' => true,
     'areasList' => $areasList,
     'subAreasList' => $subAreasList,
+    'conceptosPorAgrupador' => $conceptosPorAgrupador,
+    'selectedIdsConceptosCargo' => $selectedIdsConceptosCargo,
+    'cargoAccordionSuffix' => $cargoAccordionSuffix,
+    'urlAjaxConceptosCargoHtml' => $urlAjaxConceptosCargoHtml,
 ]) ?>
 
 <?php ActiveForm::end(); ?>
