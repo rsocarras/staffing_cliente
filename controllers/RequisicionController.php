@@ -17,8 +17,10 @@ use Yii;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\db\ActiveQuery;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
@@ -85,9 +87,7 @@ class RequisicionController extends Controller
         $dataProvider = $searchModel->search($this->request->queryParams);
         $dataProvider->pagination = false;
 
-        if (Yii::$app->user->can('requisicion_approve') ) {
-            $dataProvider->query->andWhere(['!=', 'requisicion.estado', Requisicion::ESTADO_DRAFT]);
-        }
+        $this->applyDraftVisibilityForApprover($dataProvider->query);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -119,9 +119,7 @@ class RequisicionController extends Controller
         /** @var \yii\db\ActiveQuery $baseQuery */
         $baseQuery = clone $dataProvider->query;
 
-        if (Yii::$app->user->can('requisicion_approve')) {
-            $baseQuery->andWhere(['!=', 'requisicion.estado', Requisicion::ESTADO_DRAFT]);
-        }
+        $this->applyDraftVisibilityForApprover($baseQuery);
 
         // Persona (profile) is required for the table column.
         $baseQuery->joinWith(['profile']);
@@ -650,9 +648,46 @@ class RequisicionController extends Controller
             ->where(['id' => $id, 'empresas_id' => $this->currentEmpresaId()])
             ->one();
         if ($model !== null) {
+            $this->assertApproverCanAccessDraft($model);
             return $model;
         }
         throw new NotFoundHttpException('La página solicitada no existe.');
+    }
+
+    /**
+     * Aprobadores: no ven borradores de otros; sí los propios (mismo creado_por).
+     */
+    protected function applyDraftVisibilityForApprover(ActiveQuery $query): void
+    {
+        if (!Yii::$app->user->can('requisicion_approve')) {
+            return;
+        }
+        $uid = Yii::$app->user->id;
+        $query->andWhere([
+            'or',
+            ['!=', 'requisicion.estado', Requisicion::ESTADO_DRAFT],
+            [
+                'and',
+                ['requisicion.estado' => Requisicion::ESTADO_DRAFT],
+                ['requisicion.creado_por' => $uid],
+            ],
+        ]);
+    }
+
+    /**
+     * Evita ver/editar por URL borradores de terceros si el usuario es aprobador.
+     */
+    protected function assertApproverCanAccessDraft(Requisicion $model): void
+    {
+        if (!Yii::$app->user->can('requisicion_approve')) {
+            return;
+        }
+        if ($model->estado !== Requisicion::ESTADO_DRAFT) {
+            return;
+        }
+        if ((int) $model->creado_por !== (int) Yii::$app->user->id) {
+            throw new ForbiddenHttpException('No puede acceder al borrador de otro usuario.');
+        }
     }
 
     private function currentEmpresaId(): ?int
