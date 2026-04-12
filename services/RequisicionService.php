@@ -36,7 +36,7 @@ class RequisicionService
         }
         $estadoAnterior = $req->estado;
         $req->motivo_rechazo = null;
-        $req->estado = Requisicion::ESTADO_ORDER_PENDING;
+        $req->estado = Requisicion::ESTADO_APPROVED;
         return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, null, $estadoAnterior);
     }
 
