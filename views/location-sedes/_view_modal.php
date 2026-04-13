@@ -61,10 +61,6 @@ use yii\helpers\Html;
                         <span class="fw-medium"><?= Html::encode($model->codigo_externo ?: '—') ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block">Máx. horas clases grupales</small>
-                        <span class="fw-medium"><?= $model->max_horas_clases_grupales !== null ? Html::encode(number_format((float) $model->max_horas_clases_grupales, 2, '.', ',')) : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
                         <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_diurna')) ?></small>
                         <span class="fw-medium"><?= $model->valor_hora_diurna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna, 'COP') : '—' ?></span>
                     </div>

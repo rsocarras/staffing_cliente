@@ -165,20 +165,6 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
         </div>
         <div class="row g-3">
             <div class="col-md-4">
-                <?= $form->field($model, 'max_horas_clases_grupales', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-clock-hour-4 text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.01',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.00',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-4">
                 <?= $form->field($model, 'valor_hora_diurna', [
                     'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-currency-dollar text-secondary"></i></span>{input}</div>{error}{hint}',
                     'options' => ['class' => 'mb-0'],
