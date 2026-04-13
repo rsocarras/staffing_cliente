@@ -10,6 +10,14 @@ use yii\helpers\Url;
 
 $esCreacion = isset($esCreacion) ? $esCreacion : $model->isNewRecord;
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+$ciudades = [];
+if ($tenantEmpresaId) {
+    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresa((int) $tenantEmpresaId);
+    $ciudades = \app\models\LocationSedes::mapCiudadesIncluirActualSiFalta(
+        $ciudades,
+        $model->ciudad_id !== null ? (int) $model->ciudad_id : null
+    );
+}
 $tiposContratoRows = \app\models\ContratoTipos::find()
     ->where(['activo' => 1])
     ->orderBy(['nombre' => SORT_ASC])
@@ -35,7 +43,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
         <?= $form->field($model, 'fecha_ingreso')->input('datetime-local') ?>
         <div class="row">
             <div class="col-md-6">
-                <?= $form->field($model, 'ciudad_id')->dropDownList(ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select']) ?>
+                <?= $form->field($model, 'ciudad_id')->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
             </div>
             <div class="col-md-6">
                 <?= $form->field($model, 'sede_id')->dropDownList([], ['prompt' => 'Primero seleccione ciudad', 'id' => 'requisicion-sede_id', 'class' => 'form-select', 'disabled' => true]) ?>

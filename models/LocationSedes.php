@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "location_sedes".
@@ -200,6 +201,60 @@ class LocationSedes extends \yii\db\ActiveRecord
         }
 
         return $models;
+    }
+
+    /**
+     * Ciudades activas donde la organización tiene al menos una sede activa con ciudad asignada.
+     *
+     * @return array<int, string> id ciudad => nombre
+     */
+    public static function mapCiudadesConSedeActivaParaEmpresa(int $empresaId): array
+    {
+        if ($empresaId <= 0) {
+            return [];
+        }
+
+        $cityIds = static::find()
+            ->select('city_id')
+            ->where(['empresa_id' => $empresaId, 'activo' => 1])
+            ->andWhere(['not', ['city_id' => null]])
+            ->distinct()
+            ->column();
+
+        if ($cityIds === []) {
+            return [];
+        }
+
+        return ArrayHelper::map(
+            City::find()
+                ->where(['id' => $cityIds, 'is_active' => 1])
+                ->orderBy(['name' => SORT_ASC])
+                ->all(),
+            'id',
+            'name'
+        );
+    }
+
+    /**
+     * Incluye la ciudad del registro actual si ya no tiene sedes (p. ej. edición de borrador).
+     *
+     * @param array<int, string> $ciudades
+     * @return array<int, string>
+     */
+    public static function mapCiudadesIncluirActualSiFalta(array $ciudades, ?int $ciudadId): array
+    {
+        $cid = (int) ($ciudadId ?? 0);
+        if ($cid <= 0 || array_key_exists($cid, $ciudades)) {
+            return $ciudades;
+        }
+        $c = City::findOne($cid);
+        if ($c === null) {
+            return $ciudades;
+        }
+        $ciudades[$cid] = $c->name;
+        asort($ciudades, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $ciudades;
     }
 
 }

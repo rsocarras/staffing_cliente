@@ -7,9 +7,16 @@ use yii\helpers\Url;
 /** @var yii\widgets\ActiveForm $form */
 
 $motivos = \yii\helpers\ArrayHelper::map(\app\models\MotivoVinculacion::getActivos(), 'id', 'nombre');
-$ciudades = \yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name');
-$esquemas = \yii\helpers\ArrayHelper::map(\app\models\EsquemaVariable::getActivos(), 'id', 'nombre');
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+$ciudades = [];
+if ($tenantEmpresaId) {
+    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresa((int) $tenantEmpresaId);
+    $ciudades = \app\models\LocationSedes::mapCiudadesIncluirActualSiFalta(
+        $ciudades,
+        $model->ciudad_id !== null ? (int) $model->ciudad_id : null
+    );
+}
+$esquemas = \yii\helpers\ArrayHelper::map(\app\models\EsquemaVariable::getActivos(), 'id', 'nombre');
 $tiposContratoRows = \app\models\ContratoTipos::find()
     ->where(['activo' => 1])
     ->orderBy(['nombre' => SORT_ASC])
@@ -58,7 +65,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-map-pin text-primary"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select']) ?>
+            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'sede_id', [
