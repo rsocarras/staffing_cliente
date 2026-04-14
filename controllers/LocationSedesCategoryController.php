@@ -29,6 +29,7 @@ class LocationSedesCategoryController extends Controller
                     'create-ajax' => ['POST'],
                     'update-ajax' => ['POST'],
                     'delete' => ['POST'],
+                    'sedes-by-empresa-cliente' => ['GET'],
                 ],
             ],
         ]);
@@ -293,6 +294,48 @@ class LocationSedesCategoryController extends Controller
         }
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * Returns JSON list of sedes assigned to an empresa_cliente via empresa_cliente_sedes (GET).
+     *
+     * @return array{id:int,nombre:string}[]
+     */
+    public function actionSedesByEmpresaCliente(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $empresaClienteId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        $empresaId = TenantContext::requireEmpresaId();
+
+        if (!$empresaClienteId) {
+            return [];
+        }
+
+        $ec = EmpresaCliente::findOne(['id' => $empresaClienteId, 'empresas_id' => $empresaId]);
+        if ($ec === null) {
+            return [];
+        }
+
+        $sedeIds = (new \yii\db\Query())
+            ->select('ecs.location_sede_id')
+            ->from(['ecs' => 'empresa_cliente_sedes'])
+            ->where(['ecs.empresa_cliente_id' => $empresaClienteId])
+            ->column();
+
+        if (empty($sedeIds)) {
+            return [];
+        }
+
+        $sedes = LocationSedes::find()
+            ->where(['empresa_id' => $empresaId, 'id' => $sedeIds])
+            ->orderBy(['nombre' => SORT_ASC])
+            ->all();
+
+        return array_map(static fn(LocationSedes $s) => [
+            'id' => (int) $s->id,
+            'nombre' => (string) $s->nombre,
+        ], $sedes);
     }
 
     private function findModel(int $id): LocationSedesCategory

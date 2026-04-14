@@ -2581,7 +2581,7 @@ class NovedadController extends Controller
             'valor_movilizacion' => Yii::t('app', 'Valor movilización'),
             'valor_hora_nocturna' => Yii::t('app', 'Valor hora nocturna'),
             'valor_hora_diurna_domingo_festivos' => Yii::t('app', 'Valor hora diurna domingo/festivos'),
-            'valor_hora_nocturna_domingo_festiva' => Yii::t('app', 'Valor hora nocturna domingo/festivo'),
+            'valor_hora_nocturna_dominical_festiva' => Yii::t('app', 'Valor hora nocturna domingo/festivo'),
         ];
         $label = $campo !== null ? ($etiquetasPorCampo[$campo] ?? Yii::t('app', 'Tarifa sede')) : Yii::t('app', 'Sin tarifa en sede');
 
@@ -2656,7 +2656,7 @@ class NovedadController extends Controller
         $diurna = (float) ($sede->valor_hora_diurna ?? 0);
         $domFest = (float) ($sede->valor_hora_diurna_domingo_festivos ?? 0);
         $noct = (float) ($sede->valor_hora_nocturna ?? 0);
-        $noctDomFest = (float) ($sede->valor_hora_nocturna_domingo_festiva ?? 0);
+        $noctDomFest = (float) ($sede->valor_hora_nocturna_dominical_festiva ?? 0);
 
         return [
             NovedadHorasTroceoService::COD_HORA_DIURNA => $diurna,
@@ -3516,7 +3516,9 @@ class NovedadController extends Controller
     public function actionCiudades(): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $rows = City::find()->where(['is_active' => 1])->orderBy('name')->limit(500)->all();
+        $rows = City::sortRowsWithPriority(
+            City::find()->where(['is_active' => 1])->orderBy('name')->limit(500)->all()
+        );
 
         return array_map(static function (City $c) {
             return ['id' => $c->id, 'nombre' => $c->name];

@@ -20,7 +20,7 @@ use yii\helpers\ArrayHelper;
  * @property float|string|null $valor_hora_diurna
  * @property float|string|null $valor_hora_diurna_domingo_festivos
  * @property float|string|null $valor_hora_nocturna
- * @property float|string|null $valor_hora_nocturna_domingo_festiva
+ * @property float|string|null $valor_hora_nocturna_dominical_festiva
  * @property float|string|null $valor_movilizacion
  * @property float|string|null $valor_hora_especial
  * @property int|null $centro_costo
@@ -54,7 +54,7 @@ class LocationSedes extends \yii\db\ActiveRecord
                 'valor_hora_diurna',
                 'valor_hora_diurna_domingo_festivos',
                 'valor_hora_nocturna',
-                'valor_hora_nocturna_domingo_festiva',
+                'valor_hora_nocturna_dominical_festiva',
                 'valor_movilizacion',
                 'valor_hora_especial',
             ], 'default', 'value' => null],
@@ -68,7 +68,7 @@ class LocationSedes extends \yii\db\ActiveRecord
                 'valor_hora_diurna',
                 'valor_hora_diurna_domingo_festivos',
                 'valor_hora_nocturna',
-                'valor_hora_nocturna_domingo_festiva',
+                'valor_hora_nocturna_dominical_festiva',
                 'valor_movilizacion',
                 'valor_hora_especial',
             ], 'number'],
@@ -106,7 +106,7 @@ class LocationSedes extends \yii\db\ActiveRecord
             'valor_hora_diurna' => 'Valor hora diurna',
             'valor_hora_diurna_domingo_festivos' => 'Valor hora diurna domingo/festivos',
             'valor_hora_nocturna' => 'Valor hora nocturna',
-            'valor_hora_nocturna_domingo_festiva' => 'Valor hora nocturna domingo/festiva',
+            'valor_hora_nocturna_dominical_festiva' => 'Valor hora nocturna domingo/festiva',
             'valor_movilizacion' => 'Valor movilización',
             'valor_hora_especial' => 'Valor hora especial',
             'centro_costo' => 'Centro de Costo',
@@ -225,14 +225,14 @@ class LocationSedes extends \yii\db\ActiveRecord
             return [];
         }
 
-        return ArrayHelper::map(
+        return City::sortMapWithPriority(ArrayHelper::map(
             City::find()
                 ->where(['id' => $cityIds, 'is_active' => 1])
                 ->orderBy(['name' => SORT_ASC])
                 ->all(),
             'id',
             'name'
-        );
+        ));
     }
 
     /**
@@ -252,9 +252,8 @@ class LocationSedes extends \yii\db\ActiveRecord
             return $ciudades;
         }
         $ciudades[$cid] = $c->name;
-        asort($ciudades, SORT_NATURAL | SORT_FLAG_CASE);
 
-        return $ciudades;
+        return City::sortMapWithPriority($ciudades);
     }
 
 }

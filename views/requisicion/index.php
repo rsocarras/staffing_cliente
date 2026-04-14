@@ -61,7 +61,7 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
                 <div class="row g-2">
                     <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Ciudad'])->label(false) ?></div>
+                    <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\app\models\City::sortMapWithPriority(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name')), ['prompt' => 'Ciudad'])->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
                     <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
                     <div class="col-md-2">

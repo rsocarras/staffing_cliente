@@ -70,7 +70,7 @@ final class NovedadHorasTroceoService
             self::COD_AUXILIO_MOVILIZACION => 'valor_movilizacion',
             self::COD_HORA_NOCTURNA => 'valor_hora_nocturna',
             self::COD_HORA_FESTIVA_DIURNA => 'valor_hora_diurna_domingo_festivos',
-            self::COD_HORA_FESTIVA_NOCTURNA => 'valor_hora_nocturna_domingo_festiva',
+            self::COD_HORA_FESTIVA_NOCTURNA => 'valor_hora_nocturna_dominical_festiva',
         ];
     }
 

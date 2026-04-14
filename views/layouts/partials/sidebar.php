@@ -56,17 +56,7 @@ $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === '
                 <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
                 <li><a href="<?= Url::to(['/support-ticket/index']) ?>" class="<?php echo $isSupportTicket ? 'active' : ''; ?>"><i class="ti ti-ticket"></i><span>Soporte / Tickets</span></a></li>
-                <li class="submenu">
-                    <a href="javascript:void(0);">
-                        <i class="ti ti-calculator"></i><span>Presupuestos</span>
-                        <span class="menu-arrow"></span>
-                    </a>
-                    <ul>
-                        <li><a href="<?= Url::to(['/sistema/presupuesto']) ?>" class="<?php echo (strpos($path, 'sistema/presupuesto') === 0 && $path !== 'sistema/presupuesto/pending') ? 'active' : ''; ?>">Listado</a></li>
-                        <li><a href="<?= Url::to(['/sistema/presupuesto/create']) ?>" class="<?php echo ($path == 'sistema/presupuesto/create') ? 'active' : ''; ?>">Crear presupuesto</a></li>
-                        <li><a href="<?= Url::to(['/sistema/presupuesto/pending']) ?>" class="<?php echo ($path == 'sistema/presupuesto/pending') ? 'active' : ''; ?>">Pendientes por aprobar</a></li>
-                    </ul>
-                </li>
+                <li><a href="<?= Url::to(['/sistema/presupuesto']) ?>" class="<?php echo (strpos($path, 'sistema/presupuesto') === 0) ? 'active' : ''; ?>"><i class="ti ti-calculator"></i><span>Presupuestos</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/empleados']) ?>" class="<?php echo (strpos($path, 'sistema/empleados') === 0) ? 'active' : ''; ?>"><i class="ti ti-users"></i><span>Empleados / colaboradores</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/contratos']) ?>" class="<?php echo ($path == 'sistema/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Contratos</span></a></li>
 

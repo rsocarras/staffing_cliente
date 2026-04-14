@@ -73,8 +73,8 @@ use yii\helpers\Html;
                         <span class="fw-medium"><?= $model->valor_hora_nocturna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna_domingo_festiva')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_nocturna_domingo_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_domingo_festiva, 'COP') : '—' ?></span>
+                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna_dominical_festiva')) ?></small>
+                        <span class="fw-medium"><?= $model->valor_hora_nocturna_dominical_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_dominical_festiva, 'COP') : '—' ?></span>
                     </div>
                     <div class="col-md-4">
                         <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_especial')) ?></small>
