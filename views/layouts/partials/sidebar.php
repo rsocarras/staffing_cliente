@@ -53,7 +53,6 @@ $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === '
                         <li><a href="<?= Url::to(['/sistema/novedad-conceptos']) ?>" class="<?php echo (strpos($path, 'sistema/novedad-conceptos') === 0) ? 'active' : ''; ?>">Mis conceptos</a></li>
                     </ul>
                 </li>
-                <li><a href="<?= Url::to(['/sistema/novedad-tipo']) ?>" class="<?php echo ($path == 'sistema/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipo de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/requisicion']) ?>" class="<?php echo ($path == 'sistema/requisicion') ? 'active' : ''; ?>"><i class="ti ti-file-certificate"></i><span>Requisiciones</span></a></li>
                 <li><a href="<?= Url::to(['/support-ticket/index']) ?>" class="<?php echo $isSupportTicket ? 'active' : ''; ?>"><i class="ti ti-ticket"></i><span>Soporte / Tickets</span></a></li>
                 <li><a href="<?= Url::to(['/sistema/presupuesto']) ?>" class="<?php echo (strpos($path, 'sistema/presupuesto') === 0) ? 'active' : ''; ?>"><i class="ti ti-calculator"></i><span>Presupuestos</span></a></li>
@@ -99,6 +98,7 @@ $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === '
                 <li><a href="<?= Url::to(['/configuracion/areas']) ?>" class="<?php echo ($path == 'configuracion/areas') ? 'active' : ''; ?>"><i class="ti ti-folders"></i><span>Áreas</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/cargos']) ?>" class="<?php echo ($path == 'configuracion/cargos') ? 'active' : ''; ?>"><i class="ti ti-briefcase"></i><span>Cargos</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/contratos']) ?>" class="<?php echo ($path == 'configuracion/contratos') ? 'active' : ''; ?>"><i class="ti ti-id-badge-2"></i><span>Tipos de Contratos</span></a></li>
+                <li><a href="<?= Url::to(['/configuracion/novedad-tipo']) ?>" class="<?php echo ($path == 'configuracion/novedad-tipo') ? 'active' : ''; ?>"><i class="ti ti-list-details"></i><span>Tipos de Novedad</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/sedes']) ?>" class="<?php echo ($path == 'configuracion/sedes') ? 'active' : ''; ?>"><i class="ti ti-building"></i><span>Sedes</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/categoria-sedes']) ?>" class="<?php echo (strpos($path, 'configuracion/categoria-sedes') === 0) ? 'active' : ''; ?>"><i class="ti ti-category"></i><span>Categoría de sedes</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/novedad-flujo']) ?>" class="<?php echo (strpos($path, 'configuracion/novedad-flujo') === 0) ? 'active' : ''; ?>"><i class="ti ti-route"></i><span>Flujos de novedad</span></a></li>

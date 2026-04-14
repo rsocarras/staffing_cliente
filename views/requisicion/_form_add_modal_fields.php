@@ -5,6 +5,9 @@ use yii\helpers\Url;
 /** @var yii\web\View $this */
 /** @var app\models\Requisicion $model */
 /** @var yii\widgets\ActiveForm $form */
+/** @var bool $esCreacion */
+
+$esCreacion = isset($esCreacion) ? (bool) $esCreacion : true;
 
 $motivos = \yii\helpers\ArrayHelper::map(\app\models\MotivoVinculacion::getActivos(), 'id', 'nombre');
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
@@ -36,15 +39,15 @@ $cargoId = $model->cargo_id ? (int) $model->cargo_id : '';
 $jornadaSelector = $model->jornada_selector ?: '';
 ?>
 
-<!-- Empresa y ubicación -->
+<!-- Empresa y ubicaci?n -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-primary text-primary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
             <i class="ti ti-building-community fs-20"></i>
         </span>
         <div>
-            <h6 class="fw-semibold mb-1">Empresa y ubicación</h6>
-            <p class="text-muted small mb-0">Cliente, motivo de vinculación, fecha de ingreso, ciudad y sede.</p>
+            <h6 class="fw-semibold mb-1">Empresa y ubicaci?n</h6>
+            <p class="text-muted small mb-0">Cliente, motivo de vinculaci?n, fecha de ingreso, ciudad y sede.</p>
         </div>
     </div>
     <div class="row g-3">
@@ -67,7 +70,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-map-pin text-primary"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
+            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organizaci?n.') ?>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'sede_id', [
@@ -87,7 +90,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
         </span>
         <div>
             <h6 class="fw-semibold mb-1">Estructura organizacional</h6>
-            <p class="text-muted small mb-0">Área y subárea según la empresa cliente; cargo según organización (tenant), área y subárea.</p>
+            <p class="text-muted small mb-0">��rea y sub?rea seg?n la empresa cliente; cargo seg?n organizaci?n (tenant), ?rea y sub?rea.</p>
         </div>
     </div>
     <div class="row g-3">
@@ -108,14 +111,14 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-hierarchy text-info"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-sub_area_id', 'class' => 'form-select', 'disabled' => true]) ?>
+            ])->dropDownList([], ['prompt' => 'Primero seleccione ?rea', 'id' => 'requisicion-sub_area_id', 'class' => 'form-select', 'disabled' => true]) ?>
         </div>
         <div class="col-12">
             <?= $form->field($model, 'cargo_id', [
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-briefcase text-info"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-cargo_id', 'class' => 'form-select', 'disabled' => true]) ?>
+            ])->dropDownList([], ['prompt' => 'Primero seleccione ?rea', 'id' => 'requisicion-cargo_id', 'class' => 'form-select', 'disabled' => true]) ?>
         </div>
     </div>
 </div>
@@ -138,7 +141,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
             ])->dropDownList(\app\models\Requisicion::optsTipoContrato(), [
-                'prompt' => 'Seleccione modalidad de vinculación',
+                'prompt' => 'Seleccione modalidad de vinculaci?n',
                 'class' => 'form-select',
                 'id' => 'requisicion-tipo_contrato',
             ]) ?>
@@ -149,7 +152,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
             ])->dropDownList($tiposContrato, [
-                'prompt' => $modalidadInicial ? 'Seleccione tipo de contrato' : 'Primero seleccione modalidad de vinculación',
+                'prompt' => $modalidadInicial ? 'Seleccione tipo de contrato' : 'Primero seleccione modalidad de vinculaci?n',
                 'class' => 'form-select',
                 'id' => 'requisicion-contrato_tipo_id',
                 'disabled' => $modalidadInicial === null,
@@ -212,7 +215,8 @@ $jornadaSelector = $model->jornada_selector ?: '';
     </div>
 </div>
 
-<!-- Vacantes (creación) -->
+<?php if ($esCreacion): ?>
+<!-- Vacantes (solo creaci?n) -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -229,58 +233,112 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-hash text-warning"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->textInput(['type' => 'number', 'min' => 1, 'class' => 'form-control'])->hint('Se crearán N requisiciones (1 por vacante)') ?>
+            ])->textInput(['type' => 'number', 'min' => 1, 'class' => 'form-control'])->hint('Se crear?n N requisiciones (1 por vacante)') ?>
         </div>
     </div>
 </div>
+<?php endif; ?>
 
 <?php
-$sedesUrl = Url::to(['sedes-por-ciudad']);
-$areasUrl = Url::to(['areas-por-empresa-cliente']);
-$subAreasUrl = Url::to(['sub-areas-por-area']);
-$cargosUrl = Url::to(['cargos-por-sub-area']);
+$sedesUrl        = Url::to(['sedes-por-ciudad']);
+$areasUrl        = Url::to(['areas-por-empresa-cliente']);
+$subAreasUrl     = Url::to(['sub-areas-por-area']);
+$cargosUrl       = Url::to(['cargos-por-sub-area']);
 $tiposContratoUrl = Url::to(['tipos-contrato-por-modalidad']);
-$ciudadId = $model->ciudad_id ?: '';
-$sedeId = $model->sede_id ?: '';
+$ciudadId        = $model->ciudad_id ?: '';
+$sedeId          = $model->sede_id ?: '';
+$contratoTipoId  = $model->contrato_tipo_id ?: '';
 $tiposContratoCodeMapJson = json_encode($tiposContratoCodeMap, JSON_UNESCAPED_UNICODE);
-$modalidadInicialJson = json_encode($modalidadInicial, JSON_UNESCAPED_UNICODE);
+$modalidadInicialJson     = json_encode($modalidadInicial, JSON_UNESCAPED_UNICODE);
+// Scope all selectors to the correct form to avoid conflicts when both modals are in the DOM
+$formId = $esCreacion ? 'form-add-requisicion' : 'form-edit-requisicion-modal';
 
 $js = <<<JS
 (function() {
-    var sedesUrl = '{$sedesUrl}';
-    var areasUrl = '{$areasUrl}';
-    var subAreasUrl = '{$subAreasUrl}';
-    var cargosUrl = '{$cargosUrl}';
+    var formId = '{$formId}';
+    var \$form  = $('#' + formId);
+    if (!\$form.length) return;
+
+    var sedesUrl         = '{$sedesUrl}';
+    var areasUrl         = '{$areasUrl}';
+    var subAreasUrl      = '{$subAreasUrl}';
+    var cargosUrl        = '{$cargosUrl}';
     var tiposContratoUrl = '{$tiposContratoUrl}';
     var modalidadInicial = {$modalidadInicialJson};
-    var ciudadId = '{$ciudadId}';
-    var sedeId = '{$sedeId}';
+    var ciudadId         = '{$ciudadId}';
+    var sedeId           = '{$sedeId}';
     var empresaClienteId = '{$empresaClienteId}';
-    var areaId = '{$areaId}';
-    var subAreaId = '{$subAreaId}';
-    var cargoId = '{$cargoId}';
-    var jornadaSelector = '{$jornadaSelector}';
+    var areaId           = '{$areaId}';
+    var subAreaId        = '{$subAreaId}';
+    var cargoId          = '{$cargoId}';
+    var contratoTipoId   = '{$contratoTipoId}';
+    var jornadaSelector  = '{$jornadaSelector}';
     var contratoTipoCodeMap = {$tiposContratoCodeMapJson} || {};
+
+    // Scoped element lookup ? avoids duplicate-ID conflicts between create and edit modals
+    function f(id) { return \$form.find('#' + id); }
+
+    var \$empresa     = f('requisicion-empresa_cliente_id');
+    var \$ciudad      = f('requisicion-ciudad_id');
+    var \$sede        = f('requisicion-sede_id');
+    var \$area        = f('requisicion-area_id');
+    var \$sub         = f('requisicion-sub_area_id');
+    var \$cargo       = f('requisicion-cargo_id');
+    var \$tipoContrato = f('requisicion-tipo_contrato');
+    var \$contratoTipo = f('requisicion-contrato_tipo_id');
+    var \$jSelWrap    = f('requisicion-jornada-selector-wrap');
+    var \$jOtroWrap   = f('requisicion-jornada-otro-wrap');
+    var \$jSel        = f('requisicion-jornada_selector');
+    var \$jOtro       = f('requisicion-jornada_otro');
+    var \$jornada     = f('requisicion-jornada');
+    var \$salario     = f('requisicion-salario');
+    var \$auxilio     = f('requisicion-auxilio');
+
+    function resetSelect(\$el, prompt, disabled) {
+        \$el.html('<option value="">' + prompt + '</option>');
+        \$el.prop('disabled', !!disabled);
+    }
+
+    function setLabelRequired(\$input, required) {
+        if (!\$input.length) return;
+        var id = \$input.attr('id');
+        if (!id) return;
+        var \$label = \$form.find('label[for="' + id + '"]');
+        if (!\$label.length) \$label = $('label[for="' + id + '"]');
+        var \$star = \$label.find('.req-star');
+        if (required) {
+            if (!\$star.length) \$label.append(' <span class="text-danger req-star">*</span>');
+        } else {
+            \$star.remove();
+        }
+    }
+
+    function applyRequiredLabelRules() {
+        [\$empresa, \$ciudad, \$sede, \$area, \$cargo, \$tipoContrato, \$contratoTipo, \$jSel, \$salario, \$auxilio, f('requisicion-fecha_ingreso'), f('requisicion-numero_vacantes')]
+            .forEach(function(\$el) { setLabelRequired(\$el, true); });
+        [\$sub, f('requisicion-motivo_vinculacion_id'), f('requisicion-esquema_variable_id'), \$jOtro]
+            .forEach(function(\$el) { setLabelRequired(\$el, false); });
+    }
 
     function mergeContratoTipoCodeMapFromRows(rows) {
         contratoTipoCodeMap = {};
-        (rows || []).forEach(function (it) {
+        (rows || []).forEach(function(it) {
             contratoTipoCodeMap[String(it.id)] = (it.code || '').toString();
         });
     }
 
     function loadTiposContratoPorModalidad(modalidad, preserveId) {
         if (!modalidad || (modalidad !== 'directo' && modalidad !== 'temporal')) {
-            resetSelect(\$contratoTipo, 'Primero seleccione modalidad de vinculación', true);
+            resetSelect(\$contratoTipo, 'Primero seleccione modalidad de vinculaci?n', true);
             mergeContratoTipoCodeMapFromRows([]);
             applyContratoTipoRules();
             return;
         }
         \$contratoTipo.prop('disabled', false);
-        $.get(tiposContratoUrl, { modalidad: modalidad }, function (data) {
+        $.get(tiposContratoUrl, { modalidad: modalidad }, function(data) {
             var rows = data || [];
             \$contratoTipo.empty().append('<option value="">Seleccione tipo de contrato</option>');
-            rows.forEach(function (t) {
+            rows.forEach(function(t) {
                 \$contratoTipo.append('<option value="' + t.id + '">' + $('<div/>').text(t.nombre).html() + '</option>');
             });
             mergeContratoTipoCodeMapFromRows(rows);
@@ -295,70 +353,9 @@ $js = <<<JS
                 \$contratoTipo.val('');
             }
             applyContratoTipoRules();
-        }).fail(function () {
+        }).fail(function() {
             resetSelect(\$contratoTipo, 'Error al cargar tipos de contrato', true);
         });
-    }
-
-    var \$area = $('#requisicion-area_id');
-    var \$sede = $('#requisicion-sede_id');
-    var \$sub = $('#requisicion-sub_area_id');
-    var \$cargo = $('#requisicion-cargo_id');
-    var \$jSel = $('#requisicion-jornada_selector');
-    var \$jSelWrap = $('#requisicion-jornada-selector-wrap');
-    var \$jOtroWrap = $('#requisicion-jornada-otro-wrap');
-    var \$jOtro = $('#requisicion-jornada_otro');
-    var \$jornada = $('#requisicion-jornada');
-    var \$contratoTipo = $('#requisicion-contrato_tipo_id');
-    var \$salario = $('#requisicion-salario');
-    var \$auxilio = $('#requisicion-auxilio');
-
-    function resetSelect(\$el, prompt, disabled) {
-        \$el.html('<option value="">' + prompt + '</option>');
-        \$el.prop('disabled', !!disabled);
-    }
-
-    function setLabelRequired(inputSelector, required) {
-        var \$input = $(inputSelector);
-        if (!\$input.length) return;
-        var id = \$input.attr('id');
-        if (!id) return;
-        var \$label = $('label[for="' + id + '"]');
-        if (!\$label.length) return;
-        var \$star = \$label.find('.req-star');
-        if (required) {
-            if (!\$star.length) {
-                \$label.append(' <span class="text-danger req-star">*</span>');
-            }
-        } else {
-            \$star.remove();
-        }
-    }
-
-    function applyRequiredLabelRules() {
-        var required = [
-            '#requisicion-empresa_cliente_id',
-            '#requisicion-fecha_ingreso',
-            '#requisicion-ciudad_id',
-            '#requisicion-sede_id',
-            '#requisicion-area_id',
-            '#requisicion-cargo_id',
-            '#requisicion-tipo_contrato',
-            '#requisicion-contrato_tipo_id',
-            '#requisicion-jornada_selector',
-            '#requisicion-salario',
-            '#requisicion-auxilio',
-            '#requisicion-numero_vacantes'
-        ];
-        required.forEach(function (sel) { setLabelRequired(sel, true); });
-
-        var optional = [
-            '#requisicion-sub_area_id',
-            '#requisicion-motivo_vinculacion_id',
-            '#requisicion-esquema_variable_id',
-            '#requisicion-jornada_otro'
-        ];
-        optional.forEach(function (sel) { setLabelRequired(sel, false); });
     }
 
     function loadSedes(cid, preserveVal) {
@@ -366,17 +363,17 @@ $js = <<<JS
         if (!cid) return;
         \$sede.prop('disabled', false);
         $.get(sedesUrl, { ciudad_id: cid }, function(data) {
-            data.forEach(function(s) {
+            (data || []).forEach(function(s) {
                 \$sede.append('<option value="' + s.id + '">' + $('<div/>').text(s.nombre).html() + '</option>');
             });
-            if (preserveVal) \$sede.val(preserveVal);
+            if (preserveVal) \$sede.val(String(preserveVal));
         });
     }
 
     function loadAreas(ecId, preserveAreaVal, done) {
-        resetSelect(\$area, 'Seleccione área', true);
-        resetSelect(\$sub, 'Primero seleccione área', true);
-        resetSelect(\$cargo, 'Primero seleccione área', true);
+        resetSelect(\$area, 'Seleccione ?rea', true);
+        resetSelect(\$sub, 'Primero seleccione ?rea', true);
+        resetSelect(\$cargo, 'Primero seleccione ?rea', true);
         if (!ecId) {
             resetSelect(\$area, 'Primero seleccione empresa cliente', true);
             if (typeof done === 'function') done();
@@ -385,38 +382,38 @@ $js = <<<JS
         \$area.prop('disabled', false);
         $.get(areasUrl, { empresa_cliente_id: ecId }, function(data) {
             var rows = data || [];
-            \$area.empty().append('<option value="">Seleccione área</option>');
+            \$area.empty().append('<option value="">Seleccione ?rea</option>');
             rows.forEach(function(a) {
                 \$area.append('<option value="' + a.id + '">' + $('<div/>').text(a.nombre).html() + '</option>');
             });
             if (preserveAreaVal) \$area.val(String(preserveAreaVal));
             if (typeof done === 'function') done();
         }).fail(function() {
-            resetSelect(\$area, 'Error al cargar áreas', true);
+            resetSelect(\$area, 'Error al cargar ?reas', true);
             if (typeof done === 'function') done();
         });
     }
 
     function loadSubAreas(aid, preserveSubVal, done) {
-        resetSelect(\$sub, 'Subárea (opcional)', true);
+        resetSelect(\$sub, 'Sub?rea (opcional)', true);
         resetSelect(\$cargo, 'Seleccione cargo', true);
         if (!aid) {
-            resetSelect(\$sub, 'Primero seleccione área', true);
-            resetSelect(\$cargo, 'Primero seleccione área', true);
+            resetSelect(\$sub, 'Primero seleccione ?rea', true);
+            resetSelect(\$cargo, 'Primero seleccione ?rea', true);
             if (typeof done === 'function') done();
             return;
         }
         \$sub.prop('disabled', false);
         $.get(subAreasUrl, { area_id: aid }, function(data) {
             var rows = data || [];
-            \$sub.empty().append('<option value="">Subárea (opcional)</option>');
+            \$sub.empty().append('<option value="">Sub?rea (opcional)</option>');
             rows.forEach(function(a) {
                 \$sub.append('<option value="' + a.id + '">' + $('<div/>').text(a.nombre).html() + '</option>');
             });
             if (preserveSubVal) \$sub.val(String(preserveSubVal));
             if (typeof done === 'function') done();
         }).fail(function() {
-            resetSelect(\$sub, 'Error al cargar subáreas', true);
+            resetSelect(\$sub, 'Error al cargar sub?reas', true);
             if (typeof done === 'function') done();
         });
     }
@@ -424,18 +421,16 @@ $js = <<<JS
     function loadCargos(aid, subId, preserveCargoVal) {
         resetSelect(\$cargo, 'Seleccione cargo', true);
         if (!aid) {
-            resetSelect(\$cargo, 'Primero seleccione área', true);
+            resetSelect(\$cargo, 'Primero seleccione ?rea', true);
             return;
         }
         \$cargo.prop('disabled', false);
         var params = { area_id: aid };
-        if (subId) {
-            params.sub_area_id = subId;
-        }
+        if (subId) params.sub_area_id = subId;
         $.get(cargosUrl, params, function(data) {
             var rows = data || [];
             if (!rows.length) {
-                \$cargo.html('<option value="">No hay cargos para esta selección</option>');
+                \$cargo.html('<option value="">No hay cargos para esta selecci?n</option>');
                 \$cargo.prop('disabled', true);
                 return;
             }
@@ -449,48 +444,31 @@ $js = <<<JS
         });
     }
 
-    function currencyDigits(v) {
-        return (v || '').toString().replace(/\D/g, '');
-    }
-
+    function currencyDigits(v) { return (v || '').toString().replace(/\D/g, ''); }
     function formatMiles(v) {
-        var digits = currencyDigits(v);
-        if (!digits) return '';
-        return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        var d = currencyDigits(v);
+        return d ? d.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
     }
 
     function bindCurrencyMask(\$input) {
         if (!\$input.length) return;
         \$input.attr('inputmode', 'numeric');
         var init = \$input.val();
-        if (init) {
-            \$input.val(formatMiles(init));
-        }
-        \$input.off('input.requisicionCurrency').on('input.requisicionCurrency', function () {
-            var digits = currencyDigits($(this).val());
-            $(this).val(formatMiles(digits));
+        if (init) \$input.val(formatMiles(init));
+        \$input.off('input.reqCurrency').on('input.reqCurrency', function() {
+            $(this).val(formatMiles(currencyDigits($(this).val())));
         });
     }
 
     function unformatCurrencyForSubmit() {
-        if (\$salario.length) {
-            \$salario.val(currencyDigits(\$salario.val()));
-        }
-        if (\$auxilio.length) {
-            \$auxilio.val(currencyDigits(\$auxilio.val()));
-        }
+        if (\$salario.length) \$salario.val(currencyDigits(\$salario.val()));
+        if (\$auxilio.length) \$auxilio.val(currencyDigits(\$auxilio.val()));
     }
 
     function syncJornadaHidden() {
         var sel = (\$jSel.val() || '').toString();
-        if (sel === '110' || sel === '220') {
-            \$jornada.val(sel);
-            return;
-        }
-        if (sel === 'otro') {
-            \$jornada.val((\$jOtro.val() || '').toString().trim());
-            return;
-        }
+        if (sel === '110' || sel === '220') { \$jornada.val(sel); return; }
+        if (sel === 'otro') { \$jornada.val((\$jOtro.val() || '').toString().trim()); return; }
         \$jornada.val('');
     }
 
@@ -499,121 +477,91 @@ $js = <<<JS
         var showOtro = sel === 'otro';
         \$jOtroWrap.toggleClass('d-none', !showOtro);
         \$jOtro.prop('required', showOtro);
-        setLabelRequired('#requisicion-jornada_otro', showOtro);
-        if (!showOtro) {
-            \$jOtro.val('');
-        }
+        setLabelRequired(\$jOtro, showOtro);
+        if (!showOtro) \$jOtro.val('');
         syncJornadaHidden();
     }
 
     function contratoTipoEsHoras() {
-        var id = (\$contratoTipo.val() || '').toString();
-        var code = (contratoTipoCodeMap[id] || '').toString().toUpperCase();
+        var code = (contratoTipoCodeMap[(\$contratoTipo.val() || '').toString()] || '').toString().toUpperCase();
         return code === 'HORAS';
     }
-
-    $('#requisicion-tipo_contrato').off('change.requisicionModalidad').on('change.requisicionModalidad', function () {
-        loadTiposContratoPorModalidad($(this).val(), null);
-    });
 
     function applyContratoTipoRules() {
         var esHoras = contratoTipoEsHoras();
         if (esHoras) {
-            \$jSel.val('');
-            \$jOtro.val('');
-            \$jSelWrap.addClass('d-none');
-            \$jOtroWrap.addClass('d-none');
-            \$jSel.prop('required', false);
-            \$jOtro.prop('required', false);
-            setLabelRequired('#requisicion-jornada_selector', false);
-            setLabelRequired('#requisicion-jornada_otro', false);
+            \$jSel.val(''); \$jOtro.val('');
+            \$jSelWrap.addClass('d-none'); \$jOtroWrap.addClass('d-none');
+            \$jSel.prop('required', false); \$jOtro.prop('required', false);
+            setLabelRequired(\$jSel, false); setLabelRequired(\$jOtro, false);
             \$jornada.val('');
             \$salario.val('0').prop('readonly', true);
         } else {
             \$jSelWrap.removeClass('d-none');
             \$jSel.prop('required', true);
-            setLabelRequired('#requisicion-jornada_selector', true);
+            setLabelRequired(\$jSel, true);
             \$salario.prop('readonly', false);
             toggleJornadaOtro();
         }
     }
 
-    $('#requisicion-empresa_cliente_id').off('change.requisicionAdd').on('change.requisicionAdd', function() {
-        var ec = $(this).val();
-        loadAreas(ec, null, null);
+    // Events scoped to the correct form elements
+    \$empresa.off('change.reqForm').on('change.reqForm', function() {
+        loadAreas($(this).val(), null, null);
     });
-
-    $('#requisicion-ciudad_id').off('change.requisicionAdd').on('change.requisicionAdd', function() {
+    \$ciudad.off('change.reqForm').on('change.reqForm', function() {
         var v = $(this).val();
         if (v) loadSedes(v);
         else resetSelect(\$sede, 'Primero seleccione ciudad', true);
     });
-
-    $('#requisicion-area_id').off('change.requisicionAdd').on('change.requisicionAdd', function() {
+    \$area.off('change.reqForm').on('change.reqForm', function() {
         var v = $(this).val();
-        if (v) {
-            loadSubAreas(v, null, null);
-            loadCargos(v, null, null);
-        }
-        else {
-            resetSelect(\$sub, 'Primero seleccione área', true);
-            resetSelect(\$cargo, 'Primero seleccione área', true);
-        }
+        if (v) { loadSubAreas(v, null, null); loadCargos(v, null, null); }
+        else { resetSelect(\$sub, 'Primero seleccione ?rea', true); resetSelect(\$cargo, 'Primero seleccione ?rea', true); }
     });
-
-    $('#requisicion-sub_area_id').off('change.requisicionAdd').on('change.requisicionAdd', function() {
-        var subVal = $(this).val();
+    \$sub.off('change.reqForm').on('change.reqForm', function() {
         var aVal = \$area.val();
-        if (aVal) loadCargos(aVal, subVal || null);
-        else resetSelect(\$cargo, 'Primero seleccione área', true);
+        if (aVal) loadCargos(aVal, $(this).val() || null);
+        else resetSelect(\$cargo, 'Primero seleccione ?rea', true);
     });
-    \$jSel.off('change.requisicionAdd').on('change.requisicionAdd', function () {
-        toggleJornadaOtro();
+    \$tipoContrato.off('change.reqForm').on('change.reqForm', function() {
+        loadTiposContratoPorModalidad($(this).val(), null);
     });
-    \$jOtro.off('input.requisicionAdd change.requisicionAdd').on('input.requisicionAdd change.requisicionAdd', function () {
-        syncJornadaHidden();
-    });
-    \$contratoTipo.off('change.requisicionAdd').on('change.requisicionAdd', function () {
+    \$contratoTipo.off('change.reqForm').on('change.reqForm', function() {
         applyContratoTipoRules();
     });
-    \$salario.off('input.requisicionAdd').on('input.requisicionAdd', function () {
-        if (contratoTipoEsHoras()) {
-            \$salario.val('0');
-        }
+    \$jSel.off('change.reqForm').on('change.reqForm', function() { toggleJornadaOtro(); });
+    \$jOtro.off('input.reqForm change.reqForm').on('input.reqForm change.reqForm', function() { syncJornadaHidden(); });
+    \$salario.off('input.reqForm').on('input.reqForm', function() {
+        if (contratoTipoEsHoras()) \$salario.val('0');
     });
-    $('#form-add-requisicion')
-        .off('submit.requisicionCurrency')
-        .on('submit.requisicionCurrency', function () {
-            \$contratoTipo.prop('disabled', false);
-            unformatCurrencyForSubmit();
-        });
+    \$form.off('submit.reqCurrency').on('submit.reqCurrency', function() {
+        \$contratoTipo.prop('disabled', false);
+        unformatCurrencyForSubmit();
+    });
 
-    if (ciudadId) {
-        loadSedes(ciudadId, sedeId);
-    }
+    // Pre-populate cascaded dropdowns with existing model values
+    if (ciudadId) loadSedes(ciudadId, sedeId);
 
     if (empresaClienteId) {
-        loadAreas(empresaClienteId, areaId, function () {
+        loadAreas(empresaClienteId, areaId, function() {
             if (areaId) {
-                loadSubAreas(areaId, subAreaId, function () {
+                loadSubAreas(areaId, subAreaId, function() {
                     loadCargos(areaId, subAreaId || null, cargoId);
                 });
             }
         });
     }
-    if (jornadaSelector) {
-        \$jSel.val(jornadaSelector);
-    }
+
+    if (jornadaSelector) \$jSel.val(jornadaSelector);
+
     applyRequiredLabelRules();
     bindCurrencyMask(\$salario);
     bindCurrencyMask(\$auxilio);
     toggleJornadaOtro();
-    if (!modalidadInicial) {
-        mergeContratoTipoCodeMapFromRows([]);
-    }
+    if (!modalidadInicial) mergeContratoTipoCodeMapFromRows([]);
     applyContratoTipoRules();
-
-    $('#requisicion-sede_id').off('change.requisicionAdd').on('change.requisicionAdd', function() {});
 })();
 JS;
-$this->registerJs($js, \yii\web\View::POS_READY);
+// Output inline so it runs both in full-page render and in AJAX renderPartial responses
+echo '<script>$(function() {' . $js . '});</script>';

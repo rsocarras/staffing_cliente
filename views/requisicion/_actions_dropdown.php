@@ -12,18 +12,20 @@ use yii\helpers\Url;
     </button>
     <ul class="dropdown-menu dropdown-menu-end">
         <li>
-            <a href="javascript:void(0);" class="dropdown-item btn-requisicion-view" data-id="<?= (int) $model->id ?>">
-                <i class="ti ti-eye me-2"></i>Ver
+            <a href="javascript:void(0);" class="dropdown-item btn-requisicion-view d-flex align-items-center gap-2 py-2 rounded text-info" data-id="<?= (int) $model->id ?>">
+                <span class="avatar avatar-sm bg-soft-info text-info rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"><i class="ti ti-eye fs-12"></i></span>
+                <span class="fw-medium">Ver</span>
             </a>
         </li>
         <?php if ($model->isEditable()): ?>
             <li>
-                <a href="javascript:void(0);" class="dropdown-item btn-requisicion-edit" data-id="<?= (int) $model->id ?>">
-                    <i class="ti ti-edit me-2"></i>Editar
+                <a href="javascript:void(0);" class="dropdown-item btn-requisicion-edit d-flex align-items-center gap-2 py-2 rounded" data-id="<?= (int) $model->id ?>">
+                    <span class="avatar avatar-sm bg-soft-primary text-primary rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"><i class="ti ti-edit fs-12"></i></span>
+                    <span class="fw-medium">Editar</span>
                 </a>
             </li>
             <li>
-                <a href="javascript:void(0);" class="dropdown-item btn-requisicion-submit"
+                <a href="javascript:void(0);" class="dropdown-item btn-requisicion-submit d-flex align-items-center gap-2 py-2 rounded"
                    data-url="<?= Html::encode(Url::to(['submit', 'id' => $model->id])) ?>"
                    data-requisicion="<?= Html::encode((string) $model->id) ?>"
                    data-empresa="<?= Html::encode((string) ($model->empresa->nombre ?? '-')) ?>"
@@ -32,12 +34,14 @@ use yii\helpers\Url;
                    data-area="<?= Html::encode((string) ($model->area->nombre ?? '-')) ?>"
                    data-cargo="<?= Html::encode((string) ($model->cargo->nombre ?? '-')) ?>"
                    data-fecha="<?= Html::encode((string) (Yii::$app->formatter->asDate($model->fecha_ingreso) ?: '-')) ?>">
-                    <i class="ti ti-send me-2"></i>Enviar a aprobación
+                    <span class="avatar avatar-sm bg-soft-warning text-warning rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"><i class="ti ti-send fs-12"></i></span>
+                    <span class="fw-medium">Enviar a aprobación</span>
                 </a>
             </li>
             <li>
-                <a href="javascript:void(0);" class="dropdown-item text-danger btn-requisicion-delete" data-id="<?= (int) $model->id ?>" data-nombre="<?= Html::encode($model->group_uuid ?: 'Requisición') ?>">
-                    <i class="ti ti-trash me-2"></i>Eliminar
+                <a href="javascript:void(0);" class="dropdown-item text-danger btn-requisicion-delete d-flex align-items-center gap-2 py-2 rounded" data-id="<?= (int) $model->id ?>" data-nombre="<?= Html::encode($model->group_uuid ?: 'Requisición') ?>">
+                    <span class="avatar avatar-sm bg-soft-danger text-danger rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"><i class="ti ti-trash fs-12"></i></span>
+                    <span class="fw-medium">Eliminar</span>
                 </a>
             </li>
         <?php endif; ?>

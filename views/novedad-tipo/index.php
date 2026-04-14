@@ -41,7 +41,7 @@ $csrfParam = Yii::$app->request->csrfParam;
                     <div class="text-end">
                         <ol class="breadcrumb m-0 py-0">
                             <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>"><i class="ti ti-home"></i> </a></li>
-                            <li class="breadcrumb-item">Sistema</li>
+                            <li class="breadcrumb-item">Configuración</li>
                             <li class="breadcrumb-item active" aria-current="page"><?= Html::encode($this->title) ?></li>
                         </ol>
                     </div>
