@@ -49,66 +49,77 @@ if ($empresaId !== null) {
 
 <div class="page-wrapper">
     <div class="content">
-        <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2 pb-3">
-            <div class="flex-grow-1">
-                <h4 class="mb-0"><?= Html::encode($this->title) ?></h4>
-            </div>
-            <div class="text-end">
-                <?php if (Yii::$app->user->can('presupuesto_create')): ?>
-                    <?= Html::a('<i class="ti ti-plus me-1"></i> Crear presupuesto', 'javascript:void(0);', ['class' => 'btn btn-primary', 'data-bs-toggle' => 'modal', 'data-bs-target' => '#modal-create-presupuesto']) ?>
-                <?php endif; ?>
-                <?php if (Yii::$app->user->can('presupuesto_index')): ?>
-                    <?= Html::a('<i class="ti ti-clock me-1"></i> Pendientes', ['pending'], ['class' => 'btn btn-outline-primary']) ?>
-                <?php endif; ?>
+        <div class="card mb-3">
+            <div class="card-body py-3">
+                <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+                    <div class="flex-grow-1">
+                        <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
+                    </div>
+                    <div class="text-end d-flex gap-2 align-items-center">
+                        <ol class="breadcrumb m-0 py-0 me-2">
+                            <li class="breadcrumb-item"><a href="<?= Url::to(['/']) ?>"><i class="ti ti-home"></i></a></li>
+                            <li class="breadcrumb-item">Sistema</li>
+                            <li class="breadcrumb-item active" aria-current="page"><?= Html::encode($this->title) ?></li>
+                        </ol>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card mb-3">
-            <div class="card-header"><h5 class="card-title mb-0">Filtros</h5></div>
-            <div class="card-body">
-                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => ['index']]); ?>
-                <div class="row g-2">
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'estado')->dropDownList(Presupuesto::optsEstado(), ['prompt' => 'Estado'])->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'location_sede_id')->dropDownList(
-                            \yii\helpers\ArrayHelper::map(
-                                \app\models\LocationSedes::find()->where([
-                                    'empresa_id' => $tenantEmpresaId,
-                                    'activo' => 1,
-                                ])->orderBy(['nombre' => SORT_ASC])->all(),
-                                'id',
-                                'nombre'
-                            ),
-                            ['prompt' => 'Sede']
-                        )->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(
-                            \yii\helpers\ArrayHelper::map(
-                                \app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null),
-                                'id',
-                                'nombre'
-                            ),
-                            ['prompt' => 'Cliente']
-                        )->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'vigencia_desde')->input('date')->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'vigencia_hasta')->input('date')->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= $form->field($searchModel, 'created_by')->input('number', ['min' => 1, 'placeholder' => 'ID creador'])->label(false) ?>
-                    </div>
-                    <div class="col-md-2">
-                        <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
-                        <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+        <div class="accordion mb-3" id="accordionFiltrosPresupuesto">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltrosPresupuesto" aria-expanded="false" aria-controls="collapseFiltrosPresupuesto">
+                        <i class="ti ti-filter me-2"></i>Filtros
+                    </button>
+                </h2>
+                <div id="collapseFiltrosPresupuesto" class="accordion-collapse collapse" data-bs-parent="#accordionFiltrosPresupuesto">
+                    <div class="accordion-body">
+                        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => ['index']]); ?>
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'estado')->dropDownList(Presupuesto::optsEstado(), ['prompt' => 'Estado'])->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'location_sede_id')->dropDownList(
+                                    \yii\helpers\ArrayHelper::map(
+                                        \app\models\LocationSedes::find()->where([
+                                            'empresa_id' => $tenantEmpresaId,
+                                            'activo' => 1,
+                                        ])->orderBy(['nombre' => SORT_ASC])->all(),
+                                        'id',
+                                        'nombre'
+                                    ),
+                                    ['prompt' => 'Sede']
+                                )->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(
+                                    \yii\helpers\ArrayHelper::map(
+                                        \app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null),
+                                        'id',
+                                        'nombre'
+                                    ),
+                                    ['prompt' => 'Cliente']
+                                )->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'vigencia_desde')->input('date')->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'vigencia_hasta')->input('date')->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= $form->field($searchModel, 'created_by')->input('number', ['min' => 1, 'placeholder' => 'ID creador'])->label(false) ?>
+                            </div>
+                            <div class="col-md-2">
+                                <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+                            </div>
+                        </div>
+                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
-                <?php ActiveForm::end(); ?>
             </div>
         </div>
 

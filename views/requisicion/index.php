@@ -45,31 +45,37 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Filtros</h5>
-            </div>
-            <div class="card-body">
-                <?php
-                $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
-                ?>
-                <?php $form = ActiveForm::begin([
-                    'method' => 'get',
-                    'action' => ['index'],
-                    'options' => ['id' => 'requisicion-filter-form'],
-                ]); ?>
-                <div class="row g-2">
-                    <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\app\models\City::sortMapWithPriority(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name')), ['prompt' => 'Ciudad'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
-                    <div class="col-md-2">
-                        <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
-                        <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+        <div class="accordion mb-3" id="accordionFiltrosRequisicion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltrosRequisicion" aria-expanded="false" aria-controls="collapseFiltrosRequisicion">
+                        <i class="ti ti-filter me-2"></i>Filtros
+                    </button>
+                </h2>
+                <div id="collapseFiltrosRequisicion" class="accordion-collapse collapse" data-bs-parent="#accordionFiltrosRequisicion">
+                    <div class="accordion-body">
+                        <?php
+                        $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+                        ?>
+                        <?php $form = ActiveForm::begin([
+                            'method' => 'get',
+                            'action' => ['index'],
+                            'options' => ['id' => 'requisicion-filter-form'],
+                        ]); ?>
+                        <div class="row g-2">
+                            <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\app\models\City::sortMapWithPriority(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name')), ['prompt' => 'Ciudad'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
+                            <div class="col-md-2">
+                                <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+                            </div>
+                        </div>
+                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
-                <?php ActiveForm::end(); ?>
             </div>
         </div>
 

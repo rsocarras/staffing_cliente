@@ -175,58 +175,67 @@ $this->registerCss('
                     </div>
                 </div>
 
-                <div class="card border rounded-3 mb-4 bg-light bg-opacity-25">
-                    <div class="card-body py-3">
-                        <div class="row g-2 align-items-end">
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-estado"><?= Html::encode(Yii::t('app', 'Estado')) ?></label>
-                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-estado">
-                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
-                                    <option value="<?= Html::encode(Novedad::ESTADO_BORRADOR) ?>"><?= Html::encode(Yii::t('app', 'Borrador')) ?></option>
-                                    <option value="<?= Html::encode(Novedad::ESTADO_PENDIENTE) ?>"><?= Html::encode(Yii::t('app', 'Pendiente')) ?></option>
-                                    <option value="<?= Html::encode(Novedad::ESTADO_APROBADA) ?>"><?= Html::encode(Yii::t('app', 'Aprobada')) ?></option>
-                                    <option value="<?= Html::encode(Novedad::ESTADO_RECHAZADA) ?>"><?= Html::encode(Yii::t('app', 'Rechazada')) ?></option>
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-tipo"><?= Html::encode(Yii::t('app', 'Tipo')) ?></label>
-                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-tipo">
-                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
-                                    <?php foreach ($tipos as $t): ?>
-                                        <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-concepto"><?= Html::encode(Yii::t('app', 'Concepto')) ?></label>
-                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-concepto">
-                                    <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
-                                    <?php foreach ($conceptosFiltro as $conc): ?>
-                                        <option value="<?= (int) $conc->id ?>"><?= Html::encode($conc->nombre) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-profile"><?= Html::encode(Yii::t('app', 'Persona')) ?></label>
-                                <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-profile">
-                                    <option value=""><?= Html::encode(Yii::t('app', 'Todas')) ?></option>
-                                    <?php foreach ($profiles as $pf): ?>
-                                        <option value="<?= (int) $pf->user_id ?>"><?= Html::encode(trim((string) ($pf->name ?: $pf->num_doc ?: '#' . $pf->user_id))) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-desde"><?= Html::encode(Yii::t('app', 'Fecha desde')) ?></label>
-                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-desde">
-                            </div>
-                            <div class="col-6 col-md-4 col-lg-2">
-                                <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-hasta"><?= Html::encode(Yii::t('app', 'Fecha hasta')) ?></label>
-                                <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-hasta">
-                            </div>
-                            <div class="col-12 col-lg-auto ms-lg-auto">
-                                <button type="button" class="btn btn-sm btn-outline-secondary" id="novedad-filter-clear">
-                                    <i class="ti ti-filter-off me-1"></i><?= Html::encode(Yii::t('app', 'Limpiar filtros')) ?>
-                                </button>
+                <div class="accordion mb-4" id="accordionFiltrosNovedad">
+                    <div class="accordion-item border rounded-3">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltrosNovedad" aria-expanded="false" aria-controls="collapseFiltrosNovedad">
+                                <i class="ti ti-filter me-2"></i><?= Html::encode(Yii::t('app', 'Filtros')) ?>
+                            </button>
+                        </h2>
+                        <div id="collapseFiltrosNovedad" class="accordion-collapse collapse" data-bs-parent="#accordionFiltrosNovedad">
+                            <div class="accordion-body py-3 bg-light bg-opacity-25">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-estado"><?= Html::encode(Yii::t('app', 'Estado')) ?></label>
+                                        <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-estado">
+                                            <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                            <option value="<?= Html::encode(Novedad::ESTADO_BORRADOR) ?>"><?= Html::encode(Yii::t('app', 'Borrador')) ?></option>
+                                            <option value="<?= Html::encode(Novedad::ESTADO_PENDIENTE) ?>"><?= Html::encode(Yii::t('app', 'Pendiente')) ?></option>
+                                            <option value="<?= Html::encode(Novedad::ESTADO_APROBADA) ?>"><?= Html::encode(Yii::t('app', 'Aprobada')) ?></option>
+                                            <option value="<?= Html::encode(Novedad::ESTADO_RECHAZADA) ?>"><?= Html::encode(Yii::t('app', 'Rechazada')) ?></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-tipo"><?= Html::encode(Yii::t('app', 'Tipo')) ?></label>
+                                        <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-tipo">
+                                            <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                            <?php foreach ($tipos as $t): ?>
+                                                <option value="<?= (int) $t->id ?>"><?= Html::encode($t->nombre) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-concepto"><?= Html::encode(Yii::t('app', 'Concepto')) ?></label>
+                                        <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-concepto">
+                                            <option value=""><?= Html::encode(Yii::t('app', 'Todos')) ?></option>
+                                            <?php foreach ($conceptosFiltro as $conc): ?>
+                                                <option value="<?= (int) $conc->id ?>"><?= Html::encode($conc->nombre) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-profile"><?= Html::encode(Yii::t('app', 'Persona')) ?></label>
+                                        <select class="form-select form-select-sm novedad-list-filter" id="novedad-filter-profile">
+                                            <option value=""><?= Html::encode(Yii::t('app', 'Todas')) ?></option>
+                                            <?php foreach ($profiles as $pf): ?>
+                                                <option value="<?= (int) $pf->user_id ?>"><?= Html::encode(trim((string) ($pf->name ?: $pf->num_doc ?: '#' . $pf->user_id))) ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-desde"><?= Html::encode(Yii::t('app', 'Fecha desde')) ?></label>
+                                        <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-desde">
+                                    </div>
+                                    <div class="col-6 col-md-4 col-lg-2">
+                                        <label class="form-label small text-muted mb-1" for="novedad-filter-fecha-hasta"><?= Html::encode(Yii::t('app', 'Fecha hasta')) ?></label>
+                                        <input type="date" class="form-control form-control-sm novedad-list-filter" id="novedad-filter-fecha-hasta">
+                                    </div>
+                                    <div class="col-12 col-lg-auto ms-lg-auto">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="novedad-filter-clear">
+                                            <i class="ti ti-filter-off me-1"></i><?= Html::encode(Yii::t('app', 'Limpiar filtros')) ?>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

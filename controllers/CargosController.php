@@ -311,8 +311,20 @@ class CargosController extends Controller
      */
     public function actionViewAjax($id)
     {
+        $model = $this->findModel($id);
+        $model->novedadConceptoIds = array_map(
+            'intval',
+            NovedadConceptoCargo::find()
+                ->select('novedad_concepto_id')
+                ->where(['cargo_id' => $model->id])
+                ->column()
+        );
+        $conceptosOpts = $this->opcionesConceptosCargoForm($model);
+
         return $this->renderPartial('_view_modal', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'conceptosPorAgrupador' => $conceptosOpts['conceptosPorAgrupador'],
+            'selectedIdsConceptosCargo' => $conceptosOpts['selectedIdsConceptosCargo'],
         ]);
     }
 
