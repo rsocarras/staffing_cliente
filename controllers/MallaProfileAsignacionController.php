@@ -108,7 +108,7 @@ class MallaProfileAsignacionController extends Controller
             $estadoCls = MallaProfileAsignacion::estadoAprobacionBadgeSoftClass($model->estado_aprobacion);
             $estadoHtml = '<span class="badge badge-soft-' . $estadoCls . '">' . Html::encode($model->displayEstadoAprobacion()) . '</span>';
             $actualHtml = (int) $model->es_actual === 1
-                ? '<span class="badge badge-soft-success">S?</span>'
+                ? '<span class="badge badge-soft-success">Sí</span>'
                 : '<span class="badge badge-soft-danger">No</span>';
             $data[] = [
                 (int) $model->id,
@@ -149,7 +149,7 @@ class MallaProfileAsignacionController extends Controller
             }
 
             if (!$model->hasErrors() && $model->save()) {
-                Yii::$app->session->setFlash('success', 'Asignaci?n enviada a aprobaci?n RRHH.');
+                Yii::$app->session->setFlash('success', 'Asignación enviada a aprobación RRHH.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -169,7 +169,7 @@ class MallaProfileAsignacionController extends Controller
         $model->empresa_id = TenantContext::requireEmpresaId();
 
         if (!$this->request->isPost || !$model->load(Yii::$app->request->post())) {
-            return ['success' => false, 'errors' => ['general' => ['Datos inv?lidos.']]];
+            return ['success' => false, 'errors' => ['general' => ['Datos inválidos.']]];
         }
 
         $model->empresa_id = TenantContext::requireEmpresaId();
@@ -189,7 +189,7 @@ class MallaProfileAsignacionController extends Controller
         if (!$model->hasErrors() && $model->save()) {
             return [
                 'success' => true,
-                'message' => 'Asignaci?n creada. Enviada a aprobaci?n RRHH.',
+                'message' => 'Asignación creada. Enviada a aprobación RRHH.',
             ];
         }
 
@@ -215,7 +215,7 @@ class MallaProfileAsignacionController extends Controller
             }
 
             if (!$model->hasErrors() && $model->save()) {
-                Yii::$app->session->setFlash('success', 'Asignaci?n actualizada y enviada a aprobaci?n RRHH.');
+                Yii::$app->session->setFlash('success', 'Asignación actualizada y enviada a aprobación RRHH.');
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
@@ -248,7 +248,7 @@ class MallaProfileAsignacionController extends Controller
         $model = $this->findModel($id);
 
         if (!$this->request->isPost || !$model->load(Yii::$app->request->post())) {
-            return ['success' => false, 'errors' => ['general' => ['Datos inv?lidos.']]];
+            return ['success' => false, 'errors' => ['general' => ['Datos inválidos.']]];
         }
 
         $model->estado_aprobacion = MallaProfileAsignacion::ESTADO_PENDIENTE;
@@ -267,7 +267,7 @@ class MallaProfileAsignacionController extends Controller
         if (!$model->hasErrors() && $model->save()) {
             return [
                 'success' => true,
-                'message' => 'Asignaci?n actualizada y enviada a aprobaci?n RRHH.',
+                'message' => 'Asignación actualizada y enviada a aprobación RRHH.',
             ];
         }
 
@@ -301,7 +301,7 @@ class MallaProfileAsignacionController extends Controller
     {
         $model = $this->findModel($id);
         $model->approve(Yii::$app->user->id);
-        Yii::$app->session->setFlash('success', 'Asignaci?n a empleado aprobada.');
+        Yii::$app->session->setFlash('success', 'Asignación a empleado aprobada.');
         return $this->redirect($this->request->referrer ?: ['view', 'id' => $id]);
     }
 
@@ -315,7 +315,7 @@ class MallaProfileAsignacionController extends Controller
         $model->es_actual = 0;
         $model->activo = 0;
         $model->save(false);
-        Yii::$app->session->setFlash('success', 'Asignaci?n a empleado rechazada.');
+        Yii::$app->session->setFlash('success', 'Asignación a empleado rechazada.');
         return $this->redirect($this->request->referrer ?: ['view', 'id' => $id]);
     }
 

@@ -7,6 +7,7 @@ use app\models\Area;
 use app\models\Cargos;
 use app\models\EmpresaCliente;
 use app\models\Requisicion;
+use app\models\ContratoTipos;
 use app\models\RequisicionHistoryLog;
 use app\models\search\RequisicionSearch;
 use app\models\Profile;
@@ -37,6 +38,7 @@ class RequisicionController extends Controller
                     'areas-por-empresa-cliente' => ['GET'],
                     'sub-areas-por-area' => ['GET'],
                     'cargos-por-sub-area' => ['GET'],
+                    'tipos-contrato-por-modalidad' => ['GET'],
                     'create-ajax' => ['POST'],
                     'submit' => ['POST'],
                     'update-ajax' => ['POST'],
@@ -53,7 +55,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'areas-por-empresa-cliente', 'sub-areas-por-area', 'cargos-por-sub-area'],
+                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'areas-por-empresa-cliente', 'sub-areas-por-area', 'cargos-por-sub-area', 'tipos-contrato-por-modalidad'],
                     ],
                     [
                         'allow' => true,
@@ -639,6 +641,30 @@ class RequisicionController extends Controller
 
         return array_map(static function (Cargos $c) {
             return ['id' => $c->id, 'nombre' => $c->nombre];
+        }, $rows);
+    }
+
+    /**
+     * Tipos de contrato activos filtrados por modalidad de contratación (requisicion.tipo_contrato).
+     *
+     * @return list<array{id: int, nombre: string, code: string}>
+     */
+    public function actionTiposContratoPorModalidad(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $modalidad = trim((string) Yii::$app->request->get('modalidad', ''));
+        if (!in_array($modalidad, [ContratoTipos::MODALIDAD_DIRECTO, ContratoTipos::MODALIDAD_TEMPORAL], true)) {
+            return [];
+        }
+
+        $rows = ContratoTipos::findActivosPorModalidad($modalidad);
+
+        return array_map(static function (ContratoTipos $t) {
+            return [
+                'id' => (int) $t->id,
+                'nombre' => (string) $t->nombre,
+                'code' => (string) $t->code,
+            ];
         }, $rows);
     }
 

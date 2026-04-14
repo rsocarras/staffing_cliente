@@ -1,5 +1,6 @@
 <?php
 
+use app\models\ContratoTipos;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
@@ -18,10 +19,12 @@ if ($tenantEmpresaId) {
         $model->ciudad_id !== null ? (int) $model->ciudad_id : null
     );
 }
-$tiposContratoRows = \app\models\ContratoTipos::find()
-    ->where(['activo' => 1])
-    ->orderBy(['nombre' => SORT_ASC])
-    ->all();
+$modalidadInicial = ($model->tipo_contrato && in_array((string) $model->tipo_contrato, [ContratoTipos::MODALIDAD_DIRECTO, ContratoTipos::MODALIDAD_TEMPORAL], true))
+    ? (string) $model->tipo_contrato
+    : null;
+$tiposContratoRows = $modalidadInicial !== null
+    ? ContratoTipos::findActivosPorModalidad($modalidadInicial)
+    : [];
 $tiposContrato = ArrayHelper::map($tiposContratoRows, 'id', 'nombre');
 $tiposContratoCodeMap = [];
 foreach ($tiposContratoRows as $tc) {
@@ -57,8 +60,17 @@ $jornadaSelector = $model->jornada_selector ?: '';
         ]) ?>
         <?= $form->field($model, 'sub_area_id')->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-sub_area_id', 'class' => 'form-select', 'disabled' => true]) ?>
         <?= $form->field($model, 'cargo_id')->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-cargo_id', 'class' => 'form-select', 'disabled' => true]) ?>
-        <?= $form->field($model, 'tipo_contrato')->dropDownList(\app\models\Requisicion::optsTipoContrato(), ['prompt' => 'Seleccione modalidad de vinculación']) ?>
-        <?= $form->field($model, 'contrato_tipo_id')->dropDownList($tiposContrato, ['prompt' => 'Seleccione tipo de contrato']) ?>
+        <?= $form->field($model, 'tipo_contrato')->dropDownList(\app\models\Requisicion::optsTipoContrato(), [
+            'prompt' => 'Seleccione modalidad de vinculación',
+            'id' => 'requisicion-tipo_contrato',
+            'class' => 'form-select',
+        ]) ?>
+        <?= $form->field($model, 'contrato_tipo_id')->dropDownList($tiposContrato, [
+            'prompt' => $modalidadInicial ? 'Seleccione tipo de contrato' : 'Primero seleccione modalidad de vinculación',
+            'id' => 'requisicion-contrato_tipo_id',
+            'class' => 'form-select',
+            'disabled' => $modalidadInicial === null,
+        ]) ?>
         <?= $form->field($model, 'jornada_selector', ['options' => ['id' => 'requisicion-jornada-selector-wrap']])->dropDownList([
             '110' => '110',
             '220' => '220',
@@ -89,9 +101,11 @@ $sedesUrl = Url::to(['/requisicion/sedes-por-ciudad']);
 $areasUrl = Url::to(['/requisicion/areas-por-empresa-cliente']);
 $subAreasUrl = Url::to(['/requisicion/sub-areas-por-area']);
 $cargosUrl = Url::to(['/requisicion/cargos-por-sub-area']);
+$tiposContratoUrl = Url::to(['/requisicion/tipos-contrato-por-modalidad']);
 $ciudadId = $model->ciudad_id ?: '';
 $sedeId = $model->sede_id ?: '';
 $tiposContratoCodeMapJson = json_encode($tiposContratoCodeMap, JSON_UNESCAPED_UNICODE);
+$modalidadInicialJson = json_encode($modalidadInicial, JSON_UNESCAPED_UNICODE);
 
 $js = <<<JS
 (function() {
@@ -107,6 +121,8 @@ $js = <<<JS
     var cargoId = '{$cargoId}';
     var jornadaSelector = '{$jornadaSelector}';
     var contratoTipoCodeMap = {$tiposContratoCodeMapJson} || {};
+    var tiposContratoUrl = '{$tiposContratoUrl}';
+    var modalidadInicial = {$modalidadInicialJson};
 
     var \$area = $('#requisicion-area_id');
     var \$sede = $('#requisicion-sede_id');
@@ -314,6 +330,44 @@ $js = <<<JS
         syncJornadaHidden();
     }
 
+    function mergeContratoTipoCodeMapFromRows(rows) {
+        contratoTipoCodeMap = {};
+        (rows || []).forEach(function (it) {
+            contratoTipoCodeMap[String(it.id)] = (it.code || '').toString();
+        });
+    }
+
+    function loadTiposContratoPorModalidad(modalidad, preserveId) {
+        if (!modalidad || (modalidad !== 'directo' && modalidad !== 'temporal')) {
+            resetSelect(\$contratoTipo, 'Primero seleccione modalidad de vinculación', true);
+            mergeContratoTipoCodeMapFromRows([]);
+            applyContratoTipoRules();
+            return;
+        }
+        \$contratoTipo.prop('disabled', false);
+        $.get(tiposContratoUrl, { modalidad: modalidad }, function (data) {
+            var rows = data || [];
+            \$contratoTipo.empty().append('<option value="">Seleccione tipo de contrato</option>');
+            rows.forEach(function (t) {
+                \$contratoTipo.append('<option value="' + t.id + '">' + $('<div/>').text(t.nombre).html() + '</option>');
+            });
+            mergeContratoTipoCodeMapFromRows(rows);
+            if (preserveId) {
+                var sid = String(preserveId);
+                if (\$contratoTipo.find('option[value="' + sid + '"]').length) {
+                    \$contratoTipo.val(sid);
+                } else {
+                    \$contratoTipo.val('');
+                }
+            } else {
+                \$contratoTipo.val('');
+            }
+            applyContratoTipoRules();
+        }).fail(function () {
+            resetSelect(\$contratoTipo, 'Error al cargar tipos de contrato', true);
+        });
+    }
+
     function contratoTipoEsHoras() {
         var id = (\$contratoTipo.val() || '').toString();
         var code = (contratoTipoCodeMap[id] || '').toString().toUpperCase();
@@ -341,6 +395,10 @@ $js = <<<JS
             toggleJornadaOtro();
         }
     }
+
+    $('#requisicion-tipo_contrato').off('change.requisicionModalidad').on('change.requisicionModalidad', function () {
+        loadTiposContratoPorModalidad($(this).val(), null);
+    });
 
     $('#requisicion-empresa_cliente_id').off('change.requisicionForm').on('change.requisicionForm', function() {
         loadAreas($(this).val(), null, null);
@@ -387,6 +445,7 @@ $js = <<<JS
     $('#requisicion-form, #form-edit-requisicion-modal')
         .off('submit.requisicionCurrency')
         .on('submit.requisicionCurrency', function () {
+            \$contratoTipo.prop('disabled', false);
             unformatCurrencyForSubmit();
         });
 
@@ -410,6 +469,9 @@ $js = <<<JS
     bindCurrencyMask(\$salario);
     bindCurrencyMask(\$auxilio);
     toggleJornadaOtro();
+    if (!modalidadInicial) {
+        mergeContratoTipoCodeMapFromRows([]);
+    }
     applyContratoTipoRules();
 })();
 JS;

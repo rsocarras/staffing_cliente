@@ -112,7 +112,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
     </div>
 </div>
 
-<!-- ?rea, sub?rea y cargo -->
+<!-- Área, subárea y cargo -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -120,7 +120,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
         </span>
         <div>
             <h6 class="fw-semibold mb-1">Estructura organizacional</h6>
-            <p class="text-muted small mb-0">?rea, sub?rea y cargo asignados al contrato.</p>
+            <p class="text-muted small mb-0">Área, subárea y cargo asignados al contrato.</p>
         </div>
     </div>
     <div class="row g-3">
@@ -129,7 +129,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-building text-warning"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($areaItems, ['prompt' => 'Seleccione ?rea', 'id' => 'contrato-area_id-' . $prefix, 'class' => 'form-select']) ?>
+            ])->dropDownList($areaItems, ['prompt' => 'Seleccione área', 'id' => 'contrato-area_id-' . $prefix, 'class' => 'form-select']) ?>
         </div>
         <div class="col-lg-4">
             <?= $form->field($model, 'sub_area_id', [
@@ -137,7 +137,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
             ])->dropDownList($subAreaItems, [
-                'prompt' => 'Seleccione sub?rea',
+                'prompt' => 'Seleccione subárea',
                 'id' => 'contrato-sub_area_id-' . $prefix,
                 'class' => 'form-select contrato-select-subarea',
                 'disabled' => true,
@@ -158,21 +158,21 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
     </div>
 </div>
 
-<!-- Distribuci?n por sedes -->
+<!-- Distribución por sedes -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-success text-success rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
             <i class="ti ti-chart-pie fs-20"></i>
         </span>
         <div class="flex-grow-1">
-            <h6 class="fw-semibold mb-1">Distribuci?n por sedes</h6>
+            <h6 class="fw-semibold mb-1">Distribución por sedes</h6>
             <p class="text-muted mb-0 small">Si no agrega filas, el contrato cuenta al 100% en la sede principal.</p>
         </div>
     </div>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <span class="badge bg-info" id="distribution-total-badge-<?= $prefix ?>">Total: 0%</span>
         <button type="button" class="btn btn-outline-primary btn-sm" id="add-distribution-row-<?= $prefix ?>">
-            <i class="ti ti-plus me-1"></i>Agregar distribuci?n
+            <i class="ti ti-plus me-1"></i>Agregar distribución
         </button>
     </div>
     <div class="table-responsive">
@@ -181,7 +181,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
                 <tr>
                     <th>Sede</th>
                     <th style="width: 180px;">Porcentaje</th>
-                    <th class="text-end" style="width: 80px;">Acci?n</th>
+                    <th class="text-end" style="width: 80px;">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -284,7 +284,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
 
         function cascadeFromArea() {
             var areaId = $('#contrato-area_id-' + prefix).val();
-            rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione sub?rea');
+            rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione subárea');
             rebuildSelect('#contrato-cargo_id-' + prefix, [], 'Seleccione cargo');
             setCargoEnabled(false);
             if (!areaId) {
@@ -297,7 +297,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
                 })
                 .done(function(data) {
                     data = Array.isArray(data) ? data : [];
-                    rebuildSelect('#contrato-sub_area_id-' + prefix, data, 'Seleccione sub?rea');
+                    rebuildSelect('#contrato-sub_area_id-' + prefix, data, 'Seleccione subárea');
                     setSubAreaEnabled(true);
                     setCargoEnabled(false);
                     var $sub = $('#contrato-sub_area_id-' + prefix);
@@ -307,7 +307,7 @@ $cargosUrlJson = Json::encode(Url::to(['contrato/cargos-por-estructura']));
                     }
                 })
                 .fail(function() {
-                    rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione sub?rea');
+                    rebuildSelect('#contrato-sub_area_id-' + prefix, [], 'Seleccione subárea');
                     setSubAreaEnabled(true);
                     setCargoEnabled(false);
                 });

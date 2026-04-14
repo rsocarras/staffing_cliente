@@ -133,6 +133,7 @@ class Requisicion extends ActiveRecord
             [['sub_area_id'], 'validateSubArea'],
             [['cargo_id'], 'validateCargoDependencia'],
             [['contrato_tipo_id'], 'validateContratoTipoTenant'],
+            [['contrato_tipo_id'], 'validateContratoTipoModalidad'],
             [['jornada_selector'], 'validateJornadaRequeridaSegunTipoContrato'],
             [['jornada'], 'validateJornadaRango'],
             [['jornada_otro'], 'validateJornadaOtro'],
@@ -239,6 +240,24 @@ class Requisicion extends ActiveRecord
         }
         if ($contratoTipo->empresa_id !== null && (int) $contratoTipo->empresa_id !== (int) $this->empresas_id) {
             $this->addError($attribute, 'El tipo de contrato debe pertenecer a la empresa actual.');
+        }
+    }
+
+    public function validateContratoTipoModalidad($attribute, $params, $validator): void
+    {
+        $modalidad = trim((string) $this->tipo_contrato);
+        if ($modalidad === '' || empty($this->contrato_tipo_id)) {
+            return;
+        }
+        if (!array_key_exists($modalidad, self::optsTipoContrato())) {
+            return;
+        }
+        $contratoTipo = ContratoTipos::findOne((int) $this->contrato_tipo_id);
+        if ($contratoTipo === null) {
+            return;
+        }
+        if (!ContratoTipos::aplicaAModalidad($contratoTipo, $modalidad)) {
+            $this->addError($attribute, 'El tipo de contrato no aplica para la modalidad de contratación seleccionada.');
         }
     }
 
