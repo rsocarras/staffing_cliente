@@ -123,8 +123,8 @@ class RequisicionController extends Controller
 
         $this->applyDraftVisibilityForApprover($baseQuery);
 
-        // Persona (profile) is required for the table column.
-        $baseQuery->joinWith(['profile']);
+        // Persona: profile (asignación cliente) o candidato (asignación atracción admin).
+        $baseQuery->joinWith(['profile', 'candidatoAsignado']);
 
         $recordsTotal = (int) $baseQuery->count();
 
@@ -143,6 +143,9 @@ class RequisicionController extends Controller
                 ['like', 'area.nombre', $v],
                 ['like', 'cargo.nombre', $v],
                 ['like', 'profile.name', $v],
+                ['like', 'candidato.nombres', $v],
+                ['like', 'candidato.apellidos', $v],
+                ['like', 'candidato.num_documento', $v],
             ]);
         }
 
@@ -173,7 +176,10 @@ class RequisicionController extends Controller
             $parts = explode('-', $model->group_uuid ?? '');
             $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
             $fechaIngreso = $model->fecha_ingreso ? Yii::$app->formatter->asDate($model->fecha_ingreso) : '-';
-            $persona = $model->profile ? ($model->profile->name ?: '-') : '-';
+            $persona = $model->personaAsignadaNombre;
+            if ($persona === '—') {
+                $persona = '-';
+            }
 
             $data[] = [
                 (string) $model->id,

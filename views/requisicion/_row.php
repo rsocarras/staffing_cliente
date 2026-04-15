@@ -24,7 +24,7 @@ $shortUuid = $model->group_uuid ? (end($parts) ?: $model->group_uuid) : '-';
     <td><?= Html::encode($model->sede->nombre ?? '-') ?></td>
     <td><?= Html::encode($model->cargo->nombre ?? '-') ?></td>
     <td><?= Yii::$app->formatter->asDate($model->fecha_ingreso) ?></td>
-    <td><?= Html::encode($model->profile ? $model->profile->name : '-') ?></td>
+    <td><?= Html::encode($model->personaAsignadaNombre !== '—' ? $model->personaAsignadaNombre : '-') ?></td>
     <td class="text-end">
         <?= Html::a('<i class="ti ti-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn btn-icon btn-sm btn-soft-info rounded-pill', 'title' => 'Ver']) ?>
         <?php if ($model->isEditable()): ?>

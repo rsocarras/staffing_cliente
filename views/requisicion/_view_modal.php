@@ -106,8 +106,27 @@ $estadoLabel = Requisicion::optsEstado()[$model->estado] ?? $model->estado;
             <div class="row g-3">
                 <div class="col-12">
                     <small class="text-muted d-block">Nombre</small>
-                    <span class="fw-medium"><?= Html::encode($model->profile ? ($model->profile->name ?: '—') : '—') ?></span>
+                    <span class="fw-medium"><?= Html::encode($model->personaAsignadaNombre) ?></span>
                 </div>
+                <?php if ($model->profile): ?>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Documento</small>
+                        <span class="fw-medium"><?= Html::encode(trim((string) $model->profile->tipo_doc . ' ' . $model->profile->num_doc)) ?></span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Correo</small>
+                        <span class="fw-medium"><?= Html::encode($model->profile->public_email ?: '—') ?></span>
+                    </div>
+                <?php elseif ($c = $model->candidatoAsignado): ?>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Documento</small>
+                        <span class="fw-medium"><?= Html::encode(trim((string) $c->tipo_documento . ' ' . $c->num_documento)) ?></span>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted d-block">Correo</small>
+                        <span class="fw-medium"><?= Html::encode($c->correo ?: '—') ?></span>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

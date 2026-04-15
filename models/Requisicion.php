@@ -50,7 +50,10 @@ use yii\behaviors\BlameableBehavior;
  * @property Cargos $cargo
  * @property ContratoTipos|null $contratoTipo
  * @property EsquemaVariable $esquemaVariable
- * @property Profile $profile
+ * @property Profile|null $profile
+ * @property RequisicionCandidato[] $requisicionCandidatos
+ * @property Candidato[] $candidatos
+ * @property Candidato|null $candidatoAsignado asignado=1 en pivote (flujo atracción admin)
  * @property Requisicion $parent
  * @property Requisicion[] $hijas
  * @property ChecklistStatus[] $checklistStatuses
@@ -422,6 +425,43 @@ class Requisicion extends ActiveRecord
     public function getProfile()
     {
         return $this->hasOne(Profile::class, ['user_id' => 'profile_id']);
+    }
+
+    public function getRequisicionCandidatos()
+    {
+        return $this->hasMany(RequisicionCandidato::class, ['requisicion_id' => 'id']);
+    }
+
+    public function getCandidatos()
+    {
+        return $this->hasMany(Candidato::class, ['id' => 'candidato_id'])
+            ->viaTable('requisicion_candidato', ['requisicion_id' => 'id']);
+    }
+
+    public function getCandidatoAsignado()
+    {
+        return $this->hasOne(Candidato::class, ['id' => 'candidato_id'])
+            ->viaTable('requisicion_candidato', ['requisicion_id' => 'id'], function ($q) {
+                $q->andWhere(['asignado' => 1]);
+            });
+    }
+
+    /**
+     * Nombre para listados y cabeceras: perfil (user) o candidato desde atracción.
+     */
+    public function getPersonaAsignadaNombre(): string
+    {
+        if ($this->profile && $this->profile->name !== null && trim((string) $this->profile->name) !== '') {
+            return (string) $this->profile->name;
+        }
+        $c = $this->candidatoAsignado;
+        if ($c !== null) {
+            $nombre = trim(($c->nombres ?? '') . ' ' . ($c->apellidos ?? ''));
+
+            return $nombre !== '' ? $nombre : '—';
+        }
+
+        return '—';
     }
 
     public function getParent()

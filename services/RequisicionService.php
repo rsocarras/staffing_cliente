@@ -65,12 +65,17 @@ class RequisicionService
         if (!in_array($req->estado, [Requisicion::ESTADO_ORDER_PENDING, Requisicion::ESTADO_PERSON_ASSIGNED])) {
             throw new \DomainException('Estado no permite asignar persona.');
         }
-        $profile = Profile::findOne($profileId);
+        $uid = (int) $profileId;
+        if ($uid <= 0) {
+            throw new \DomainException('Perfil no encontrado.');
+        }
+        // requisicion.profile_id almacena user_id; Profile puede tener PK numérica distinta de user_id.
+        $profile = Profile::findOne(['user_id' => $uid]);
         if (!$profile) {
             throw new \DomainException('Perfil no encontrado.');
         }
         $estadoAnterior = $req->estado;
-        $req->profile_id = $profileId;
+        $req->profile_id = $uid;
         $req->estado = Requisicion::ESTADO_PERSON_ASSIGNED;
         return $req->save(false) && RequisicionHistoryLog::registrar($req, $req->estado, $comentario, $estadoAnterior);
     }
@@ -118,7 +123,7 @@ class RequisicionService
 
             RequisicionHistoryLog::registrar($req, $req->estado, $comentario, $estadoAnterior);
 
-            $profile = Profile::findOne($req->profile_id);
+            $profile = Profile::findOne(['user_id' => (int) $req->profile_id]);
             if ($profile) {
                 $profile->estado = Profile::ESTADO_ACTIVO;
                 $profile->save(false);

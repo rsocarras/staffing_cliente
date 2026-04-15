@@ -123,6 +123,18 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                         </tbody>
                                     </table>
                                 </div>
+                            <?php elseif ($cand = $model->candidatoAsignado): ?>
+                                <div class="table-responsive">
+                                    <table class="table table-sm align-middle mb-0">
+                                        <tbody>
+                                            <tr><th class="w-50 text-muted fw-medium">Nombre</th><td><?= Html::encode($cand->getNombreCompleto() ?: '—') ?></td></tr>
+                                            <tr><th class="text-muted fw-medium">Documento</th><td><?= Html::encode(trim((string) $cand->tipo_documento . ' ' . $cand->num_documento)) ?></td></tr>
+                                            <tr><th class="text-muted fw-medium">Correo</th><td><?= Html::encode($cand->correo ?: '—') ?></td></tr>
+                                            <tr><th class="text-muted fw-medium">Teléfono</th><td><?= Html::encode($cand->telefono ?: '—') ?></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="text-muted small mb-0 mt-2">Persona asignada desde atracción (candidato); aún sin usuario interno vinculado.</p>
                             <?php else: ?>
                                 <div class="rounded-3 border bg-white p-3 text-muted small">
                                     Sin persona asignada.
@@ -164,7 +176,7 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                                 <?= Html::encode(Requisicion::optsEstado()[$r->estado] ?? $r->estado) ?>
                                             </span>
                                         </td>
-                                        <td><?= Html::encode($r->profile ? $r->profile->name : '—') ?></td>
+                                        <td><?= Html::encode($r->personaAsignadaNombre) ?></td>
                                         <td class="text-end">
                                             <?= Html::a('<i class="ti ti-eye me-1"></i>Ver', ['view', 'id' => $r->id], ['class' => 'btn btn-sm btn-outline-primary']) ?>
                                         </td>
