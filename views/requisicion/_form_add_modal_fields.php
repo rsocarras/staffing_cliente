@@ -39,15 +39,15 @@ $cargoId = $model->cargo_id ? (int) $model->cargo_id : '';
 $jornadaSelector = $model->jornada_selector ?: '';
 ?>
 
-<!-- Empresa y ubicaci?n -->
+<!-- Empresa y ubicación -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-primary text-primary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
             <i class="ti ti-building-community fs-20"></i>
         </span>
         <div>
-            <h6 class="fw-semibold mb-1">Empresa y ubicaci?n</h6>
-            <p class="text-muted small mb-0">Cliente, motivo de vinculaci?n, fecha de ingreso, ciudad y sede.</p>
+            <h6 class="fw-semibold mb-1">Empresa y ubicación</h6>
+            <p class="text-muted small mb-0">Cliente, motivo de vinculación, fecha de ingreso, ciudad y sede.</p>
         </div>
     </div>
     <div class="row g-3">
@@ -70,7 +70,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-map-pin text-primary"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organizaci?n.') ?>
+            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'sede_id', [
@@ -90,7 +90,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
         </span>
         <div>
             <h6 class="fw-semibold mb-1">Estructura organizacional</h6>
-            <p class="text-muted small mb-0">��rea y sub?rea seg?n la empresa cliente; cargo seg?n organizaci?n (tenant), ?rea y sub?rea.</p>
+            <p class="text-muted small mb-0">Área y subárea según la empresa cliente; cargo según organización (tenant), área y subárea.</p>
         </div>
     </div>
     <div class="row g-3">
@@ -111,14 +111,14 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-hierarchy text-info"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList([], ['prompt' => 'Primero seleccione ?rea', 'id' => 'requisicion-sub_area_id', 'class' => 'form-select', 'disabled' => true]) ?>
+            ])->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-sub_area_id', 'class' => 'form-select', 'disabled' => true]) ?>
         </div>
         <div class="col-12">
             <?= $form->field($model, 'cargo_id', [
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-briefcase text-info"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList([], ['prompt' => 'Primero seleccione ?rea', 'id' => 'requisicion-cargo_id', 'class' => 'form-select', 'disabled' => true]) ?>
+            ])->dropDownList([], ['prompt' => 'Primero seleccione área', 'id' => 'requisicion-cargo_id', 'class' => 'form-select', 'disabled' => true]) ?>
         </div>
     </div>
 </div>
@@ -141,7 +141,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
             ])->dropDownList(\app\models\Requisicion::optsTipoContrato(), [
-                'prompt' => 'Seleccione modalidad de vinculaci?n',
+                'prompt' => 'Seleccione modalidad de vinculación',
                 'class' => 'form-select',
                 'id' => 'requisicion-tipo_contrato',
             ]) ?>
@@ -152,7 +152,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
             ])->dropDownList($tiposContrato, [
-                'prompt' => $modalidadInicial ? 'Seleccione tipo de contrato' : 'Primero seleccione modalidad de vinculaci?n',
+                'prompt' => $modalidadInicial ? 'Seleccione tipo de contrato' : 'Primero seleccione modalidad de vinculación',
                 'class' => 'form-select',
                 'id' => 'requisicion-contrato_tipo_id',
                 'disabled' => $modalidadInicial === null,
@@ -216,7 +216,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
 </div>
 
 <?php if ($esCreacion): ?>
-<!-- Vacantes (solo creaci?n) -->
+<!-- Vacantes (solo creación) -->
 <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
     <div class="d-flex align-items-start gap-3 mb-3">
         <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
@@ -233,7 +233,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-hash text-warning"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->textInput(['type' => 'number', 'min' => 1, 'class' => 'form-control'])->hint('Se crear?n N requisiciones (1 por vacante)') ?>
+            ])->textInput(['type' => 'number', 'min' => 1, 'class' => 'form-control'])->hint('Se crearán N requisiciones (1 por vacante)') ?>
         </div>
     </div>
 </div>
@@ -275,7 +275,7 @@ $js = <<<JS
     var jornadaSelector  = '{$jornadaSelector}';
     var contratoTipoCodeMap = {$tiposContratoCodeMapJson} || {};
 
-    // Scoped element lookup ? avoids duplicate-ID conflicts between create and edit modals
+    // Búsqueda acotada al formulario: evita duplicate-ID conflicts between create and edit modals
     function f(id) { return \$form.find('#' + id); }
 
     var \$empresa     = f('requisicion-empresa_cliente_id');
@@ -329,7 +329,7 @@ $js = <<<JS
 
     function loadTiposContratoPorModalidad(modalidad, preserveId) {
         if (!modalidad || (modalidad !== 'directo' && modalidad !== 'temporal')) {
-            resetSelect(\$contratoTipo, 'Primero seleccione modalidad de vinculaci?n', true);
+            resetSelect(\$contratoTipo, 'Primero seleccione modalidad de vinculación', true);
             mergeContratoTipoCodeMapFromRows([]);
             applyContratoTipoRules();
             return;
@@ -371,9 +371,9 @@ $js = <<<JS
     }
 
     function loadAreas(ecId, preserveAreaVal, done) {
-        resetSelect(\$area, 'Seleccione ?rea', true);
-        resetSelect(\$sub, 'Primero seleccione ?rea', true);
-        resetSelect(\$cargo, 'Primero seleccione ?rea', true);
+        resetSelect(\$area, 'Seleccione área', true);
+        resetSelect(\$sub, 'Primero seleccione área', true);
+        resetSelect(\$cargo, 'Primero seleccione área', true);
         if (!ecId) {
             resetSelect(\$area, 'Primero seleccione empresa cliente', true);
             if (typeof done === 'function') done();
@@ -382,38 +382,38 @@ $js = <<<JS
         \$area.prop('disabled', false);
         $.get(areasUrl, { empresa_cliente_id: ecId }, function(data) {
             var rows = data || [];
-            \$area.empty().append('<option value="">Seleccione ?rea</option>');
+            \$area.empty().append('<option value="">Seleccione área</option>');
             rows.forEach(function(a) {
                 \$area.append('<option value="' + a.id + '">' + $('<div/>').text(a.nombre).html() + '</option>');
             });
             if (preserveAreaVal) \$area.val(String(preserveAreaVal));
             if (typeof done === 'function') done();
         }).fail(function() {
-            resetSelect(\$area, 'Error al cargar ?reas', true);
+            resetSelect(\$area, 'Error al cargar áreas', true);
             if (typeof done === 'function') done();
         });
     }
 
     function loadSubAreas(aid, preserveSubVal, done) {
-        resetSelect(\$sub, 'Sub?rea (opcional)', true);
+        resetSelect(\$sub, 'Subárea (opcional)', true);
         resetSelect(\$cargo, 'Seleccione cargo', true);
         if (!aid) {
-            resetSelect(\$sub, 'Primero seleccione ?rea', true);
-            resetSelect(\$cargo, 'Primero seleccione ?rea', true);
+            resetSelect(\$sub, 'Primero seleccione área', true);
+            resetSelect(\$cargo, 'Primero seleccione área', true);
             if (typeof done === 'function') done();
             return;
         }
         \$sub.prop('disabled', false);
         $.get(subAreasUrl, { area_id: aid }, function(data) {
             var rows = data || [];
-            \$sub.empty().append('<option value="">Sub?rea (opcional)</option>');
+            \$sub.empty().append('<option value="">Subárea (opcional)</option>');
             rows.forEach(function(a) {
                 \$sub.append('<option value="' + a.id + '">' + $('<div/>').text(a.nombre).html() + '</option>');
             });
             if (preserveSubVal) \$sub.val(String(preserveSubVal));
             if (typeof done === 'function') done();
         }).fail(function() {
-            resetSelect(\$sub, 'Error al cargar sub?reas', true);
+            resetSelect(\$sub, 'Error al cargar subáreas', true);
             if (typeof done === 'function') done();
         });
     }
@@ -421,7 +421,7 @@ $js = <<<JS
     function loadCargos(aid, subId, preserveCargoVal) {
         resetSelect(\$cargo, 'Seleccione cargo', true);
         if (!aid) {
-            resetSelect(\$cargo, 'Primero seleccione ?rea', true);
+            resetSelect(\$cargo, 'Primero seleccione área', true);
             return;
         }
         \$cargo.prop('disabled', false);
@@ -430,7 +430,7 @@ $js = <<<JS
         $.get(cargosUrl, params, function(data) {
             var rows = data || [];
             if (!rows.length) {
-                \$cargo.html('<option value="">No hay cargos para esta selecci?n</option>');
+                \$cargo.html('<option value="">No hay cargos para esta selección</option>');
                 \$cargo.prop('disabled', true);
                 return;
             }
@@ -517,12 +517,12 @@ $js = <<<JS
     \$area.off('change.reqForm').on('change.reqForm', function() {
         var v = $(this).val();
         if (v) { loadSubAreas(v, null, null); loadCargos(v, null, null); }
-        else { resetSelect(\$sub, 'Primero seleccione ?rea', true); resetSelect(\$cargo, 'Primero seleccione ?rea', true); }
+        else { resetSelect(\$sub, 'Primero seleccione área', true); resetSelect(\$cargo, 'Primero seleccione área', true); }
     });
     \$sub.off('change.reqForm').on('change.reqForm', function() {
         var aVal = \$area.val();
         if (aVal) loadCargos(aVal, $(this).val() || null);
-        else resetSelect(\$cargo, 'Primero seleccione ?rea', true);
+        else resetSelect(\$cargo, 'Primero seleccione área', true);
     });
     \$tipoContrato.off('change.reqForm').on('change.reqForm', function() {
         loadTiposContratoPorModalidad($(this).val(), null);
