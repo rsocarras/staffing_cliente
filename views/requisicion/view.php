@@ -11,6 +11,18 @@ $this->params['breadcrumbs'][] = $this->title;
 $estadoLabel = Requisicion::optsEstado()[$model->estado] ?? $model->estado;
 $estadoClass = Requisicion::estadoBadgeClass($model->estado);
 $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
+
+$this->registerCss(<<<CSS
+.requisicion-detail-panel .requisicion-detail-table > tbody > tr > th,
+.requisicion-detail-panel .requisicion-detail-table > tbody > tr > td {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+    vertical-align: top;
+}
+.requisicion-detail-panel .requisicion-detail-table > tbody > tr > th {
+    padding-right: 1.25rem;
+}
+CSS);
 ?>
 <div class="page-wrapper">
     <div class="content">
@@ -71,11 +83,11 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
         <?php endif; ?>
 
         <div class="card mb-3">
-            <div class="card-body">
-                <div class="row g-3">
+            <div class="card-body p-4">
+                <div class="row g-4">
                     <div class="col-lg-6">
-                        <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light h-100">
-                            <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="rounded-3 border border-dashed p-4 bg-light h-100 requisicion-detail-panel">
+                            <div class="d-flex align-items-start gap-3 mb-4">
                                 <span class="avatar avatar-md bg-soft-primary text-primary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                                     <i class="ti ti-briefcase fs-20"></i>
                                 </span>
@@ -84,8 +96,8 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                     <p class="text-muted small mb-0">Información principal de ubicación, cargo y condiciones.</p>
                                 </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0">
+                            <div class="table-responsive requisicion-detail-table-wrap">
+                                <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                     <tbody>
                                         <tr><th class="w-50 text-muted fw-medium">Empresa</th><td><?= Html::encode($model->empresa->nombre ?? '—') ?></td></tr>
                                         <tr><th class="text-muted fw-medium">Ciudad</th><td><?= Html::encode($model->ciudad->name ?? '—') ?></td></tr>
@@ -102,8 +114,8 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light h-100">
-                            <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="rounded-3 border border-dashed p-4 bg-light h-100 requisicion-detail-panel">
+                            <div class="d-flex align-items-start gap-3 mb-4">
                                 <span class="avatar avatar-md bg-soft-success text-success rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                                     <i class="ti ti-user fs-20"></i>
                                 </span>
@@ -113,8 +125,8 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                 </div>
                             </div>
                             <?php if ($model->profile_id && $model->profile): ?>
-                                <div class="table-responsive">
-                                    <table class="table table-sm align-middle mb-0">
+                                <div class="table-responsive requisicion-detail-table-wrap">
+                                    <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                         <tbody>
                                             <tr><th class="w-50 text-muted fw-medium">Nombre</th><td><?= Html::encode($model->profile->name ?: '—') ?></td></tr>
                                             <tr><th class="text-muted fw-medium">Documento</th><td><?= Html::encode(trim((string) $model->profile->tipo_doc . ' ' . $model->profile->num_doc)) ?></td></tr>
@@ -124,8 +136,8 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                     </table>
                                 </div>
                             <?php elseif ($cand = $model->candidatoAsignado): ?>
-                                <div class="table-responsive">
-                                    <table class="table table-sm align-middle mb-0">
+                                <div class="table-responsive requisicion-detail-table-wrap">
+                                    <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                         <tbody>
                                             <tr><th class="w-50 text-muted fw-medium">Nombre</th><td><?= Html::encode($cand->getNombreCompleto() ?: '—') ?></td></tr>
                                             <tr><th class="text-muted fw-medium">Documento</th><td><?= Html::encode(trim((string) $cand->tipo_documento . ' ' . $cand->num_documento)) ?></td></tr>
@@ -134,7 +146,7 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                                         </tbody>
                                     </table>
                                 </div>
-                                <p class="text-muted small mb-0 mt-2">Persona asignada desde atracción (candidato); aún sin usuario interno vinculado.</p>
+                                <p class="text-muted small mb-0 mt-3 pt-1">Persona asignada desde atracción (candidato); aún sin usuario interno vinculado.</p>
                             <?php else: ?>
                                 <div class="rounded-3 border bg-white p-3 text-muted small">
                                     Sin persona asignada.
@@ -150,6 +162,8 @@ $grupoLabel = $model->group_uuid ?: ('REQ-' . $model->id);
                 </div>
             </div>
         </div>
+
+        <?= $this->render('_checklist_resumen', ['model' => $model]) ?>
 
         <?php if (count($grupo) > 1): ?>
             <div class="card mb-3">
