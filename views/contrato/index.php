@@ -47,7 +47,6 @@ $csrfParam = Yii::$app->request->csrfParam;
                 <div class="d-flex align-items-sm-center flex-sm-row flex-column gap-2">
                     <div class="flex-grow-1">
                         <h4 class="fs-20 fw-bold mb-0"><?= Html::encode($this->title) ?></h4>
-                        <p class="mb-0 text-muted">Listado contractual por empleado, sede, área y cargo.</p>
                     </div>
                     <div class="text-end d-flex gap-2 align-items-center">
                         <ol class="breadcrumb m-0 py-0 me-2">
@@ -133,47 +132,56 @@ $csrfParam = Yii::$app->request->csrfParam;
                 </div>
 
                 <!-- Start Search and Filter -->
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <?php $form = ActiveForm::begin(['method' => 'get', 'action' => ['index'], 'options' => ['class' => 'row g-3']]); ?>
-                        <div class="col-lg-3">
-                            <?= $form->field($searchModel, 'profile_id')->dropDownList($profileItems, ['prompt' => 'Empleado']) ?>
+                <div class="accordion mb-4" id="accordionFiltrosContrato">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltrosContrato" aria-expanded="false" aria-controls="collapseFiltrosContrato">
+                                <i class="ti ti-filter me-2"></i>Filtros
+                            </button>
+                        </h2>
+                        <div id="collapseFiltrosContrato" class="accordion-collapse collapse" data-bs-parent="#accordionFiltrosContrato">
+                            <div class="accordion-body">
+                                <?php $form = ActiveForm::begin(['method' => 'get', 'action' => ['index'], 'options' => ['class' => 'row g-3']]); ?>
+                                <div class="col-lg-3">
+                                    <?= $form->field($searchModel, 'profile_id')->dropDownList($profileItems, ['prompt' => 'Empleado']) ?>
+                                </div>
+                                <div class="col-lg-3">
+                                    <?= $form->field($searchModel, 'contrato_tipo_id')->dropDownList(ArrayHelper::map($filterOptions['contratoTipos'], 'id', 'nombre'), ['prompt' => 'Tipo contrato']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'estado')->dropDownList($filterOptions['estados'], ['prompt' => 'Estado']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'vigente')->dropDownList($filterOptions['vigencia'], ['prompt' => 'Vigencia']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'sede_id')->dropDownList(ArrayHelper::map($filterOptions['sedes'], 'id', 'nombre'), ['prompt' => 'Sede']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'region_id')->dropDownList(ArrayHelper::map($filterOptions['regiones'], 'id', 'name'), ['prompt' => 'Región']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'city_id')->dropDownList(ArrayHelper::map($filterOptions['ciudades'], 'id', 'name'), ['prompt' => 'Ciudad']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'area_id')->dropDownList(ArrayHelper::map($filterOptions['areas'], 'id', 'nombre'), ['prompt' => 'Área', 'id' => 'contratosearch-area_id']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'sub_area_id')->dropDownList(ArrayHelper::map($filterOptions['subAreas'], 'id', 'nombre'), ['prompt' => 'Subárea', 'id' => 'contratosearch-sub_area_id']) ?>
+                                </div>
+                                <div class="col-lg-2">
+                                    <?= $form->field($searchModel, 'cargo_id')->dropDownList(ArrayHelper::map($filterOptions['cargos'], 'id', 'nombre'), ['prompt' => 'Cargo', 'id' => 'contratosearch-cargo_id']) ?>
+                                </div>
+                                <div class="col-lg-4">
+                                    <?= $form->field($searchModel, 'texto')->textInput(['placeholder' => 'Buscar por empleado, usuario, sede o cargo']) ?>
+                                </div>
+                                <div class="col-lg-4 d-flex align-items-end gap-2">
+                                    <?= Html::submitButton('Filtrar', ['class' => 'btn btn-primary']) ?>
+                                    <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+                                </div>
+                                <?php ActiveForm::end(); ?>
+                            </div>
                         </div>
-                        <div class="col-lg-3">
-                            <?= $form->field($searchModel, 'contrato_tipo_id')->dropDownList(ArrayHelper::map($filterOptions['contratoTipos'], 'id', 'nombre'), ['prompt' => 'Tipo contrato']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'estado')->dropDownList($filterOptions['estados'], ['prompt' => 'Estado']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'vigente')->dropDownList($filterOptions['vigencia'], ['prompt' => 'Vigencia']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'sede_id')->dropDownList(ArrayHelper::map($filterOptions['sedes'], 'id', 'nombre'), ['prompt' => 'Sede']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'region_id')->dropDownList(ArrayHelper::map($filterOptions['regiones'], 'id', 'name'), ['prompt' => 'Región']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'city_id')->dropDownList(ArrayHelper::map($filterOptions['ciudades'], 'id', 'name'), ['prompt' => 'Ciudad']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'area_id')->dropDownList(ArrayHelper::map($filterOptions['areas'], 'id', 'nombre'), ['prompt' => 'Área', 'id' => 'contratosearch-area_id']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'sub_area_id')->dropDownList(ArrayHelper::map($filterOptions['subAreas'], 'id', 'nombre'), ['prompt' => 'Subárea', 'id' => 'contratosearch-sub_area_id']) ?>
-                        </div>
-                        <div class="col-lg-2">
-                            <?= $form->field($searchModel, 'cargo_id')->dropDownList(ArrayHelper::map($filterOptions['cargos'], 'id', 'nombre'), ['prompt' => 'Cargo', 'id' => 'contratosearch-cargo_id']) ?>
-                        </div>
-                        <div class="col-lg-4">
-                            <?= $form->field($searchModel, 'texto')->textInput(['placeholder' => 'Buscar por empleado, usuario, sede o cargo']) ?>
-                        </div>
-                        <div class="col-lg-4 d-flex align-items-end gap-2">
-                            <?= Html::submitButton('Filtrar', ['class' => 'btn btn-primary']) ?>
-                            <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
-                        </div>
-                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
                 <!-- End Search and Filter -->

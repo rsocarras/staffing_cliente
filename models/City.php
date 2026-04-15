@@ -86,4 +86,56 @@ class City extends \yii\db\ActiveRecord
         return $this->hasOne(Region::class, ['id' => 'region_id']);
     }
 
+    /** Ciudades que deben aparecer primero en cualquier select, en ese orden. */
+    private const PRIORITY_CITIES = ['bogota', 'medellin', 'barranquilla'];
+
+    private static function normalizeCityName(string $name): string
+    {
+        $name = mb_strtolower($name, 'UTF-8');
+        return strtr($name, ['á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u', 'ü' => 'u', 'ñ' => 'n']);
+    }
+
+    /**
+     * Ordena un mapa [id => nombre] poniendo primero Bogotá, Medellín y Barranquilla.
+     *
+     * @param array<int|string, string> $map
+     * @return array<int|string, string>
+     */
+    public static function sortMapWithPriority(array $map): array
+    {
+        $priorities = array_flip(static::PRIORITY_CITIES);
+        uksort($map, static function ($aId, $bId) use ($map, $priorities) {
+            $aPos = $priorities[static::normalizeCityName($map[$aId])] ?? PHP_INT_MAX;
+            $bPos = $priorities[static::normalizeCityName($map[$bId])] ?? PHP_INT_MAX;
+            if ($aPos !== $bPos) {
+                return $aPos - $bPos;
+            }
+            return strnatcasecmp($map[$aId], $map[$bId]);
+        });
+        return $map;
+    }
+
+    /**
+     * Ordena un array de filas (modelos City o arrays con clave 'name') poniendo
+     * primero Bogotá, Medellín y Barranquilla.
+     *
+     * @param array $rows
+     * @return array
+     */
+    public static function sortRowsWithPriority(array $rows): array
+    {
+        $priorities = array_flip(static::PRIORITY_CITIES);
+        usort($rows, static function ($a, $b) use ($priorities) {
+            $aName = is_array($a) ? ($a['name'] ?? '') : $a->name;
+            $bName = is_array($b) ? ($b['name'] ?? '') : $b->name;
+            $aPos = $priorities[static::normalizeCityName($aName)] ?? PHP_INT_MAX;
+            $bPos = $priorities[static::normalizeCityName($bName)] ?? PHP_INT_MAX;
+            if ($aPos !== $bPos) {
+                return $aPos - $bPos;
+            }
+            return strnatcasecmp($aName, $bName);
+        });
+        return $rows;
+    }
+
 }

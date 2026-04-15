@@ -16,24 +16,13 @@ $form = ActiveForm::begin([
 ]);
 ?>
 
-<div id="requisicion-edit-form-errors" class="alert alert-danger d-none"></div>
+<div id="requisicion-edit-form-errors" class="alert alert-danger border-0 d-none mb-3"></div>
 
-<?= $this->render('_form_fields', [
+<?= $this->render('_form_add_modal_fields', [
     'model' => $model,
     'form' => $form,
-    'esCreacion' => $esCreacion,
+    'esCreacion' => false,
 ]) ?>
-
-<div class="mt-3 d-flex justify-content-between gap-2">
-    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
-    <button type="button" class="btn btn-primary" id="btn-save-edit-requisicion">
-        <span class="btn-text">Guardar</span>
-        <span class="btn-loading d-none">
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            Guardando...
-        </span>
-    </button>
-</div>
 
 <?php ActiveForm::end(); ?>
 

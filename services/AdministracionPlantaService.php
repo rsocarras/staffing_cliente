@@ -4,6 +4,7 @@ namespace app\services;
 
 use app\components\TenantContext;
 use app\models\Area;
+use app\models\City;
 use app\models\Cargos;
 use app\models\CompanySetting;
 use app\models\Contrato;
@@ -309,7 +310,7 @@ class AdministracionPlantaService
 
         return [
             'regiones' => $regionsQuery->orderBy(['name' => SORT_ASC])->all(),
-            'ciudades' => $citiesQuery->orderBy(['name' => SORT_ASC])->all(),
+            'ciudades' => City::sortRowsWithPriority($citiesQuery->orderBy(['name' => SORT_ASC])->all()),
             'sedes' => $sedesQuery->all(),
             'areas' => $areasQuery->all(),
             'subAreas' => $searchModel && $searchModel->area_id ? $this->getSubAreaOptions($searchModel->area_id, $empresaId) : [],

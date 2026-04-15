@@ -72,8 +72,6 @@ $config = [
                 'profile/<action:[\w-]+>' => 'profile/<action>',
                 'sistema/contratos' => 'contrato/index',
                 'sistema/contratos/<action:[\w-]+>' => 'contrato/<action>',
-                'sistema/novedad-tipo' => 'novedad-tipo/index',
-                'sistema/novedad-tipo/<action:[\w-]+>' => 'novedad-tipo/<action>',
                 'sistema/novedades' => 'novedad/index',
                 'sistema/novedades/<action:[\w-]+>' => 'novedad/<action>',
                 'sistema/novedad-conceptos' => 'novedad-concepto-empresa/index',
@@ -114,6 +112,8 @@ $config = [
                 'configuracion/contratos/<action:[\w-]+>' => 'contrato-tipos/<action>',
                 'configuracion/novedad-flujo' => 'novedad-flujo/index',
                 'configuracion/novedad-flujo/<action:[\w-]+>' => 'novedad-flujo/<action>',
+                'configuracion/novedad-tipo' => 'novedad-tipo/index',
+                'configuracion/novedad-tipo/<action:[\w-]+>' => 'novedad-tipo/<action>',
             ],
         ],
 

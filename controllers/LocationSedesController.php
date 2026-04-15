@@ -95,7 +95,7 @@ class LocationSedesController extends Controller
                 ['like', 'CAST(sede.valor_hora_diurna AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_diurna_domingo_festivos AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_nocturna AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_nocturna_domingo_festiva AS CHAR)', $searchValue],
+                ['like', 'CAST(sede.valor_hora_nocturna_dominical_festiva AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_hora_especial AS CHAR)', $searchValue],
                 ['like', 'CAST(sede.valor_movilizacion AS CHAR)', $searchValue],
             ]);
@@ -216,7 +216,7 @@ class LocationSedesController extends Controller
                         'valor_hora_diurna' => $model->valor_hora_diurna,
                         'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
                         'valor_hora_nocturna' => $model->valor_hora_nocturna,
-                        'valor_hora_nocturna_domingo_festiva' => $model->valor_hora_nocturna_domingo_festiva,
+                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
                         'valor_hora_especial' => $model->valor_hora_especial,
                         'valor_movilizacion' => $model->valor_movilizacion,
                     ],
@@ -236,10 +236,12 @@ class LocationSedesController extends Controller
     public function actionGetCities($country_id)
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $cities = City::find()
-            ->where(['country_id' => (int) $country_id])
-            ->orderBy('name')
-            ->all();
+        $cities = City::sortRowsWithPriority(
+            City::find()
+                ->where(['country_id' => (int) $country_id])
+                ->orderBy('name')
+                ->all()
+        );
         return array_map(function ($c) {
             return ['id' => $c->id, 'name' => $c->name];
         }, $cities);
@@ -326,11 +328,11 @@ class LocationSedesController extends Controller
         $initialCountryId = $model->city ? $model->city->country_id : null;
         $initialCities = [];
         if ($initialCountryId) {
-            $initialCities = \yii\helpers\ArrayHelper::map(
+            $initialCities = City::sortMapWithPriority(\yii\helpers\ArrayHelper::map(
                 City::find()->where(['country_id' => $initialCountryId])->orderBy('name')->all(),
                 'id',
                 'name'
-            );
+            ));
         }
 
         return $this->renderPartial('_form_modal', [
@@ -376,7 +378,7 @@ class LocationSedesController extends Controller
                         'valor_hora_diurna' => $model->valor_hora_diurna,
                         'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
                         'valor_hora_nocturna' => $model->valor_hora_nocturna,
-                        'valor_hora_nocturna_domingo_festiva' => $model->valor_hora_nocturna_domingo_festiva,
+                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
                         'valor_hora_especial' => $model->valor_hora_especial,
                         'valor_movilizacion' => $model->valor_movilizacion,
                     ],

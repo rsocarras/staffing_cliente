@@ -45,31 +45,37 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Filtros</h5>
-            </div>
-            <div class="card-body">
-                <?php
-                $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
-                ?>
-                <?php $form = ActiveForm::begin([
-                    'method' => 'get',
-                    'action' => ['index'],
-                    'options' => ['id' => 'requisicion-filter-form'],
-                ]); ?>
-                <div class="row g-2">
-                    <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name'), ['prompt' => 'Ciudad'])->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
-                    <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
-                    <div class="col-md-2">
-                        <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
-                        <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+        <div class="accordion mb-3" id="accordionFiltrosRequisicion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFiltrosRequisicion" aria-expanded="false" aria-controls="collapseFiltrosRequisicion">
+                        <i class="ti ti-filter me-2"></i>Filtros
+                    </button>
+                </h2>
+                <div id="collapseFiltrosRequisicion" class="accordion-collapse collapse" data-bs-parent="#accordionFiltrosRequisicion">
+                    <div class="accordion-body">
+                        <?php
+                        $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
+                        ?>
+                        <?php $form = ActiveForm::begin([
+                            'method' => 'get',
+                            'action' => ['index'],
+                            'options' => ['id' => 'requisicion-filter-form'],
+                        ]); ?>
+                        <div class="row g-2">
+                            <div class="col-md-2"><?= $form->field($searchModel, 'estado')->dropDownList(\app\models\Requisicion::optsEstado(), ['prompt' => 'Todos'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'empresa_cliente_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\EmpresaCliente::getActivos($tenantEmpresaId ? (int) $tenantEmpresaId : null), 'id', 'nombre'), ['prompt' => 'Empresa cliente'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'ciudad_id')->dropDownList(\app\models\City::sortMapWithPriority(\yii\helpers\ArrayHelper::map(\app\models\City::find()->where(['is_active' => 1])->orderBy('name')->all(), 'id', 'name')), ['prompt' => 'Ciudad'])->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_desde')->input('date')->label(false) ?></div>
+                            <div class="col-md-2"><?= $form->field($searchModel, 'fecha_ingreso_hasta')->input('date')->label(false) ?></div>
+                            <div class="col-md-2">
+                                <?= Html::submitButton('<i class="ti ti-search"></i> Buscar', ['class' => 'btn btn-primary']) ?>
+                                <?= Html::a('Limpiar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
+                            </div>
+                        </div>
+                        <?php ActiveForm::end(); ?>
                     </div>
                 </div>
-                <?php ActiveForm::end(); ?>
             </div>
         </div>
 
@@ -119,14 +125,33 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
 
 <!-- Modal Editar Requisición -->
 <div class="modal fade" id="modal-edit-requisicion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Requisición</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-xl requisicion-edit-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 align-items-start flex-shrink-0">
+                <div class="me-3">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="avatar avatar-sm bg-soft-primary text-primary rounded d-inline-flex align-items-center justify-content-center flex-shrink-0">
+                            <i class="ti ti-edit fs-16"></i>
+                        </span>
+                        <h5 class="modal-title fw-bold mb-0">Editar requisición</h5>
+                    </div>
+                    <p class="text-muted small mb-0 ps-1">Modifique los datos de la vacante.</p>
+                </div>
+                <button type="button" class="btn-close mt-1" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <div class="modal-body" id="modal-edit-requisicion-body">
-                <div class="text-center py-4"><span class="spinner-border text-primary"></span></div>
+            <div class="modal-body p-0 d-flex flex-column requisicion-edit-modal-body">
+                <div class="requisicion-edit-scroll px-4 pt-3 pb-2" id="modal-edit-requisicion-body">
+                    <div class="text-center py-5 px-3"><span class="spinner-border text-primary"></span><p class="text-muted mt-2 mb-0">Cargando...</p></div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2 flex-shrink-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="ti ti-x me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-save-edit-requisicion">
+                    <span class="btn-text"><i class="ti ti-device-floppy me-1"></i>Guardar cambios</span>
+                    <span class="btn-loading d-none"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+                </button>
             </div>
         </div>
     </div>
@@ -215,25 +240,29 @@ $modelRequisicionModal->numero_vacantes = 1;
 <?php
 $this->registerCss(<<<CSS
 /**
- * Scroll del modal de creación: altura máxima en vh sobre .requisicion-add-scroll
+ * Scroll del modal de creación y edición: altura máxima en vh
  * (evita el problema de modal-dialog-centered que deja crecer el contenido sin tope).
  */
-#add_requisicion .requisicion-add-dialog {
+#add_requisicion .requisicion-add-dialog,
+#modal-edit-requisicion .requisicion-edit-dialog {
     max-width: min(1140px, 96vw);
     margin: 1rem auto;
 }
-#add_requisicion .requisicion-add-dialog .modal-content {
+#add_requisicion .requisicion-add-dialog .modal-content,
+#modal-edit-requisicion .requisicion-edit-dialog .modal-content {
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 2rem);
     overflow: hidden;
 }
-#add_requisicion .requisicion-add-modal-body {
+#add_requisicion .requisicion-add-modal-body,
+#modal-edit-requisicion .requisicion-edit-modal-body {
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden !important;
 }
-#add_requisicion .requisicion-add-scroll {
+#add_requisicion .requisicion-add-scroll,
+#modal-edit-requisicion .requisicion-edit-scroll {
     max-height: min(72vh, calc(100vh - 200px));
     overflow-y: auto !important;
     overflow-x: hidden;
@@ -244,7 +273,8 @@ $this->registerCss(<<<CSS
     z-index: 0;
 }
 @media (max-height: 700px) {
-    #add_requisicion .requisicion-add-scroll {
+    #add_requisicion .requisicion-add-scroll,
+    #modal-edit-requisicion .requisicion-edit-scroll {
         max-height: calc(100vh - 180px);
     }
 }
@@ -358,13 +388,13 @@ $(function() {
     $(document).on('click', '.btn-requisicion-edit', function() {
         var id = $(this).data('id');
         var modal = new bootstrap.Modal(document.getElementById('modal-edit-requisicion'));
-        $('#modal-edit-requisicion-body').html('<div class=\"text-center py-4\"><span class=\"spinner-border text-primary\"></span></div>');
+        $('#modal-edit-requisicion-body').html('<div class=\"text-center py-5 px-3\"><span class=\"spinner-border text-primary\"></span><p class=\"text-muted mt-2 mb-0\">Cargando...</p></div>');
         modal.show();
         $.get('{$formAjaxUrl}', { id: id }, function(html) {
             $('#modal-edit-requisicion-body').html(html);
             $('#btn-save-edit-requisicion').data('id', id);
         }).fail(function() {
-            $('#modal-edit-requisicion-body').html('<div class=\"alert alert-danger\">Error al cargar el formulario.</div>');
+            $('#modal-edit-requisicion-body').html('<div class=\"alert alert-danger border-0 m-3\">Error al cargar el formulario.</div>');
         });
     });
 
@@ -374,12 +404,25 @@ $(function() {
         var \$btn = $('#btn-save-edit-requisicion');
         var \$errors = $('#requisicion-edit-form-errors');
 
+        if (!\$form.length || !id) {
+            \$errors.html('No se pudo identificar la requisición a guardar.').removeClass('d-none');
+            return;
+        }
+
         \$errors.addClass('d-none').empty();
         \$btn.prop('disabled', true);
         \$btn.find('.btn-text').addClass('d-none');
         \$btn.find('.btn-loading').removeClass('d-none');
 
+        // Enable disabled selects so their values are included in serialization
+        var \$disabled = \$form.find('select:disabled');
+        \$disabled.prop('disabled', false);
+
         var formData = \$form.serialize() + '&{$csrfParam}={$csrfToken}';
+
+        // Restore disabled state
+        \$disabled.prop('disabled', true);
+
         $.ajax({
             url: '{$updateAjaxUrl}'.replace(/\/$/, '') + '?id=' + id,
             type: 'POST',
@@ -397,7 +440,7 @@ $(function() {
                             errors.push($.isArray(v) ? v.join(' ') : v);
                         });
                     }
-                    \$errors.html(errors.join('<br>')).removeClass('d-none');
+                    \$errors.html(errors.join('<br>') || 'No fue posible guardar los cambios.').removeClass('d-none');
                 }
             },
             error: function() {

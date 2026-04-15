@@ -14,13 +14,23 @@ use yii\widgets\ActiveForm;
 /** @var int[] $selectedConceptos */
 /** @var array<int, string> $conceptosCatalogo */
 
+$isModal = $isModal ?? false;
+
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
 $empresaId = is_numeric($tenantEmpresaId) ? (int) $tenantEmpresaId : null;
 
-$sedes = $empresaId
-    ? LocationSedes::find()->where(['empresa_id' => $empresaId, 'activo' => 1])->orderBy(['nombre' => SORT_ASC])->all()
-    : [];
 $empresaClientes = EmpresaCliente::getActivos($empresaId);
+
+$empresaClienteIdInit = $model->empresa_cliente_id ? (int) $model->empresa_cliente_id : null;
+$sedeIdInit = $model->location_sede_id ? (int) $model->location_sede_id : null;
+
+$sedesIniciales = [];
+if ($empresaClienteIdInit !== null && $empresaId !== null) {
+    $sedesModels = LocationSedes::findSelectableForEmpresaCliente($empresaClienteIdInit, $empresaId, $sedeIdInit);
+    foreach ($sedesModels as $sm) {
+        $sedesIniciales[(int) $sm->id] = $sm->nombre;
+    }
+}
 
 $dias = PresupuestoConceptoDia::optsDiaSemana();
 
@@ -52,15 +62,19 @@ $matrizColspan = 1 + count($dias);
         <?= $form->field($model, 'fecha_fin_vigencia')->input('date') ?>
     </div>
     <div class="col-md-6">
-        <?= $form->field($model, 'location_sede_id')->dropDownList(
-            \yii\helpers\ArrayHelper::map($sedes, 'id', 'nombre'),
-            ['prompt' => 'Seleccione sede…']
+        <?= $form->field($model, 'empresa_cliente_id')->dropDownList(
+            \yii\helpers\ArrayHelper::map($empresaClientes, 'id', 'nombre'),
+            ['prompt' => '— Opcional —', 'id' => 'presupuesto-empresa_cliente_id']
         ) ?>
     </div>
     <div class="col-md-6">
-        <?= $form->field($model, 'empresa_cliente_id')->dropDownList(
-            \yii\helpers\ArrayHelper::map($empresaClientes, 'id', 'nombre'),
-            ['prompt' => '— Opcional —']
+        <?= $form->field($model, 'location_sede_id')->dropDownList(
+            $sedesIniciales,
+            [
+                'prompt' => $empresaClienteIdInit ? 'Seleccione sede…' : 'Primero seleccione empresa cliente',
+                'id' => 'presupuesto-location_sede_id',
+                'disabled' => $empresaClienteIdInit === null,
+            ]
         ) ?>
     </div>
     <div class="col-12">
@@ -137,10 +151,12 @@ $matrizColspan = 1 + count($dias);
     </table>
 </div>
 
+<?php if (!$isModal): ?>
 <div class="form-group">
     <?= Html::submitButton('Guardar borrador', ['class' => 'btn btn-primary', 'name' => 'save', 'value' => '1']) ?>
     <?= Html::a('Cancelar', ['index'], ['class' => 'btn btn-outline-secondary']) ?>
 </div>
+<?php endif; ?>
 
 <?php ActiveForm::end(); ?>
 
@@ -285,5 +301,59 @@ $this->registerCss(<<<'CSS'
 CSS
 );
 $this->registerJs($js, \yii\web\View::POS_READY, 'presupuesto-matriz-form');
+
+$sedesUrl = \yii\helpers\Url::to(['presupuesto/sedes-por-empresa-cliente']);
+$ecIdInitJs = $empresaClienteIdInit ?? '';
+$sedeIdInitJs = $sedeIdInit ?? '';
+
+$jsEmpresaSede = str_replace('__FORM_ID__', Html::encode($formId), <<<JS
+(function () {
+    var sedesUrl = '{$sedesUrl}';
+    var ecIdInit = '{$ecIdInitJs}';
+    var sedeIdInit = '{$sedeIdInitJs}';
+    var \$empresa = \$('#presupuesto-empresa_cliente_id');
+    var \$sede = \$('#presupuesto-location_sede_id');
+
+    function resetSede(msg) {
+        \$sede.empty().append('<option value="">' + msg + '</option>');
+        \$sede.prop('disabled', true);
+    }
+
+    function loadSedes(ecId, preserveSedeId) {
+        resetSede('Cargando…');
+        \$.get(sedesUrl, { empresa_cliente_id: ecId }, function (data) {
+            \$sede.empty().append('<option value="">Seleccione sede\u2026</option>');
+            (data || []).forEach(function (s) {
+                \$sede.append('<option value="' + s.id + '">' + \$('<div/>').text(s.nombre).html() + '</option>');
+            });
+            \$sede.prop('disabled', false);
+            if (preserveSedeId) {
+                \$sede.val(String(preserveSedeId));
+            }
+        }).fail(function () {
+            resetSede('Error al cargar sedes');
+        });
+    }
+
+    \$empresa.off('change.presupuestoSede').on('change.presupuestoSede', function () {
+        var ec = \$(this).val();
+        if (ec) {
+            loadSedes(ec, null);
+        } else {
+            resetSede('Primero seleccione empresa cliente');
+        }
+    });
+
+    \$('#__FORM_ID__').off('submit.presupuestoSede').on('submit.presupuestoSede', function () {
+        \$sede.prop('disabled', false);
+    });
+
+    if (ecIdInit) {
+        loadSedes(ecIdInit, sedeIdInit || null);
+    }
+})();
+JS
+);
+$this->registerJs($jsEmpresaSede, \yii\web\View::POS_READY, 'presupuesto-sede-empresa');
 ?>
 

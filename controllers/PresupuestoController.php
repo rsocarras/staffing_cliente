@@ -11,6 +11,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -39,6 +40,7 @@ class PresupuestoController extends Controller
                     'reopen' => ['POST'],
                     'cancel' => ['POST'],
                     'clone' => ['POST'],
+                    'create-ajax' => ['POST'],
                     'sedes-por-empresa-cliente' => ['GET'],
                 ],
             ],
@@ -169,6 +171,46 @@ class PresupuestoController extends Controller
             'selectedConceptos' => [],
             'conceptosCatalogo' => $this->buildConceptosCatalogoMap(),
         ]);
+    }
+
+    public function actionCreateAjax()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (!$this->request->isPost) {
+            return ['success' => false, 'errors' => ['general' => 'Método no permitido.']];
+        }
+
+        $model = new Presupuesto();
+        $model->estado = Presupuesto::ESTADO_BORRADOR;
+        $model->loadDefaultValues();
+        if (!$model->fecha_inicio_vigencia) {
+            $model->fecha_inicio_vigencia = date('Y-m-d');
+        }
+        if (!$model->fecha_fin_vigencia) {
+            $model->fecha_fin_vigencia = date('Y-m-d', strtotime('+1 year'));
+        }
+
+        if (!$model->load($this->request->post())) {
+            return ['success' => false, 'errors' => ['general' => 'Datos inválidos.']];
+        }
+
+        $eid = $this->currentEmpresaId();
+        if ($eid !== null) {
+            $model->empresa_id = $eid;
+        }
+
+        [$conceptoIds, $matrix] = $this->parseConceptosPost();
+
+        if (!$this->workflow->createNew($model, $conceptoIds, $matrix)) {
+            return ['success' => false, 'errors' => $model->getErrors()];
+        }
+
+        return [
+            'success' => true,
+            'viewUrl' => Url::to(['view', 'id' => $model->id]),
+            'message' => 'Presupuesto creado.',
+        ];
     }
 
     public function actionUpdate($id)

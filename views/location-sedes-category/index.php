@@ -26,6 +26,7 @@ $viewAjaxUrl = Url::to(['location-sedes-category/view-ajax']);
 $formAjaxUrl = Url::to(['location-sedes-category/form-ajax']);
 $updateAjaxUrl = Url::to(['location-sedes-category/update-ajax']);
 $deleteUrl = Url::to(['location-sedes-category/delete']);
+$sedesByClienteUrl = Url::to(['location-sedes-category/sedes-by-empresa-cliente']);
 $csrfToken = Yii::$app->request->csrfToken;
 $csrfParam = Yii::$app->request->csrfParam;
 ?>
@@ -253,6 +254,62 @@ $(document).ready(function() {
         }
     });
 
+    // ── Dynamic sedes picker ────────────────────────────────────────────────
+    var sedesByClienteUrl = '{$sedesByClienteUrl}';
+
+    function buildSedeTile(sede) {
+        var name = $('<span>').text(sede.nombre).html();
+        return '<div class="col-12 col-md-4">' +
+            '<label class="profile-sede-tile w-100">' +
+            '<input type="checkbox" name="LocationSedesCategory[sedeIds][]" value="' + parseInt(sede.id) + '" class="visually-hidden">' +
+            '<span class="profile-sede-tile-inner d-flex align-items-center gap-2">' +
+            '<span class="profile-sede-tile-check flex-shrink-0 d-inline-flex align-items-center justify-content-center" aria-hidden="true">' +
+            '<i class="ti ti-square fs-18 profile-sede-icon-off"></i>' +
+            '<i class="ti ti-square-check fs-18 profile-sede-icon-on d-none"></i>' +
+            '</span>' +
+            '<span class="profile-sede-tile-name flex-grow-1">' + name + '</span>' +
+            '</span>' +
+            '</label>' +
+            '</div>';
+    }
+
+    function loadSedesForCliente(\$form, empresaClienteId) {
+        var \$picker = \$form.find('.sede-category-sedes-picker');
+        var \$row = \$picker.find('.row.g-2');
+        var \$toolbar = \$picker.find('.profile-sedes-toolbar');
+
+        if (!empresaClienteId) {
+            \$toolbar.addClass('d-none');
+            \$row.html('<div class="col-12 py-3 text-muted small text-center"><i class="ti ti-building-factory d-block fs-2 mb-1 opacity-50"></i>Seleccione una empresa cliente para ver las sedes disponibles.</div>');
+            return;
+        }
+
+        \$row.html('<div class="col-12 text-center py-3"><span class="spinner-border spinner-border-sm text-primary"></span></div>');
+        \$toolbar.addClass('d-none');
+
+        $.get(sedesByClienteUrl, { empresa_cliente_id: empresaClienteId }, function(sedes) {
+            if (!Array.isArray(sedes) || sedes.length === 0) {
+                \$row.html('<div class="col-12"><div class="alert alert-warning mb-0">No hay sedes activas configuradas para esta empresa cliente.</div></div>');
+                return;
+            }
+            \$toolbar.removeClass('d-none');
+            var html = '';
+            sedes.forEach(function(sede) { html += buildSedeTile(sede); });
+            \$row.html(html);
+            if (typeof syncProfileSedeTiles === 'function') {
+                syncProfileSedeTiles(\$picker);
+            }
+        }, 'json').fail(function() {
+            \$row.html('<div class="col-12"><div class="alert alert-danger mb-0">Error al cargar las sedes. Intente nuevamente.</div></div>');
+        });
+    }
+
+    $(document).on('change', '#locationsedescategory-empresa_cliente_id', function() {
+        var \$form = $(this).closest('.sede-category-modal-form');
+        loadSedesForCliente(\$form, $(this).val());
+    });
+    // ────────────────────────────────────────────────────────────────────────
+
     $(document).on('show.bs.dropdown', '.sede-category-actions-dropdown', function() {
         var rect = this.getBoundingClientRect();
         var menu = this.querySelector('.dropdown-menu');
@@ -383,6 +440,14 @@ $(document).ready(function() {
         });
     });
 
+    $('#add_sede_category').on('show.bs.modal', function() {
+        var \$form = $(this).find('.sede-category-modal-form');
+        var currentVal = \$form.find('#locationsedescategory-empresa_cliente_id').val();
+        if (!currentVal) {
+            loadSedesForCliente(\$form, '');
+        }
+    });
+
     $('#add_sede_category').on('hidden.bs.modal', function() {
         var \$form = $('#form-add-sede-category');
         if (\$form.length && \$form[0]) {
@@ -391,6 +456,7 @@ $(document).ready(function() {
             \$form.find('.profile-sede-tile').removeClass('is-selected');
         }
         $('#sede-category-form-errors').addClass('d-none').empty();
+        loadSedesForCliente($('#add_sede_category .sede-category-modal-form'), '');
     });
 
     $(document).on('click', '.btn-category-delete', function() {

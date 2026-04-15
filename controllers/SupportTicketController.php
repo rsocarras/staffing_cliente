@@ -11,6 +11,7 @@ use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -41,6 +42,7 @@ class SupportTicketController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'reply' => ['POST'],
+                    'create-ajax' => ['POST'],
                 ],
             ],
         ]);
@@ -50,11 +52,13 @@ class SupportTicketController extends Controller
     {
         $searchModel = new SupportTicketSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $query = SupportTicket::find()->where(['empresas_id' => TenantContext::requireEmpresaId()]);
+        $empresaId = TenantContext::requireEmpresaId();
+        $query = SupportTicket::find()->where(['empresas_id' => $empresaId]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'empresaClienteOptions' => $this->empresaClienteOptions($empresaId),
             'stats' => [
                 'total' => (clone $query)->count(),
                 'abiertos' => (clone $query)->andWhere(['status' => [
@@ -69,29 +73,26 @@ class SupportTicketController extends Controller
         ]);
     }
 
-    public function actionCreate()
+    public function actionCreateAjax(): Response
     {
-        $model = new SupportTicket();
-        $model->scenario = 'default';
+        Yii::$app->response->format = Response::FORMAT_JSON;
         $empresaId = TenantContext::requireEmpresaId();
 
-        if (Yii::$app->request->isPost) {
-            $ticket = $this->service->createTicket(
-                $empresaId,
-                (int) Yii::$app->user->id,
-                Yii::$app->request->post('SupportTicket', [])
-            );
-            if (!$ticket->hasErrors()) {
-                Yii::$app->session->setFlash('success', 'La solicitud fue enviada a Staffing.');
-                return $this->redirect(['/support-ticket/view', 'id' => $ticket->id]);
-            }
-            $model = $ticket;
+        $ticket = $this->service->createTicket(
+            $empresaId,
+            (int) Yii::$app->user->id,
+            Yii::$app->request->post('SupportTicket', [])
+        );
+
+        if (!$ticket->hasErrors()) {
+            return $this->asJson([
+                'success' => true,
+                'id' => $ticket->id,
+                'redirectUrl' => Url::to(['/support-ticket/view', 'id' => $ticket->id]),
+            ]);
         }
 
-        return $this->render('create', [
-            'model' => $model,
-            'empresaClienteOptions' => $this->empresaClienteOptions($empresaId),
-        ]);
+        return $this->asJson(['success' => false, 'errors' => $ticket->errors]);
     }
 
     public function actionView(int $id): string

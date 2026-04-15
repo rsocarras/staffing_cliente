@@ -12,10 +12,9 @@ use Yii;
  * @property int|null $empresas_id
  * @property int|null $empresa_cliente_id
  * @property int $activo
- * @property float|null $valor_hora_base
- * @property float|null $valor_hora_domingo_festivos
+ * @property float|null $valor_hora_diurna
+ * @property float|null $valor_hora_diurna_domingo_festivos
  * @property float|null $valor_hora_nocturna
- * @property float|null $valor_hora_nocturna_festiva
  * @property float|null $valor_hora_nocturna_dominical_festiva
  * @property float|null $valor_movilizacion
  * @property float|null $valor_hora_especial
@@ -44,11 +43,11 @@ class LocationSedesCategory extends \yii\db\ActiveRecord
     {
         return [
             [['nombre', 'empresas_id', 'empresa_cliente_id'], 'required'],
-            [['valor_hora_base', 'valor_hora_domingo_festivos', 'valor_hora_nocturna', 'valor_hora_nocturna_festiva', 'valor_hora_nocturna_dominical_festiva', 'valor_movilizacion', 'valor_hora_especial'], 'default', 'value' => null],
+            [['valor_hora_diurna', 'valor_hora_diurna_domingo_festivos', 'valor_hora_nocturna', 'valor_hora_nocturna_dominical_festiva', 'valor_movilizacion', 'valor_hora_especial'], 'default', 'value' => null],
             [['activo'], 'default', 'value' => 1],
             [['activo', 'empresas_id', 'empresa_cliente_id'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
-            [['valor_hora_base', 'valor_hora_domingo_festivos', 'valor_hora_nocturna', 'valor_hora_nocturna_festiva', 'valor_hora_nocturna_dominical_festiva', 'valor_movilizacion', 'valor_hora_especial'], 'number', 'min' => 0, 'max' => 9999999999.9999],
+            [['valor_hora_diurna', 'valor_hora_diurna_domingo_festivos', 'valor_hora_nocturna', 'valor_hora_nocturna_dominical_festiva', 'valor_movilizacion', 'valor_hora_especial'], 'number', 'min' => 0, 'max' => 9999999999.9999],
             [['nombre'], 'string', 'max' => 190],
             [['nombre'], 'unique'],
             [['sedeIds'], 'default', 'value' => []],
@@ -67,10 +66,9 @@ class LocationSedesCategory extends \yii\db\ActiveRecord
             'empresas_id' => Yii::t('app', 'Organización'),
             'empresa_cliente_id' => Yii::t('app', 'Empresa cliente'),
             'activo' => Yii::t('app', 'Activa'),
-            'valor_hora_base' => Yii::t('app', 'Valor hora base'),
-            'valor_hora_domingo_festivos' => Yii::t('app', 'Valor hora domingo/festivos'),
+            'valor_hora_diurna' => Yii::t('app', 'Valor hora diurna'),
+            'valor_hora_diurna_domingo_festivos' => Yii::t('app', 'Valor hora diurna domingo/festivos'),
             'valor_hora_nocturna' => Yii::t('app', 'Valor hora nocturna'),
-            'valor_hora_nocturna_festiva' => Yii::t('app', 'Valor hora nocturna festiva'),
             'valor_hora_nocturna_dominical_festiva' => Yii::t('app', 'Valor hora nocturna dominical/festiva'),
             'valor_movilizacion' => Yii::t('app', 'Valor movilización'),
             'valor_hora_especial' => Yii::t('app', 'Valor hora especial'),

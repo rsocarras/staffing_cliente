@@ -29,7 +29,7 @@ $estadoLabel = Requisicion::optsEstado()[$model->estado] ?? $model->estado;
                 </div>
                 <div class="col-md-4">
                     <small class="text-muted d-block">Vacante</small>
-                    <span class="fw-medium">#<?= (int) $model->vacante_index ?></span>
+                    <span class="fw-medium">#<?= (int) $model->vacante_index ?> de <?= (int) $model->numero_vacantes ?></span>
                 </div>
                 <div class="col-md-4">
                     <small class="text-muted d-block">Estado</small>
@@ -69,30 +69,50 @@ $estadoLabel = Requisicion::optsEstado()[$model->estado] ?? $model->estado;
             </div>
         </div>
 
-        <!-- Cargo y fecha -->
+        <!-- Cargo y condiciones -->
         <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
             <div class="d-flex align-items-start gap-3 mb-3">
                 <span class="avatar avatar-md bg-soft-warning text-warning rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
                     <i class="ti ti-briefcase fs-20"></i>
                 </span>
                 <div>
-                    <h6 class="fw-semibold mb-1">Cargo y fecha de ingreso</h6>
-                    <p class="text-muted small mb-0">Puesto solicitado y fecha prevista.</p>
+                    <h6 class="fw-semibold mb-1">Cargo y condiciones</h6>
+                    <p class="text-muted small mb-0">Puesto, área, jornada, salario y fecha prevista.</p>
                 </div>
             </div>
             <div class="row g-3">
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Área</small>
+                    <span class="fw-medium"><?= Html::encode($model->area->nombre ?? '—') ?></span>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Subárea</small>
+                    <span class="fw-medium"><?= Html::encode($model->subArea->nombre ?? '—') ?></span>
+                </div>
                 <div class="col-md-6">
                     <small class="text-muted d-block">Cargo</small>
                     <span class="fw-medium"><?= Html::encode($model->cargo->nombre ?? '—') ?></span>
                 </div>
                 <div class="col-md-6">
+                    <small class="text-muted d-block">Jornada</small>
+                    <span class="fw-medium"><?= $model->jornada !== null ? Html::encode((string) $model->jornada) : '—' ?></span>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Salario</small>
+                    <span class="fw-medium"><?= Yii::$app->formatter->asCurrency($model->salario) ?></span>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted d-block">Auxilio</small>
+                    <span class="fw-medium"><?= Yii::$app->formatter->asCurrency($model->auxilio) ?></span>
+                </div>
+                <div class="col-12">
                     <small class="text-muted d-block">Fecha de ingreso</small>
-                    <span class="fw-medium"><?= $model->fecha_ingreso ? Yii::$app->formatter->asDate($model->fecha_ingreso) : '—' ?></span>
+                    <span class="fw-medium"><?= $model->fecha_ingreso ? Yii::$app->formatter->asDatetime($model->fecha_ingreso) : '—' ?></span>
                 </div>
             </div>
         </div>
 
-        <!-- Persona -->
+        <!-- Persona asignada -->
         <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">
             <div class="d-flex align-items-start gap-3 mb-3">
                 <span class="avatar avatar-md bg-soft-success text-success rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
