@@ -1,10 +1,14 @@
 <?php
 
+use Yii;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 $path = Yii::$app->request->getPathInfo();
 $homeUrl = Yii::$app->homeUrl;
 $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === 'sistema/soporte/ticket';
+$isAuditLog = strpos($path, 'sistema/auditoria') === 0;
+$canAuditLog = !Yii::$app->user->isGuest && Yii::$app->user->can('audit_log.view');
 
 ?>
 
@@ -84,6 +88,9 @@ $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === '
                         <li><a href="<?= Url::to(['/usuarios']) ?>" class="<?php echo ($path == 'usuarios') ? 'active' : ''; ?>">Usuarios</a></li>
                         <li><a href="<?= Url::to(['/usuarios/roles']) ?>" class="<?php echo ($path == 'usuarios/roles') ? 'active' : ''; ?>">Roles</a></li>
                         <li><a href="<?= Url::to(['/usuarios/permisos']) ?>" class="<?php echo ($path == 'usuarios/permisos') ? 'active' : ''; ?>">Permisos</a></li>
+                        <?php if ($canAuditLog): ?>
+                            <li><a href="<?= Url::to(['/sistema/auditoria']) ?>" class="<?php echo $isAuditLog ? 'active' : ''; ?>"><?= Html::encode(Yii::t('app', 'Auditoría de cambios')) ?></a></li>
+                        <?php endif; ?>
                     </ul>
                 </li>
 

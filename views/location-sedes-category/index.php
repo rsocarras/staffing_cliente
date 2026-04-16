@@ -217,7 +217,8 @@ $csrfParam = Yii::$app->request->csrfParam;
 </div>
 
 <?php
-$this->registerCss(<<<'CSS'
+$this->registerCss(
+    <<<'CSS'
 #sedes-category-table_wrapper .table-responsive {
     overflow-x: auto;
     overflow-y: visible;

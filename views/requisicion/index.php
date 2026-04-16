@@ -141,7 +141,9 @@ $this->registerJsFile(Url::to('@web/assets/plugins/sweetalert2/sweetalert2.min.j
             </div>
             <div class="modal-body p-0 d-flex flex-column requisicion-edit-modal-body">
                 <div class="requisicion-edit-scroll px-4 pt-3 pb-2" id="modal-edit-requisicion-body">
-                    <div class="text-center py-5 px-3"><span class="spinner-border text-primary"></span><p class="text-muted mt-2 mb-0">Cargando...</p></div>
+                    <div class="text-center py-5 px-3"><span class="spinner-border text-primary"></span>
+                        <p class="text-muted mt-2 mb-0">Cargando...</p>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer border-0 bg-light bg-opacity-50 pt-2 pb-3 px-4 gap-2 flex-shrink-0">

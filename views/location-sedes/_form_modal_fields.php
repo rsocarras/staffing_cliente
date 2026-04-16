@@ -19,13 +19,13 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
 
 <div class="sede-modal-form">
     <?php if (!$model->isNewRecord && $isEdit): ?>
-    <div class="rounded-3 border border-dashed p-3 mb-3 bg-light">
-        <?= $form->field($model, 'empresa_id', [
-            'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-building text-secondary"></i></span>{input}</div>{error}',
-            'options' => ['class' => 'mb-0'],
-            'labelOptions' => ['class' => 'form-label fw-medium'],
-        ])->textInput(['readonly' => true, 'class' => 'form-control bg-light']) ?>
-    </div>
+        <div class="rounded-3 border border-dashed p-3 mb-3 bg-light">
+            <?= $form->field($model, 'empresa_id', [
+                'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-building text-secondary"></i></span>{input}</div>{error}',
+                'options' => ['class' => 'mb-0'],
+                'labelOptions' => ['class' => 'form-label fw-medium'],
+            ])->textInput(['readonly' => true, 'class' => 'form-control bg-light']) ?>
+        </div>
     <?php endif; ?>
 
     <!-- Identificación -->
