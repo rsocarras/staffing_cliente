@@ -355,6 +355,7 @@ $(function() {
         var form = $('#form-add-requisicion')[0];
         if (form) form.reset();
         $('#requisicion-form-errors').addClass('d-none').empty();
+        $('#requisicion-ciudad_id').html('<option value=\"\">Primero seleccione empresa cliente</option>').prop('disabled', true);
         $('#requisicion-sede_id').html('<option value=\"\">Primero seleccione ciudad</option>').prop('disabled', true);
         $('#requisicion-area_id').html('<option value=\"\">Primero seleccione empresa cliente</option>').prop('disabled', true);
         $('#requisicion-sub_area_id').html('<option value=\"\">Primero seleccione área</option>').prop('disabled', true);

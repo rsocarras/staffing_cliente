@@ -12,10 +12,10 @@ use yii\helpers\Url;
 $esCreacion = isset($esCreacion) ? $esCreacion : $model->isNewRecord;
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
 $ciudades = [];
-if ($tenantEmpresaId) {
-    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresa((int) $tenantEmpresaId);
-    $ciudades = \app\models\LocationSedes::mapCiudadesIncluirActualSiFalta(
-        $ciudades,
+if ($tenantEmpresaId && $model->empresa_cliente_id) {
+    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresaCliente(
+        (int) $model->empresa_cliente_id,
+        (int) $tenantEmpresaId,
         $model->ciudad_id !== null ? (int) $model->ciudad_id : null
     );
 }
@@ -46,7 +46,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
         <?= $form->field($model, 'fecha_ingreso')->input('datetime-local') ?>
         <div class="row">
             <div class="col-md-6">
-                <?= $form->field($model, 'ciudad_id')->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
+                <?= $form->field($model, 'ciudad_id')->dropDownList($ciudades, ['prompt' => 'Primero seleccione empresa cliente', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Ciudades según sedes asignadas a la empresa cliente.') ?>
             </div>
             <div class="col-md-6">
                 <?= $form->field($model, 'sede_id')->dropDownList([], ['prompt' => 'Primero seleccione ciudad', 'id' => 'requisicion-sede_id', 'class' => 'form-select', 'disabled' => true]) ?>
@@ -98,6 +98,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
 
 <?php
 $sedesUrl = Url::to(['/requisicion/sedes-por-ciudad']);
+$ciudadesUrl = Url::to(['/requisicion/ciudades-por-empresa-cliente']);
 $areasUrl = Url::to(['/requisicion/areas-por-empresa-cliente']);
 $subAreasUrl = Url::to(['/requisicion/sub-areas-por-area']);
 $cargosUrl = Url::to(['/requisicion/cargos-por-sub-area']);
@@ -110,6 +111,7 @@ $modalidadInicialJson = json_encode($modalidadInicial, JSON_UNESCAPED_UNICODE);
 $js = <<<JS
 (function() {
     var sedesUrl = '{$sedesUrl}';
+    var ciudadesUrl = '{$ciudadesUrl}';
     var areasUrl = '{$areasUrl}';
     var subAreasUrl = '{$subAreasUrl}';
     var cargosUrl = '{$cargosUrl}';
@@ -124,6 +126,8 @@ $js = <<<JS
     var tiposContratoUrl = '{$tiposContratoUrl}';
     var modalidadInicial = {$modalidadInicialJson};
 
+    var \$empresa = $('#requisicion-empresa_cliente_id');
+    var \$ciudad = $('#requisicion-ciudad_id');
     var \$area = $('#requisicion-area_id');
     var \$sede = $('#requisicion-sede_id');
     var \$sub = $('#requisicion-sub_area_id');
@@ -185,15 +189,38 @@ $js = <<<JS
         optional.forEach(function (sel) { setLabelRequired(sel, false); });
     }
 
-    function loadSedes(cid, preserveVal) {
+    function loadSedes(ecId, cid, preserveVal) {
         resetSelect(\$sede, 'Seleccione sede', true);
-        if (!cid) return;
+        if (!cid || !ecId) return;
         \$sede.prop('disabled', false);
-        $.get(sedesUrl, { ciudad_id: cid }, function(data) {
+        $.get(sedesUrl, { ciudad_id: cid, empresa_cliente_id: ecId }, function(data) {
             (data || []).forEach(function(s) {
                 \$sede.append('<option value="' + s.id + '">' + $('<div/>').text(s.nombre).html() + '</option>');
             });
             if (preserveVal) \$sede.val(preserveVal);
+        });
+    }
+
+    function loadCiudades(ecId, preserveCiudadVal, done) {
+        resetSelect(\$ciudad, 'Seleccione ciudad', true);
+        resetSelect(\$sede, 'Primero seleccione ciudad', true);
+        if (!ecId) {
+            resetSelect(\$ciudad, 'Primero seleccione empresa cliente', true);
+            if (typeof done === 'function') done();
+            return;
+        }
+        \$ciudad.prop('disabled', false);
+        $.get(ciudadesUrl, { empresa_cliente_id: ecId }, function(data) {
+            var rows = data || [];
+            \$ciudad.empty().append('<option value="">Seleccione ciudad</option>');
+            rows.forEach(function(c) {
+                \$ciudad.append('<option value="' + c.id + '">' + $('<div/>').text(c.nombre).html() + '</option>');
+            });
+            if (preserveCiudadVal) \$ciudad.val(String(preserveCiudadVal));
+            if (typeof done === 'function') done();
+        }).fail(function() {
+            resetSelect(\$ciudad, 'Error al cargar ciudades', true);
+            if (typeof done === 'function') done();
         });
     }
 
@@ -401,12 +428,16 @@ $js = <<<JS
     });
 
     $('#requisicion-empresa_cliente_id').off('change.requisicionForm').on('change.requisicionForm', function() {
-        loadAreas($(this).val(), null, null);
+        var ec = $(this).val();
+        loadCiudades(ec || null, null, function() {
+            loadAreas(ec, null, null);
+        });
     });
 
     $('#requisicion-ciudad_id').off('change.requisicionForm').on('change.requisicionForm', function() {
-        var v = $(this).val();
-        if (v) loadSedes(v);
+        var c = $(this).val();
+        var ec = \$empresa.val();
+        if (c && ec) loadSedes(ec, c);
         else resetSelect(\$sede, 'Primero seleccione ciudad', true);
     });
 
@@ -449,8 +480,10 @@ $js = <<<JS
             unformatCurrencyForSubmit();
         });
 
-    if (ciudadId) {
-        loadSedes(ciudadId, sedeId);
+    if (empresaClienteId) {
+        loadCiudades(empresaClienteId, ciudadId || null, function () {
+            if (ciudadId && empresaClienteId) loadSedes(empresaClienteId, ciudadId, sedeId);
+        });
     }
 
     if (empresaClienteId) {

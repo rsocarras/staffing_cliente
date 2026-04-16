@@ -133,6 +133,7 @@ class Requisicion extends ActiveRecord
             [['profile_id'], 'exist', 'skipOnError' => true, 'targetClass' => Profile::class, 'targetAttribute' => ['profile_id' => 'user_id']],
             [['parent_id'], 'exist', 'skipOnError' => true, 'targetClass' => Requisicion::class, 'targetAttribute' => ['parent_id' => 'id']],
             [['sede_id'], 'validateSedeCiudad'],
+            [['sede_id'], 'validateSedeVinculadaEmpresaCliente'],
             [['sub_area_id'], 'validateSubArea'],
             [['cargo_id'], 'validateCargoDependencia'],
             [['contrato_tipo_id'], 'validateContratoTipoTenant'],
@@ -197,6 +198,27 @@ class Requisicion extends ActiveRecord
         $sede = LocationSedes::findOne($this->sede_id);
         if ($sede && $sede->city_id !== null && $sede->city_id != $this->ciudad_id) {
             $this->addError($attribute, 'La sede debe pertenecer a la ciudad seleccionada.');
+        }
+    }
+
+    public function validateSedeVinculadaEmpresaCliente($attribute, $params, $validator): void
+    {
+        if (empty($this->sede_id) || empty($this->empresa_cliente_id)) {
+            return;
+        }
+        $ecId = (int) $this->empresa_cliente_id;
+        if (!(new \yii\db\Query())->from('empresa_cliente_sedes')->where(['empresa_cliente_id' => $ecId])->exists()) {
+            return;
+        }
+        $exists = (new \yii\db\Query())
+            ->from('empresa_cliente_sedes')
+            ->where([
+                'empresa_cliente_id' => $ecId,
+                'location_sede_id' => (int) $this->sede_id,
+            ])
+            ->exists();
+        if (!$exists) {
+            $this->addError($attribute, 'La sede debe estar asignada a la empresa cliente seleccionada.');
         }
     }
 

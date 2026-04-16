@@ -22,6 +22,7 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\db\ActiveQuery;
+use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 
@@ -35,6 +36,7 @@ class RequisicionController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                     'sedes-por-ciudad' => ['GET'],
+                    'ciudades-por-empresa-cliente' => ['GET'],
                     'areas-por-empresa-cliente' => ['GET'],
                     'sub-areas-por-area' => ['GET'],
                     'cargos-por-sub-area' => ['GET'],
@@ -55,7 +57,7 @@ class RequisicionController extends Controller
                     [
                         'allow' => true,
                         'roles' => ['requisicion_index'],
-                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'areas-por-empresa-cliente', 'sub-areas-por-area', 'cargos-por-sub-area', 'tipos-contrato-por-modalidad'],
+                        'actions' => ['index', 'data', 'view', 'view-ajax', 'create', 'create-ajax', 'update', 'form-ajax', 'update-ajax', 'delete', 'submit', 'sedes-por-ciudad', 'ciudades-por-empresa-cliente', 'areas-por-empresa-cliente', 'sub-areas-por-area', 'cargos-por-sub-area', 'tipos-contrato-por-modalidad'],
                     ],
                     [
                         'allow' => true,
@@ -578,18 +580,78 @@ class RequisicionController extends Controller
         }, $areas);
     }
 
-    public function actionSedesPorCiudad($ciudad_id)
+    /**
+     * Sedes activas vinculadas a la empresa cliente en empresa_cliente_sedes, filtradas por ciudad
+     * (coincidencia exacta o sede sin ciudad asignada).
+     *
+     * @return list<array{id: int, nombre: string}>
+     */
+    public function actionSedesPorCiudad($ciudad_id): array
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $sedes = \app\models\LocationSedes::find()
-            ->where(['or', ['city_id' => $ciudad_id], ['city_id' => null]])
-            ->andWhere(['empresa_id' => $this->currentEmpresaId()])
-            ->andWhere(['activo' => 1])
-            ->orderBy('nombre')
-            ->all();
-        return array_map(function ($s) {
-            return ['id' => $s->id, 'nombre' => $s->nombre];
+        $tenantId = $this->currentEmpresaId();
+        $ecId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        $ciudadId = (int) $ciudad_id;
+        if ($tenantId === null || $ecId <= 0 || $ciudadId <= 0) {
+            return [];
+        }
+
+        $ec = EmpresaCliente::findOne(['id' => $ecId, 'empresas_id' => $tenantId, 'is_active' => 1]);
+        if ($ec === null) {
+            return [];
+        }
+
+        $sedeIds = (new Query())
+            ->select('location_sede_id')
+            ->from('empresa_cliente_sedes')
+            ->where(['empresa_cliente_id' => $ecId])
+            ->column();
+
+        /** @var \app\models\LocationSedes[] $sedes */
+        if ($sedeIds === []) {
+            $sedes = \app\models\LocationSedes::find()
+                ->where(['or', ['city_id' => $ciudadId], ['city_id' => null]])
+                ->andWhere(['empresa_id' => $tenantId, 'activo' => 1])
+                ->orderBy(['nombre' => SORT_ASC])
+                ->all();
+        } else {
+            $sedes = \app\models\LocationSedes::find()
+                ->where([
+                    'id' => $sedeIds,
+                    'empresa_id' => $tenantId,
+                    'activo' => 1,
+                ])
+                ->andWhere(['or', ['city_id' => $ciudadId], ['city_id' => null]])
+                ->orderBy(['nombre' => SORT_ASC])
+                ->all();
+        }
+
+        return array_map(static function (\app\models\LocationSedes $s) {
+            return ['id' => (int) $s->id, 'nombre' => (string) $s->nombre];
         }, $sedes);
+    }
+
+    /**
+     * Ciudades con al menos una sede activa vinculada a la empresa cliente.
+     *
+     * @return list<array{id: int, nombre: string}>
+     */
+    public function actionCiudadesPorEmpresaCliente(): array
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $tenantId = $this->currentEmpresaId();
+        $ecId = (int) Yii::$app->request->get('empresa_cliente_id', 0);
+        if ($tenantId === null || $ecId <= 0) {
+            return [];
+        }
+
+        $map = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresaCliente($ecId, $tenantId);
+        $out = [];
+        foreach ($map as $id => $nombre) {
+            $out[] = ['id' => (int) $id, 'nombre' => (string) $nombre];
+        }
+
+        return $out;
     }
 
     public function actionSubAreasPorArea($area_id)

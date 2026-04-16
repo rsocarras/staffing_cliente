@@ -12,10 +12,10 @@ $esCreacion = isset($esCreacion) ? (bool) $esCreacion : true;
 $motivos = \yii\helpers\ArrayHelper::map(\app\models\MotivoVinculacion::getActivos(), 'id', 'nombre');
 $tenantEmpresaId = Yii::$app->user->empresas_id ?? null;
 $ciudades = [];
-if ($tenantEmpresaId) {
-    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresa((int) $tenantEmpresaId);
-    $ciudades = \app\models\LocationSedes::mapCiudadesIncluirActualSiFalta(
-        $ciudades,
+if ($tenantEmpresaId && $model->empresa_cliente_id) {
+    $ciudades = \app\models\LocationSedes::mapCiudadesConSedeActivaParaEmpresaCliente(
+        (int) $model->empresa_cliente_id,
+        (int) $tenantEmpresaId,
         $model->ciudad_id !== null ? (int) $model->ciudad_id : null
     );
 }
@@ -70,7 +70,7 @@ $jornadaSelector = $model->jornada_selector ?: '';
                 'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-map-pin text-primary"></i></span>{input}</div>{error}{hint}',
                 'options' => ['class' => 'mb-0'],
                 'labelOptions' => ['class' => 'form-label fw-medium'],
-            ])->dropDownList($ciudades, ['prompt' => 'Seleccione ciudad', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Solo ciudades con al menos una sede activa en su organización.') ?>
+            ])->dropDownList($ciudades, ['prompt' => 'Primero seleccione empresa cliente', 'id' => 'requisicion-ciudad_id', 'class' => 'form-select'])->hint('Ciudades según sedes asignadas a la empresa cliente.') ?>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'sede_id', [
@@ -240,11 +240,12 @@ $jornadaSelector = $model->jornada_selector ?: '';
 <?php endif; ?>
 
 <?php
-$sedesUrl        = Url::to(['sedes-por-ciudad']);
-$areasUrl        = Url::to(['areas-por-empresa-cliente']);
-$subAreasUrl     = Url::to(['sub-areas-por-area']);
-$cargosUrl       = Url::to(['cargos-por-sub-area']);
-$tiposContratoUrl = Url::to(['tipos-contrato-por-modalidad']);
+$sedesUrl         = Url::to(['/requisicion/sedes-por-ciudad']);
+$ciudadesUrl      = Url::to(['/requisicion/ciudades-por-empresa-cliente']);
+$areasUrl         = Url::to(['/requisicion/areas-por-empresa-cliente']);
+$subAreasUrl      = Url::to(['/requisicion/sub-areas-por-area']);
+$cargosUrl        = Url::to(['/requisicion/cargos-por-sub-area']);
+$tiposContratoUrl = Url::to(['/requisicion/tipos-contrato-por-modalidad']);
 $ciudadId        = $model->ciudad_id ?: '';
 $sedeId          = $model->sede_id ?: '';
 $contratoTipoId  = $model->contrato_tipo_id ?: '';
@@ -254,12 +255,12 @@ $modalidadInicialJson     = json_encode($modalidadInicial, JSON_UNESCAPED_UNICOD
 $formId = $esCreacion ? 'form-add-requisicion' : 'form-edit-requisicion-modal';
 
 $js = <<<JS
-(function() {
     var formId = '{$formId}';
     var \$form  = $('#' + formId);
     if (!\$form.length) return;
 
     var sedesUrl         = '{$sedesUrl}';
+    var ciudadesUrl      = '{$ciudadesUrl}';
     var areasUrl         = '{$areasUrl}';
     var subAreasUrl      = '{$subAreasUrl}';
     var cargosUrl        = '{$cargosUrl}';
@@ -358,15 +359,38 @@ $js = <<<JS
         });
     }
 
-    function loadSedes(cid, preserveVal) {
+    function loadSedes(ecId, cid, preserveVal) {
         resetSelect(\$sede, 'Seleccione sede', true);
-        if (!cid) return;
+        if (!cid || !ecId) return;
         \$sede.prop('disabled', false);
-        $.get(sedesUrl, { ciudad_id: cid }, function(data) {
+        $.get(sedesUrl, { ciudad_id: cid, empresa_cliente_id: ecId }, function(data) {
             (data || []).forEach(function(s) {
                 \$sede.append('<option value="' + s.id + '">' + $('<div/>').text(s.nombre).html() + '</option>');
             });
             if (preserveVal) \$sede.val(String(preserveVal));
+        });
+    }
+
+    function loadCiudades(ecId, preserveCiudadVal, done) {
+        resetSelect(\$ciudad, 'Seleccione ciudad', true);
+        resetSelect(\$sede, 'Primero seleccione ciudad', true);
+        if (!ecId) {
+            resetSelect(\$ciudad, 'Primero seleccione empresa cliente', true);
+            if (typeof done === 'function') done();
+            return;
+        }
+        \$ciudad.prop('disabled', false);
+        $.get(ciudadesUrl, { empresa_cliente_id: ecId }, function(data) {
+            var rows = data || [];
+            \$ciudad.empty().append('<option value="">Seleccione ciudad</option>');
+            rows.forEach(function(c) {
+                \$ciudad.append('<option value="' + c.id + '">' + $('<div/>').text(c.nombre).html() + '</option>');
+            });
+            if (preserveCiudadVal) \$ciudad.val(String(preserveCiudadVal));
+            if (typeof done === 'function') done();
+        }).fail(function() {
+            resetSelect(\$ciudad, 'Error al cargar ciudades', true);
+            if (typeof done === 'function') done();
         });
     }
 
@@ -507,11 +531,15 @@ $js = <<<JS
 
     // Events scoped to the correct form elements
     \$empresa.off('change.reqForm').on('change.reqForm', function() {
-        loadAreas($(this).val(), null, null);
+        var ec = $(this).val();
+        loadCiudades(ec || null, null, function() {
+            loadAreas(ec, null, null);
+        });
     });
     \$ciudad.off('change.reqForm').on('change.reqForm', function() {
-        var v = $(this).val();
-        if (v) loadSedes(v);
+        var c = $(this).val();
+        var ec = \$empresa.val();
+        if (c && ec) loadSedes(ec, c);
         else resetSelect(\$sede, 'Primero seleccione ciudad', true);
     });
     \$area.off('change.reqForm').on('change.reqForm', function() {
@@ -541,7 +569,11 @@ $js = <<<JS
     });
 
     // Pre-populate cascaded dropdowns with existing model values
-    if (ciudadId) loadSedes(ciudadId, sedeId);
+    if (empresaClienteId) {
+        loadCiudades(empresaClienteId, ciudadId || null, function() {
+            if (ciudadId && empresaClienteId) loadSedes(empresaClienteId, ciudadId, sedeId);
+        });
+    }
 
     if (empresaClienteId) {
         loadAreas(empresaClienteId, areaId, function() {
@@ -561,7 +593,10 @@ $js = <<<JS
     toggleJornadaOtro();
     if (!modalidadInicial) mergeContratoTipoCodeMapFromRows([]);
     applyContratoTipoRules();
-})();
 JS;
-// Output inline so it runs both in full-page render and in AJAX renderPartial responses
-echo '<script>$(function() {' . $js . '});</script>';
+// Inline: debe ejecutarse en index (jQuery aún no cargado al parsear el modal) y al inyectar el form por AJAX.
+echo '<script>(function(){function initRequisicionFormPartial($){' . "\n" . $js . "\n" . '}'
+    . 'if(typeof jQuery!=="undefined"){jQuery(function($){initRequisicionFormPartial($);});}'
+    . 'else{document.addEventListener("DOMContentLoaded",function(){'
+    . 'if(typeof jQuery==="undefined")return;jQuery(function($){initRequisicionFormPartial($);});});}'
+    . '})();</script>';

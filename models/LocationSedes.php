@@ -256,4 +256,59 @@ class LocationSedes extends \yii\db\ActiveRecord
         return City::sortMapWithPriority($ciudades);
     }
 
+    /**
+     * Ciudades (activas) donde la empresa cliente tiene al menos una sede activa vinculada en empresa_cliente_sedes.
+     *
+     * @return array<int, string> id ciudad => nombre
+     */
+    public static function mapCiudadesConSedeActivaParaEmpresaCliente(int $empresaClienteId, int $tenantEmpresaId, ?int $incluirCiudadId = null): array
+    {
+        if ($empresaClienteId <= 0 || $tenantEmpresaId <= 0) {
+            return [];
+        }
+
+        $ec = EmpresaCliente::findOne(['id' => $empresaClienteId, 'empresas_id' => $tenantEmpresaId, 'is_active' => 1]);
+        if ($ec === null) {
+            return [];
+        }
+
+        $sedeIds = (new Query())
+            ->select('location_sede_id')
+            ->from('empresa_cliente_sedes')
+            ->where(['empresa_cliente_id' => $empresaClienteId])
+            ->column();
+
+        // Sin filas en pivote: mismo criterio histórico (ciudades con sede activa del tenant).
+        if ($sedeIds === []) {
+            $fallback = static::mapCiudadesConSedeActivaParaEmpresa($tenantEmpresaId);
+
+            return static::mapCiudadesIncluirActualSiFalta($fallback, $incluirCiudadId);
+        }
+
+        $cityIds = static::find()
+            ->select('city_id')
+            ->where(['id' => $sedeIds, 'empresa_id' => $tenantEmpresaId, 'activo' => 1])
+            ->andWhere(['not', ['city_id' => null]])
+            ->distinct()
+            ->column();
+
+        // Sedes vinculadas pero sin ciudad en catálogo: permitir elegir ciudad del tenant.
+        if ($cityIds === []) {
+            $fallback = static::mapCiudadesConSedeActivaParaEmpresa($tenantEmpresaId);
+
+            return static::mapCiudadesIncluirActualSiFalta($fallback, $incluirCiudadId);
+        }
+
+        $map = City::sortMapWithPriority(ArrayHelper::map(
+            City::find()
+                ->where(['id' => $cityIds, 'is_active' => 1])
+                ->orderBy(['name' => SORT_ASC])
+                ->all(),
+            'id',
+            'name'
+        ));
+
+        return static::mapCiudadesIncluirActualSiFalta($map, $incluirCiudadId);
+    }
+
 }
