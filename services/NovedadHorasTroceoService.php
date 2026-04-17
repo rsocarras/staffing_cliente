@@ -58,7 +58,7 @@ final class NovedadHorasTroceoService
     public const COD_HORA_FESTIVA_NOCTURNA = 'HORA_FESTIVA_NOCTURNA';
 
     /**
-     * Mapeo código de concepto de novedad (mayúsculas) → atributo de tarifa en {@see \app\models\LocationSedes}.
+     * Mapeo código de concepto de novedad (mayúsculas) → atributo de tarifa en {@see \app\models\LocationSedeCargoTarifa}.
      *
      * @return array<string, string>
      */
@@ -70,7 +70,7 @@ final class NovedadHorasTroceoService
             self::COD_AUXILIO_MOVILIZACION => 'valor_movilizacion',
             self::COD_HORA_NOCTURNA => 'valor_hora_nocturna',
             self::COD_HORA_FESTIVA_DIURNA => 'valor_hora_diurna_domingo_festivos',
-            self::COD_HORA_FESTIVA_NOCTURNA => 'valor_hora_nocturna_dominical_festiva',
+            self::COD_HORA_FESTIVA_NOCTURNA => 'valor_hora_nocturna_domingo_festiva',
         ];
     }
 

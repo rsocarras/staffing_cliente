@@ -12,6 +12,7 @@ use app\models\EmpresaCliente;
 use app\models\EmpresaNovedadConcepto;
 use app\models\Empresas;
 use app\models\forms\NovedadSolicitudContextForm;
+use app\models\LocationSedeCargoTarifa;
 use app\models\LocationSedes;
 use app\components\TenantContext;
 use app\models\Novedad;
@@ -1461,6 +1462,7 @@ class NovedadController extends Controller
         }
 
         $sede = null;
+        $cargoTarifa = null;
         $tarifasPorConcepto = null;
         $setting = null;
         $valorHoraOrdinaria = null;
@@ -1470,10 +1472,11 @@ class NovedadController extends Controller
             if ($sede === null) {
                 return $fail(Yii::t('app', 'No se encontró la sede del contrato activo para calcular valores por concepto.'));
             }
-            $tarifasPorConcepto = $this->resolveTarifasHorasPorConcepto($empresaId, $profileId, $ctx);
-            if ($tarifasPorConcepto === null) {
-                return $fail(Yii::t('app', 'No se pudo resolver tarifas por concepto para la sede seleccionada.'));
+            $cargoTarifa = $this->resolveLocationSedeCargoTarifaContratoActivo($empresaId, $profileId, $ctx);
+            if ($cargoTarifa === null) {
+                return $fail(Yii::t('app', 'No hay tarifa horaria configurada para la sede y el cargo del contrato activo (location_sede_cargo_tarifa). Revise sede y cargo del contrato.'));
             }
+            $tarifasPorConcepto = $this->mapTarifasHorasDesdeCargoTarifa($cargoTarifa);
         } else {
             try {
                 $setting = NovedadSettingResolver::resolveForEmpresaYFecha($empresaId, $fechaPlantilla);
@@ -1540,7 +1543,7 @@ class NovedadController extends Controller
                 if ($campoTarifa === null) {
                     return $fail(Yii::t(
                         'app',
-                        'El concepto «{nombre}» no puede usarse con contrato por horas: el código del concepto en catálogo («{codigo}») no corresponde a ninguna tarifa horaria de la sede (tabla location_sedes / modelo LocationSedes). Códigos de concepto admitidos: {lista}.',
+                        'El concepto «{nombre}» no puede usarse con contrato por horas: el código del concepto en catálogo («{codigo}») no corresponde a ninguna tarifa horaria (location_sede_cargo_tarifa). Códigos de concepto admitidos: {lista}.',
                         [
                             'nombre' => (string) $concepto->nombre,
                             'codigo' => $codigo !== '' ? $codigo : Yii::t('app', '(vacío o inválido)'),
@@ -1548,13 +1551,13 @@ class NovedadController extends Controller
                         ]
                     ));
                 }
-                $valorTarifa = (float) ($sede->$campoTarifa ?? 0);
+                $valorTarifa = (float) ($cargoTarifa->$campoTarifa ?? 0);
                 if ($valorTarifa <= 0) {
                     $sedeNombre = trim((string) ($sede->nombre ?? ('#' . $sede->id)));
 
                     return $fail(Yii::t(
                         'app',
-                        'En la sede «{sede}» debe configurarse «{etiqueta}» (campo {campo} en LocationSedes) con un valor mayor a cero para liquidar el concepto «{concepto}».',
+                        'Para la sede «{sede}» y el cargo del contrato debe configurarse «{etiqueta}» ({campo} en tarifa sede–cargo) con un valor mayor a cero para liquidar el concepto «{concepto}».',
                         [
                             'sede' => $sedeNombre,
                             'etiqueta' => $campoLabel,
@@ -2581,7 +2584,7 @@ class NovedadController extends Controller
             'valor_movilizacion' => Yii::t('app', 'Valor movilización'),
             'valor_hora_nocturna' => Yii::t('app', 'Valor hora nocturna'),
             'valor_hora_diurna_domingo_festivos' => Yii::t('app', 'Valor hora diurna domingo/festivos'),
-            'valor_hora_nocturna_dominical_festiva' => Yii::t('app', 'Valor hora nocturna domingo/festivo'),
+            'valor_hora_nocturna_domingo_festiva' => Yii::t('app', 'Valor hora nocturna domingo/festivo'),
         ];
         $label = $campo !== null ? ($etiquetasPorCampo[$campo] ?? Yii::t('app', 'Tarifa sede')) : Yii::t('app', 'Sin tarifa en sede');
 
@@ -2643,25 +2646,38 @@ class NovedadController extends Controller
         return $salario / $jornada;
     }
 
-    /**
-     * @return array<string, float>|null
-     */
-    private function resolveTarifasHorasPorConcepto(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?array
+    private function resolveLocationSedeCargoTarifaContratoActivo(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?LocationSedeCargoTarifa
     {
-        $sede = $this->resolveSedeContratoActivo($empresaId, $profileId, $ctx);
-        if ($sede === null) {
+        $contrato = $this->resolveContratoActivoContexto($empresaId, $profileId, $ctx);
+        if ($contrato === null) {
+            return null;
+        }
+        $sid = (int) ($contrato->sede_id ?? 0);
+        $cid = (int) ($contrato->cargo_id ?? 0);
+        if ($sid <= 0 || $cid <= 0) {
+            return null;
+        }
+        if (LocationSedes::findOne(['id' => $sid, 'empresa_id' => $empresaId]) === null) {
             return null;
         }
 
-        $diurna = (float) ($sede->valor_hora_diurna ?? 0);
-        $domFest = (float) ($sede->valor_hora_diurna_domingo_festivos ?? 0);
-        $noct = (float) ($sede->valor_hora_nocturna ?? 0);
-        $noctDomFest = (float) ($sede->valor_hora_nocturna_dominical_festiva ?? 0);
+        return LocationSedeCargoTarifa::findOne(['location_sede_id' => $sid, 'cargo_id' => $cid]);
+    }
+
+    /**
+     * @return array<string, float>
+     */
+    private function mapTarifasHorasDesdeCargoTarifa(LocationSedeCargoTarifa $t): array
+    {
+        $diurna = (float) ($t->valor_hora_diurna ?? 0);
+        $domFest = (float) ($t->valor_hora_diurna_domingo_festivos ?? 0);
+        $noct = (float) ($t->valor_hora_nocturna ?? 0);
+        $noctDomFest = (float) ($t->valor_hora_nocturna_domingo_festiva ?? 0);
 
         return [
             NovedadHorasTroceoService::COD_HORA_DIURNA => $diurna,
-            NovedadHorasTroceoService::COD_HORA_ESPECIAL => (float) ($sede->valor_hora_especial ?? 0),
-            NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION => (float) ($sede->valor_movilizacion ?? 0),
+            NovedadHorasTroceoService::COD_HORA_ESPECIAL => (float) ($t->valor_hora_especial ?? 0),
+            NovedadHorasTroceoService::COD_AUXILIO_MOVILIZACION => (float) ($t->valor_movilizacion ?? 0),
             NovedadHorasTroceoService::COD_REC_DOM_FEST => $domFest,
             NovedadHorasTroceoService::COD_HORA_FESTIVA_DIURNA => $domFest,
             NovedadHorasTroceoService::COD_REC_NOCT => $noct,
@@ -2670,6 +2686,19 @@ class NovedadController extends Controller
             NovedadHorasTroceoService::COD_HORA_FESTIVA_NOCTURNA => $noctDomFest,
             NovedadHorasTroceoService::COD_DOMINICAL_COMPENSATORIO => $noctDomFest,
         ];
+    }
+
+    /**
+     * @return array<string, float>|null
+     */
+    private function resolveTarifasHorasPorConcepto(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?array
+    {
+        $tarifa = $this->resolveLocationSedeCargoTarifaContratoActivo($empresaId, $profileId, $ctx);
+        if ($tarifa === null) {
+            return null;
+        }
+
+        return $this->mapTarifasHorasDesdeCargoTarifa($tarifa);
     }
 
     /**
@@ -2713,9 +2742,9 @@ class NovedadController extends Controller
 
     private function resolveImporteAuxilioMovilizacion(int $empresaId, int $profileId, NovedadSolicitudContextForm $ctx): ?float
     {
-        $sede = $this->resolveSedeContratoActivo($empresaId, $profileId, $ctx);
-        if ($sede !== null && $sede->valor_movilizacion !== null) {
-            return (float) $sede->valor_movilizacion;
+        $tarifa = $this->resolveLocationSedeCargoTarifaContratoActivo($empresaId, $profileId, $ctx);
+        if ($tarifa !== null && $tarifa->valor_movilizacion !== null && (float) $tarifa->valor_movilizacion > 0) {
+            return (float) $tarifa->valor_movilizacion;
         }
 
         return NovedadAuxilioMovilizacionResolver::importePredeterminado($empresaId);

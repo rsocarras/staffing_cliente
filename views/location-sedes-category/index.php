@@ -1,5 +1,6 @@
 <?php
 
+use app\models\LocationSedeCargoTarifa;
 use app\models\LocationSedesCategory;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -228,6 +229,13 @@ $this->registerCss(<<<'CSS'
 CSS
 );
 
+$lfCatPivot = new LocationSedeCargoTarifa();
+$pivotFieldMetaForJs = [];
+foreach (LocationSedeCargoTarifa::tariffColumnNames() as $f) {
+    $pivotFieldMetaForJs[] = ['name' => $f, 'label' => $lfCatPivot->getAttributeLabel($f)];
+}
+$pivotFieldMetaJson = json_encode($pivotFieldMetaForJs, JSON_UNESCAPED_UNICODE);
+
 $js = <<<JS
 $(document).ready(function() {
     var table = $('#sedes-category-table').DataTable({
@@ -256,12 +264,25 @@ $(document).ready(function() {
 
     // ── Dynamic sedes picker ────────────────────────────────────────────────
     var sedesByClienteUrl = '{$sedesByClienteUrl}';
+    var pivotFieldMeta = {$pivotFieldMetaJson};
+
+    function escapeHtmlSede(str) {
+        return $('<span>').text(str == null ? '' : String(str)).html();
+    }
 
     function buildSedeTile(sede) {
-        var name = $('<span>').text(sede.nombre).html();
+        var name = escapeHtmlSede(sede.nombre);
+        var sid = parseInt(sede.id, 10);
+        var pivotHtml = '<div class="w-100 mt-2 pt-2 border-top js-dynamic-sede-pivot d-none">';
+        pivotFieldMeta.forEach(function (meta) {
+            pivotHtml += '<div class="mb-2"><label class="form-label small mb-0">' + escapeHtmlSede(meta.label) + '</label>' +
+                '<input type="number" step="0.0001" min="0" class="form-control form-control-sm" name="PivotTariff[' + sid + '][' + meta.name + ']"></div>';
+        });
+        pivotHtml += '</div>';
         return '<div class="col-12 col-md-4">' +
-            '<label class="profile-sede-tile w-100">' +
-            '<input type="checkbox" name="LocationSedesCategory[sedeIds][]" value="' + parseInt(sede.id) + '" class="visually-hidden">' +
+            '<div class="border rounded p-2 js-dynamic-sede-card">' +
+            '<label class="profile-sede-tile w-100 mb-0">' +
+            '<input type="checkbox" name="LocationSedesCategory[sedeIds][]" value="' + sid + '" class="visually-hidden js-dynamic-sede-chk">' +
             '<span class="profile-sede-tile-inner d-flex align-items-center gap-2">' +
             '<span class="profile-sede-tile-check flex-shrink-0 d-inline-flex align-items-center justify-content-center" aria-hidden="true">' +
             '<i class="ti ti-square fs-18 profile-sede-icon-off"></i>' +
@@ -270,12 +291,14 @@ $(document).ready(function() {
             '<span class="profile-sede-tile-name flex-grow-1">' + name + '</span>' +
             '</span>' +
             '</label>' +
+            pivotHtml +
+            '</div>' +
             '</div>';
     }
 
     function loadSedesForCliente(\$form, empresaClienteId) {
         var \$picker = \$form.find('.sede-category-sedes-picker');
-        var \$row = \$picker.find('.row.g-2');
+        var \$row = \$picker.find('.sede-category-sedes-row');
         var \$toolbar = \$picker.find('.profile-sedes-toolbar');
 
         if (!empresaClienteId) {
@@ -307,6 +330,32 @@ $(document).ready(function() {
     $(document).on('change', '#locationsedescategory-empresa_cliente_id', function() {
         var \$form = $(this).closest('.sede-category-modal-form');
         loadSedesForCliente(\$form, $(this).val());
+    });
+
+    $(document).on('change', '.sede-category-sedes-picker .js-dynamic-sede-chk', function () {
+        var \$card = $(this).closest('.js-dynamic-sede-card');
+        if (!\$card.length) return;
+        \$card.find('.js-dynamic-sede-pivot').toggleClass('d-none', !this.checked);
+        \$card.toggleClass('border-primary', this.checked);
+    });
+
+    $(document).on('click', '.sede-category-sedes-picker .js-profile-sedes-select-all', function () {
+        setTimeout(function () {
+            $('.sede-category-sedes-picker .js-dynamic-sede-chk').each(function () {
+                if (this.checked) {
+                    var \$c = $(this).closest('.js-dynamic-sede-card');
+                    \$c.find('.js-dynamic-sede-pivot').removeClass('d-none');
+                    \$c.addClass('border-primary');
+                }
+            });
+        }, 0);
+    });
+
+    $(document).on('click', '.sede-category-sedes-picker .js-profile-sedes-clear', function () {
+        setTimeout(function () {
+            $('.sede-category-sedes-picker .js-dynamic-sede-pivot').addClass('d-none');
+            $('.sede-category-sedes-picker .js-dynamic-sede-card').removeClass('border-primary');
+        }, 0);
     });
     // ────────────────────────────────────────────────────────────────────────
 

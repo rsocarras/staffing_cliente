@@ -3,10 +3,13 @@
 namespace app\controllers;
 
 use app\components\TenantContext;
+use app\models\Cargos;
 use app\models\City;
+use app\models\LocationSedeCargoTarifa;
 use app\models\LocationSedes;
 use app\services\MallaTimesheetService;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
@@ -32,6 +35,7 @@ class LocationSedesController extends Controller
                         'create-ajax' => ['POST'],
                         'update-ajax' => ['POST'],
                         'get-cities' => ['GET'],
+                        'tarifas' => ['GET', 'POST'],
                     ],
                 ],
             ]
@@ -91,13 +95,6 @@ class LocationSedesController extends Controller
                 ['like', 'sede.direccion', $searchValue],
                 ['like', 'sede.codigo_externo', $searchValue],
                 ['like', 'sede.tipo_sede', $searchValue],
-                ['like', 'CAST(sede.max_horas_clases_grupales AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_diurna AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_diurna_domingo_festivos AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_nocturna AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_nocturna_dominical_festiva AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_hora_especial AS CHAR)', $searchValue],
-                ['like', 'CAST(sede.valor_movilizacion AS CHAR)', $searchValue],
             ]);
         }
         $filteredCount = (int) (clone $query)->count();
@@ -212,13 +209,6 @@ class LocationSedesController extends Controller
                         'centro_costo' => $model->centro_costo,
                         'centro_costo_staffing' => $model->centro_costo_staffing,
                         'codigo_externo' => $model->codigo_externo,
-                        'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
-                        'valor_hora_diurna' => $model->valor_hora_diurna,
-                        'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
-                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
-                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
-                        'valor_hora_especial' => $model->valor_hora_especial,
-                        'valor_movilizacion' => $model->valor_movilizacion,
                     ],
                 ];
             }
@@ -308,6 +298,11 @@ class LocationSedesController extends Controller
             'tab' => $tab,
             'dayData' => $dayData,
             'weekData' => $weekData,
+            'cargoTarifaRows' => LocationSedeCargoTarifa::find()
+                ->where(['location_sede_id' => (int) $model->id])
+                ->with(['cargo'])
+                ->orderBy(['cargo_id' => SORT_ASC])
+                ->all(),
         ]);
     }
 
@@ -374,13 +369,6 @@ class LocationSedesController extends Controller
                         'centro_costo' => $model->centro_costo,
                         'centro_costo_staffing' => $model->centro_costo_staffing,
                         'codigo_externo' => $model->codigo_externo,
-                        'max_horas_clases_grupales' => $model->max_horas_clases_grupales,
-                        'valor_hora_diurna' => $model->valor_hora_diurna,
-                        'valor_hora_diurna_domingo_festivos' => $model->valor_hora_diurna_domingo_festivos,
-                        'valor_hora_nocturna' => $model->valor_hora_nocturna,
-                        'valor_hora_nocturna_dominical_festiva' => $model->valor_hora_nocturna_dominical_festiva,
-                        'valor_hora_especial' => $model->valor_hora_especial,
-                        'valor_movilizacion' => $model->valor_movilizacion,
                     ],
                 ];
             }
@@ -403,5 +391,108 @@ class LocationSedesController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Tarifas por cargo para una sede (pantalla dedicada).
+     *
+     * @param string $id
+     * @return Response|string
+     * @throws NotFoundHttpException
+     */
+    public function actionTarifas($id)
+    {
+        $model = $this->findModel($id);
+
+        if (Yii::$app->request->isPost) {
+            $this->persistCargoTarifas(
+                (int) $model->id,
+                (int) $model->empresa_id,
+                (array) Yii::$app->request->post('CargoTarifa', [])
+            );
+            Yii::$app->session->setFlash('success', Yii::t('app', 'Tarifas guardadas.'));
+
+            return $this->redirect(['tarifas', 'id' => $model->id]);
+        }
+
+        return $this->render('tarifas', [
+            'model' => $model,
+            'cargoOptions' => $this->cargoOptionsForEmpresa((int) $model->empresa_id),
+            'cargoTarifaValues' => $this->cargoTariffValuesForSede($model),
+        ]);
+    }
+
+    /**
+     * @param array<int|string, array<string, mixed>> $post
+     */
+    protected function persistCargoTarifas(int $sedeId, int $empresaId, array $post): void
+    {
+        if ($sedeId < 1 || $empresaId < 1) {
+            return;
+        }
+
+        $cargoIds = Cargos::find()
+            ->select('id')
+            ->where(['empresa_id' => $empresaId, 'activo' => 1])
+            ->column();
+        if ($cargoIds === []) {
+            return;
+        }
+
+        LocationSedeCargoTarifa::deleteAll(['location_sede_id' => $sedeId]);
+        $fields = LocationSedeCargoTarifa::tariffColumnNames();
+        foreach ($cargoIds as $cargoId) {
+            $cargoId = (int) $cargoId;
+            $p = $post[$cargoId] ?? $post[(string) $cargoId] ?? [];
+            $row = ['location_sede_id' => $sedeId, 'cargo_id' => $cargoId];
+            foreach ($fields as $f) {
+                $v = $p[$f] ?? null;
+                $row[$f] = LocationSedeCargoTarifa::normalizeAmountInput($v);
+            }
+            Yii::$app->db->createCommand()->insert(LocationSedeCargoTarifa::tableName(), $row)->execute();
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function cargoTariffValuesForSede(LocationSedes $model): array
+    {
+        if ($model->isNewRecord) {
+            return [];
+        }
+        $rows = LocationSedeCargoTarifa::find()
+            ->where(['location_sede_id' => (int) $model->id])
+            ->asArray()
+            ->all();
+        $out = [];
+        foreach ($rows as $r) {
+            $cid = (int) $r['cargo_id'];
+            $out[$cid] = [];
+            foreach (LocationSedeCargoTarifa::tariffColumnNames() as $f) {
+                $out[$cid][$f] = $r[$f] ?? null;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function cargoOptionsForEmpresa(int $empresaId): array
+    {
+        if ($empresaId < 1) {
+            return [];
+        }
+
+        return ArrayHelper::map(
+            Cargos::find()
+                ->where(['empresa_id' => $empresaId, 'activo' => 1])
+                ->orderBy(['nombre' => SORT_ASC, 'id' => SORT_ASC])
+                ->all(),
+            'id',
+            static fn(Cargos $c) => trim((string) $c->nombre)
+        );
     }
 }

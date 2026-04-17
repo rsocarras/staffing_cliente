@@ -1,5 +1,6 @@
 <?php
 
+use app\models\LocationSedeCargoTarifa;
 use yii\helpers\Html;
 
 /** @var app\models\LocationSedes $model */
@@ -7,6 +8,11 @@ use yii\helpers\Html;
 /** @var string $tab */
 /** @var array $dayData */
 /** @var array $weekData */
+/** @var LocationSedeCargoTarifa[] $cargoTarifaRows */
+
+$cargoTarifaRows = $cargoTarifaRows ?? [];
+$tarifaLabels = (new LocationSedeCargoTarifa())->attributeLabels();
+$tarifaFields = LocationSedeCargoTarifa::tariffColumnNames();
 ?>
 
 <div class="sede-view-modal-content" data-sede-id="<?= $model->id ?>">
@@ -60,31 +66,39 @@ use yii\helpers\Html;
                         <small class="text-muted d-block">Cód. externo</small>
                         <span class="fw-medium"><?= Html::encode($model->codigo_externo ?: '—') ?></span>
                     </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_diurna')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_diurna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_diurna_domingo_festivos')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_diurna_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna_domingo_festivos, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_nocturna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_nocturna_dominical_festiva')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_nocturna_dominical_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_dominical_festiva, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_hora_especial')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '—' ?></span>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block"><?= Html::encode($model->getAttributeLabel('valor_movilizacion')) ?></small>
-                        <span class="fw-medium"><?= $model->valor_movilizacion !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_movilizacion, 'COP') : '—' ?></span>
-                    </div>
                 </div>
+            </div>
+
+            <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
+                <h6 class="fw-semibold mb-3">Tarifas por cargo</h6>
+                <?php if ($cargoTarifaRows === []): ?>
+                    <p class="text-muted mb-0">No hay tarifas registradas para esta sede.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Cargo</th>
+                                    <?php foreach ($tarifaFields as $f): ?>
+                                        <th class="text-end"><?= Html::encode((string) ($tarifaLabels[$f] ?? $f)) ?></th>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($cargoTarifaRows as $row): ?>
+                                    <?php /** @var LocationSedeCargoTarifa $row */ ?>
+                                    <tr>
+                                        <td><?= Html::encode(trim((string) ($row->cargo->nombre ?? '#' . $row->cargo_id))) ?></td>
+                                        <?php foreach ($tarifaFields as $f): ?>
+                                            <?php $val = $row->$f; ?>
+                                            <td class="text-end"><?= $val !== null && $val !== '' ? Html::encode(Yii::$app->formatter->asDecimal(round((float) $val, 2), 2)) : '—' ?></td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="rounded-3 border border-dashed p-3 p-md-4 mb-0 bg-light">

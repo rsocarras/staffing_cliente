@@ -2,6 +2,7 @@
 
 use app\models\LocationSedes;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var app\models\LocationSedes $model */
@@ -152,101 +153,24 @@ $activoCheckboxId = $isEdit ? 'sede-modal-edit-activo' : 'sede-modal-add-activo'
         </div>
     </div>
 
-    <!-- Parámetros de operación -->
+    <!-- Tarifas: pantalla dedicada (no en el modal) -->
     <div class="rounded-3 border border-dashed p-3 p-md-4 mb-3 bg-light">
-        <div class="d-flex align-items-start gap-3 mb-3">
+        <div class="d-flex align-items-start gap-3 mb-2">
             <span class="avatar avatar-md bg-soft-secondary text-secondary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                <i class="ti ti-calculator fs-20"></i>
+                <i class="ti ti-currency-dollar fs-20"></i>
             </span>
-            <div>
-                <h6 class="fw-semibold mb-1">Parámetros de operación</h6>
-                <p class="text-muted small mb-0">Valores para cálculo de horas y movilización.</p>
-            </div>
-        </div>
-        <div class="row g-3">
-            <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_diurna', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-currency-dollar text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_diurna_domingo_festivos', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-calendar-star text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_nocturna', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-moon text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-4">
-                <?= $form->field($model, 'valor_hora_nocturna_dominical_festiva', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-moon-stars text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-6">
-                <?= $form->field($model, 'valor_hora_especial', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-star text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
-            </div>
-            <div class="col-md-6">
-                <?= $form->field($model, 'valor_movilizacion', [
-                    'template' => '{label}<div class="input-group"><span class="input-group-text bg-white"><i class="ti ti-car text-secondary"></i></span>{input}</div>{error}{hint}',
-                    'options' => ['class' => 'mb-0'],
-                    'labelOptions' => ['class' => 'form-label fw-medium'],
-                ])->textInput([
-                    'type' => 'number',
-                    'step' => '0.0001',
-                    'min' => '0',
-                    'class' => 'form-control',
-                    'placeholder' => '0.0000',
-                    'inputmode' => 'decimal',
-                ]) ?>
+            <div class="flex-grow-1">
+                <h6 class="fw-semibold mb-1">Tarifas por cargo</h6>
+                <p class="text-muted small mb-2 mb-md-3">Los valores por sede y cargo se administran en una pantalla aparte para contratos por horas.</p>
+                <?php if ($isEdit && !$model->isNewRecord): ?>
+                    <?= Html::a(
+                        '<i class="ti ti-external-link me-1" aria-hidden="true"></i>' . Yii::t('app', 'Configurar tarifas'),
+                        Url::to(['tarifas', 'id' => $model->id]),
+                        ['class' => 'btn btn-outline-primary btn-sm']
+                    ) ?>
+                <?php else: ?>
+                    <p class="text-muted small mb-0"><?= Html::encode(Yii::t('app', 'Después de guardar la sede podrás abrir «Configurar tarifas» desde la edición de la sede.')) ?></p>
+                <?php endif; ?>
             </div>
         </div>
     </div>

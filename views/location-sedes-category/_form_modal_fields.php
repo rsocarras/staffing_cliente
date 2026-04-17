@@ -1,5 +1,6 @@
 <?php
 
+use app\models\LocationSedeCargoTarifa;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -7,6 +8,11 @@ use yii\helpers\Html;
 /** @var yii\widgets\ActiveForm $form */
 /** @var array<int,string> $sedesMap */
 /** @var array<int,string> $empresaClientesMap */
+
+$selectedSedes = array_map('intval', (array) ($model->sedeIds ?? []));
+$pivotTariffs = $model->getPivotTariffsBySedeId();
+$tarifaFields = LocationSedeCargoTarifa::tariffColumnNames();
+$tarifaLabels = (new LocationSedeCargoTarifa())->attributeLabels();
 ?>
 <style>
 .sede-category-sedes-picker {
@@ -66,6 +72,9 @@ use yii\helpers\Html;
     line-height: 1.3;
     word-break: break-word;
 }
+.sede-category-sedes-picker .js-dynamic-sede-card.border-primary {
+    border-color: var(--bs-primary) !important;
+}
 </style>
 
 <div class="sede-category-modal-form">
@@ -100,7 +109,7 @@ use yii\helpers\Html;
                     </span>
                     <div>
                         <h6 class="fw-semibold mb-1">Datos de la categoría</h6>
-                        <p class="text-muted small mb-0">Define nombre, empresa cliente y estado.</p>
+                        <p class="text-muted small mb-0">Define nombre, empresa cliente y estado. Las tarifas se configuran por sede en la pestaña «Sedes».</p>
                     </div>
                 </div>
                 <div class="row g-3">
@@ -141,74 +150,70 @@ use yii\helpers\Html;
                     </div>
                 </div>
             </div>
-
-            <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light">
-                <div class="d-flex align-items-start gap-3 mb-3">
-                    <span class="avatar avatar-md bg-soft-secondary text-secondary rounded flex-shrink-0 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
-                        <i class="ti ti-currency-dollar fs-20"></i>
-                    </span>
-                    <div>
-                        <h6 class="fw-semibold mb-1">Valores por categoría</h6>
-                        <p class="text-muted small mb-0">Configura los valores por hora y movilización.</p>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_hora_diurna')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_hora_diurna_domingo_festivos')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_hora_nocturna')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_hora_nocturna_dominical_festiva')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_hora_especial')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                    <div class="col-md-6">
-                        <?= $form->field($model, 'valor_movilizacion')->textInput(['type' => 'number', 'step' => '0.0001', 'min' => '0', 'inputmode' => 'decimal', 'placeholder' => '0.0000']) ?>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Tab: Sedes -->
         <div class="tab-pane fade" id="cat-form-pane-sedes" role="tabpanel" aria-labelledby="cat-form-tab-sedes">
             <div class="rounded-3 border border-dashed p-3 p-md-4 bg-light profile-sedes-picker sede-category-sedes-picker">
-                <?php if (empty($sedesMap)): ?>
-                    <div class="alert alert-warning mb-0">No hay sedes activas configuradas para esta empresa.</div>
-                <?php else: ?>
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 profile-sedes-toolbar">
-                        <p class="mb-0 text-body small flex-grow-1">Seleccione las sedes que pertenecen a esta categoría.</p>
+                <?php if ($model->isNewRecord): ?>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 profile-sedes-toolbar d-none">
+                        <p class="mb-0 text-body small flex-grow-1">Seleccione sedes y configure tarifas por sede (pivote categoría–sede).</p>
                         <div class="d-flex flex-shrink-0 gap-2">
                             <button type="button" class="btn btn-outline-sede js-profile-sedes-select-all">Seleccionar todo</button>
                             <button type="button" class="btn btn-outline-sede js-profile-sedes-clear">Limpiar</button>
                         </div>
                     </div>
-                    <div class="row g-2 g-md-3">
+                    <div class="row g-2 sede-category-sedes-row">
+                        <div class="col-12 py-3 text-muted small text-center">
+                            <i class="ti ti-building-factory d-block fs-2 mb-1 opacity-50"></i>
+                            Seleccione una empresa cliente para ver las sedes disponibles.
+                        </div>
+                    </div>
+                <?php elseif (empty($sedesMap)): ?>
+                    <div class="alert alert-warning mb-0">No hay sedes activas configuradas para esta empresa.</div>
+                <?php else: ?>
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 profile-sedes-toolbar">
+                        <p class="mb-0 text-body small flex-grow-1">Seleccione sedes y, si aplica, los valores de tarifa en el pivote categoría–sede.</p>
+                        <div class="d-flex flex-shrink-0 gap-2">
+                            <button type="button" class="btn btn-outline-sede js-profile-sedes-select-all">Seleccionar todo</button>
+                            <button type="button" class="btn btn-outline-sede js-profile-sedes-clear">Limpiar</button>
+                        </div>
+                    </div>
+                    <div class="row g-3 sede-category-sedes-row">
                         <?php foreach ($sedesMap as $sid => $nombre): ?>
                             <?php
                             $sid = (int) $sid;
-                            $checked = in_array($sid, array_map('intval', $model->sedeIds ?? []), true);
+                            $isChecked = in_array($sid, $selectedSedes, true);
+                            $pRow = $pivotTariffs[$sid] ?? [];
                             ?>
-                            <div class="col-12 col-md-4">
-                                <label class="profile-sede-tile w-100 <?= $checked ? 'is-selected' : '' ?>">
-                                    <input type="checkbox"
-                                        name="LocationSedesCategory[sedeIds][]"
-                                        value="<?= $sid ?>"
-                                        class="visually-hidden"
-                                        <?= $checked ? 'checked' : '' ?>>
-                                    <span class="profile-sede-tile-inner d-flex align-items-center gap-2">
-                                        <span class="profile-sede-tile-check flex-shrink-0 d-inline-flex align-items-center justify-content-center" aria-hidden="true">
-                                            <i class="ti ti-square fs-18 profile-sede-icon-off"></i>
-                                            <i class="ti ti-square-check fs-18 profile-sede-icon-on d-none"></i>
-                                        </span>
-                                        <span class="profile-sede-tile-name flex-grow-1"><?= Html::encode($nombre) ?></span>
-                                    </span>
-                                </label>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="form-check border rounded p-3 h-100 <?= $isChecked ? 'border-primary bg-primary bg-opacity-10' : 'border-secondary-subtle' ?> sede-card">
+                                    <?= Html::checkbox(
+                                        'LocationSedesCategory[sedeIds][]',
+                                        $isChecked,
+                                        [
+                                            'value' => $sid,
+                                            'class' => 'form-check-input sede-checkbox',
+                                            'id' => 'sede_cat_' . $sid,
+                                        ]
+                                    ) ?>
+                                    <label class="form-check-label ms-1 user-select-none w-100" for="sede_cat_<?= $sid ?>">
+                                        <?= Html::encode($nombre) ?>
+                                    </label>
+                                    <div class="js-sede-pivot-tariff mt-2 pt-2 border-top <?= $isChecked ? '' : 'd-none' ?>">
+                                        <?php foreach ($tarifaFields as $field): ?>
+                                            <?php
+                                            $pv = $pRow[$field] ?? '';
+                                            ?>
+                                            <div class="mb-2">
+                                                <label class="form-label small mb-0"><?= Html::encode((string) ($tarifaLabels[$field] ?? $field)) ?></label>
+                                                <input type="number" step="0.0001" min="0" class="form-control form-control-sm"
+                                                    name="PivotTariff[<?= $sid ?>][<?= Html::encode($field) ?>]"
+                                                    value="<?= $pv !== null && $pv !== '' ? Html::encode((string) $pv) : '' ?>">
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -217,3 +222,35 @@ use yii\helpers\Html;
         </div>
     </div>
 </div>
+
+<?php
+if (!$model->isNewRecord) {
+    $js = <<<'JS'
+(function () {
+    function togglePivotTariff(card, show) {
+        var block = card.querySelector('.js-sede-pivot-tariff');
+        if (!block) return;
+        block.classList.toggle('d-none', !show);
+    }
+    var root = document.querySelector('.sede-category-modal-form');
+    if (!root) return;
+    root.querySelectorAll('.sede-checkbox').forEach(function (chk) {
+        chk.addEventListener('change', function () {
+            var card = this.closest('.sede-card');
+            if (!card) return;
+            if (this.checked) {
+                card.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+                card.classList.remove('border-secondary-subtle');
+                togglePivotTariff(card, true);
+            } else {
+                card.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+                card.classList.add('border-secondary-subtle');
+                togglePivotTariff(card, false);
+            }
+        });
+    });
+})();
+JS;
+    $this->registerJs($js);
+}
+?>

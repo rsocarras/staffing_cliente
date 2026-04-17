@@ -1,9 +1,14 @@
 <?php
 
+use app\models\LocationSedeCargoTarifa;
 use yii\helpers\Html;
 
 /** @var app\models\LocationSedesCategory $model */
 /** @var app\models\LocationSedes[] $sedes */
+
+$pivotBySede = $model->getPivotTariffsBySedeId();
+$tarifaFields = LocationSedeCargoTarifa::tariffColumnNames();
+$tarifaLabels = (new LocationSedeCargoTarifa())->attributeLabels();
 ?>
 <div class="sede-category-view-modal-content" data-category-id="<?= (int) $model->id ?>">
     <div class="card border-0 shadow-none mb-0 w-100 rounded-0">
@@ -36,7 +41,7 @@ use yii\helpers\Html;
                             </span>
                             <div>
                                 <h6 class="fw-semibold mb-1">Categoría de sedes</h6>
-                                <p class="text-muted small mb-0">Detalle de la categoría y valores configurados.</p>
+                                <p class="text-muted small mb-0">Datos generales. Las tarifas por tipo de hora están en cada sede (pivote).</p>
                             </div>
                         </div>
                         <div class="row g-3">
@@ -58,30 +63,6 @@ use yii\helpers\Html;
                                     ? '<span class="badge badge-soft-success">Activa</span>'
                                     : '<span class="badge badge-soft-danger">Inactiva</span>' ?>
                             </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor hora base</small>
-                                <span class="fw-medium"><?= $model->valor_hora_diurna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna, 'COP') : '—' ?></span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor domingo/festivos</small>
-                                <span class="fw-medium"><?= $model->valor_hora_diurna_domingo_festivos !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_diurna_domingo_festivos, 'COP') : '—' ?></span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor hora nocturna</small>
-                                <span class="fw-medium"><?= $model->valor_hora_nocturna !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna, 'COP') : '—' ?></span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor nocturna dom/fest</small>
-                                <span class="fw-medium"><?= $model->valor_hora_nocturna_dominical_festiva !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_nocturna_dominical_festiva, 'COP') : '—' ?></span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor hora especial</small>
-                                <span class="fw-medium"><?= $model->valor_hora_especial !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_hora_especial, 'COP') : '—' ?></span>
-                            </div>
-                            <div class="col-md-4">
-                                <small class="text-muted d-block">Valor movilización</small>
-                                <span class="fw-medium"><?= $model->valor_movilizacion !== null ? Yii::$app->formatter->asCurrency((float) $model->valor_movilizacion, 'COP') : '—' ?></span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,8 +75,8 @@ use yii\helpers\Html;
                                 <i class="ti ti-building-store fs-20"></i>
                             </span>
                             <div>
-                                <h6 class="fw-semibold mb-1">Sedes asignadas</h6>
-                                <p class="text-muted small mb-0">Sedes que pertenecen a esta categoría.</p>
+                                <h6 class="fw-semibold mb-1">Sedes y tarifas (pivote)</h6>
+                                <p class="text-muted small mb-0">Valores configurados por sede en esta categoría.</p>
                             </div>
                         </div>
                         <?php if (empty($sedes)): ?>
@@ -104,11 +85,36 @@ use yii\helpers\Html;
                                 Sin sedes asignadas.
                             </div>
                         <?php else: ?>
-                            <div class="d-flex flex-wrap gap-2">
-                                <?php foreach ($sedes as $sede): ?>
-                                    <span class="badge badge-soft-primary fs-12 px-3 py-2"><?= Html::encode($sede->nombre) ?></span>
-                                <?php endforeach; ?>
-                            </div>
+                            <?php foreach ($sedes as $sede): ?>
+                                <?php
+                                $sid = (int) $sede->id;
+                                $row = $pivotBySede[$sid] ?? [];
+                                ?>
+                                <div class="mb-4 pb-3 border-bottom border-light-subtle">
+                                    <p class="fw-semibold mb-2"><?= Html::encode($sede->nombre) ?></p>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <?php foreach ($tarifaFields as $f): ?>
+                                                        <th class="small"><?= Html::encode((string) ($tarifaLabels[$f] ?? $f)) ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <?php foreach ($tarifaFields as $f): ?>
+                                                        <?php $val = $row[$f] ?? null; ?>
+                                                        <td class="text-end small">
+                                                            <?= $val !== null && $val !== '' ? Html::encode(Yii::$app->formatter->asDecimal((float) $val, 4)) : '—' ?>
+                                                        </td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>

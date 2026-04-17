@@ -211,7 +211,8 @@ class LocationSedesCategoryController extends Controller
                 return ['success' => false, 'errors' => ['general' => ['No se pudo crear la categoría.']]];
             }
 
-            $this->syncCategorySedes((int) $model->id, $empresaId, $model->sedeIds);
+            $pivotTariff = ArrayHelper::getValue($post, 'PivotTariff', []);
+            $this->syncCategorySedes($model, $empresaId, $model->sedeIds, is_array($pivotTariff) ? $pivotTariff : []);
             $tx->commit();
 
             return [
@@ -251,7 +252,8 @@ class LocationSedesCategoryController extends Controller
                 return ['success' => false, 'errors' => ['general' => ['No se pudo actualizar la categoría.']]];
             }
 
-            $this->syncCategorySedes((int) $model->id, $empresaId, $model->sedeIds);
+            $pivotTariff = ArrayHelper::getValue($post, 'PivotTariff', []);
+            $this->syncCategorySedes($model, $empresaId, $model->sedeIds, is_array($pivotTariff) ? $pivotTariff : []);
             $tx->commit();
 
             return [
@@ -393,10 +395,10 @@ class LocationSedesCategoryController extends Controller
 
     /**
      * @param int[]|string[]|null $rawIds
+     * @param array<int|string, array<string, mixed>> $pivotTariffPost
      */
-    private function syncCategorySedes(int $categoryId, int $empresaId, $rawIds): void
+    private function syncCategorySedes(LocationSedesCategory $model, int $empresaId, $rawIds, array $pivotTariffPost = []): void
     {
-        $pivotInfo = $this->resolvePivotColumns();
         $allowed = LocationSedes::find()
             ->select('id')
             ->where(['empresa_id' => $empresaId])
@@ -415,19 +417,8 @@ class LocationSedesCategoryController extends Controller
                 }
             }
         }
-        $ids = array_keys($ids);
 
-        Yii::$app->db->createCommand()->delete(
-            $pivotInfo['table'],
-            [$pivotInfo['categoryColumn'] => $categoryId]
-        )->execute();
-
-        foreach ($ids as $sedeId) {
-            Yii::$app->db->createCommand()->insert($pivotInfo['table'], [
-                $pivotInfo['categoryColumn'] => $categoryId,
-                $pivotInfo['sedeColumn'] => (int) $sedeId,
-            ])->execute();
-        }
+        $model->assignSedes(array_keys($ids), $pivotTariffPost);
     }
 
     /**
