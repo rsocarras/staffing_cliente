@@ -11,6 +11,7 @@ use app\models\Profile;
 use app\models\ProfileSede;
 use app\services\AdministracionPlantaService;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -70,13 +71,40 @@ class EmpleadosController extends Controller
             return ['total' => 0, 'activos' => 0, 'inactivos' => 0];
         }
 
-        $base = ['empresas_id' => $empresaId];
+        $base = ['p.empresas_id' => $empresaId];
+
+        $qTotal = Profile::find()->alias('p')->where($base);
+        $this->applySoloConContratoVinculado($qTotal, 'p');
+
+        $qActivos = Profile::find()->alias('p')->where($base + ['p.estado' => Profile::ESTADO_ACTIVO]);
+        $this->applySoloConContratoVinculado($qActivos, 'p');
+
+        $qInactivos = Profile::find()->alias('p')->where($base + ['p.estado' => Profile::ESTADO_INACTIVO]);
+        $this->applySoloConContratoVinculado($qInactivos, 'p');
 
         return [
-            'total' => (int) Profile::find()->where($base)->count(),
-            'activos' => (int) Profile::find()->where($base + ['estado' => Profile::ESTADO_ACTIVO])->count(),
-            'inactivos' => (int) Profile::find()->where($base + ['estado' => Profile::ESTADO_INACTIVO])->count(),
+            'total' => (int) $qTotal->count(),
+            'activos' => (int) $qActivos->count(),
+            'inactivos' => (int) $qInactivos->count(),
         ];
+    }
+
+    /**
+     * Restringe a perfiles con al menos un contrato de la misma empresa (vinculación profile ↔ contrato).
+     *
+     * @param \yii\db\ActiveQuery $query Query sobre {@see Profile} con alias de tabla $profileAlias
+     * @param string $profileAlias Alias del FROM del perfil (p. ej. "p")
+     */
+    protected function applySoloConContratoVinculado($query, string $profileAlias): void
+    {
+        $query->andWhere([
+            'exists',
+            (new Query())
+                ->from(['cx' => '{{%contrato}}'])
+                ->where(
+                    "cx.profile_id = {$profileAlias}.user_id AND cx.empresa_id = {$profileAlias}.empresas_id"
+                ),
+        ]);
     }
 
     /**
@@ -99,6 +127,7 @@ class EmpleadosController extends Controller
         $query = Profile::find()->alias('p')
             ->with(['cargo', 'area', 'sede']);
         TenantContext::applyFilter($query, 'p.empresas_id');
+        $this->applySoloConContratoVinculado($query, 'p');
         $query->leftJoin(['carg' => '{{%cargos}}'], 'p.cargo_id = carg.id')
             ->leftJoin(['ar' => '{{%area}}'], 'p.area_id = ar.id')
             ->leftJoin(['ls' => '{{%location_sedes}}'], 'p.sede_id = ls.id');

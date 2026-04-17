@@ -7,7 +7,12 @@ $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
     'language' => 'es',
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'log',
+        [
+            'class' => \app\bootstrap\ActiveRecordAuditBootstrap::class,
+        ],
+    ],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -98,6 +103,8 @@ $config = [
                 'usuarios/roles' => 'rbac/roles',
                 'usuarios/permisos' => 'rbac/permissions',
                 'usuarios/<action:[\w-]+>' => 'user-management/<action>',
+                'sistema/auditoria' => 'audit-log/index',
+                'sistema/auditoria/<action:[\w-]+>' => 'audit-log/<action>',
                 'reclutamiento/candidatos' => 'candidatos/index',
                 'reclutamiento/candidatos/<action:[\w-]+>' => 'candidatos/<action>',
                 'configuracion/areas' => 'area/index',

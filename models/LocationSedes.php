@@ -43,7 +43,9 @@ class LocationSedes extends \yii\db\ActiveRecord
         return [
             [['codigo', 'direccion', 'codigo_externo'], 'default', 'value' => null],
             [['tipo_sede'], 'default', 'value' => self::TIPO_SEDE_OPERATIVA],
-            [['codigo', 'codigo_externo'], 'filter', 'filter' => function ($v) { return $v === '' ? null : $v; }],
+            [['codigo', 'codigo_externo'], 'filter', 'filter' => function ($v) {
+                return $v === '' ? null : $v;
+            }],
             [['activo'], 'default', 'value' => 1],
             [['empresa_id', 'nombre'], 'required'],
             [['empresa_id', 'activo', 'city_id', 'centro_costo', 'centro_costo_staffing'], 'integer'],

@@ -15,66 +15,88 @@ $tarifaFields = LocationSedeCargoTarifa::tariffColumnNames();
 $tarifaLabels = (new LocationSedeCargoTarifa())->attributeLabels();
 ?>
 <style>
-.sede-category-sedes-picker {
-    --profile-sede-accent: #a2c044;
-}
-.sede-category-sedes-picker .profile-sedes-toolbar {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-    padding-bottom: 0.75rem;
-    margin-bottom: 1rem;
-}
-.sede-category-sedes-picker .profile-sedes-toolbar .btn-outline-sede {
-    border: 1px solid #212529;
-    color: #212529;
-    background: #fff;
-    border-radius: 999px;
-    font-size: 0.8125rem;
-    padding: 0.35rem 0.9rem;
-}
-.sede-category-sedes-picker .profile-sedes-toolbar .btn-outline-sede:hover {
-    background: #f8f9fa;
-}
-.sede-category-sedes-picker .profile-sede-tile {
-    display: block;
-    margin: 0;
-    cursor: pointer;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    padding: 0.65rem 0.85rem;
-    background: #fff;
-    color: #212529;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-    min-height: 2.75rem;
-}
-.sede-category-sedes-picker .profile-sede-tile:hover:not(.is-selected) {
-    background: #f8f9fa;
-    border-color: #ced4da;
-}
-.sede-category-sedes-picker .profile-sede-tile.is-selected {
-    background: var(--profile-sede-accent);
-    border-color: var(--profile-sede-accent);
-    color: #fff;
-}
-.sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-off {
-    display: none !important;
-}
-.sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-on {
-    display: inline-block !important;
-}
-.sede-category-sedes-picker .profile-sede-tile .profile-sede-icon-off {
-    color: #6c757d;
-}
-.sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-on {
-    color: #fff;
-}
-.sede-category-sedes-picker .profile-sede-tile-name {
-    font-size: 0.9375rem;
-    line-height: 1.3;
-    word-break: break-word;
-}
-.sede-category-sedes-picker .js-dynamic-sede-card.border-primary {
-    border-color: var(--bs-primary) !important;
-}
+    .sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-on {
+        color: #fff;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile-name {
+        font-size: 0.9375rem;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+
+    .sede-category-sedes-picker .js-dynamic-sede-card.border-primary {
+        border-color: var(--bs-primary) !important;
+    }
+
+    .sede-category-sedes-picker {
+        --profile-sede-accent: #a2c044;
+    }
+
+    .sede-category-sedes-picker .profile-sedes-toolbar {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .sede-category-sedes-picker .profile-sedes-toolbar .btn-outline-sede {
+        border: 1px solid #212529;
+        color: #212529;
+        background: #fff;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        padding: 0.35rem 0.9rem;
+    }
+
+    .sede-category-sedes-picker .profile-sedes-toolbar .btn-outline-sede:hover {
+        background: #f8f9fa;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile {
+        display: block;
+        margin: 0;
+        cursor: pointer;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.85rem;
+        background: #fff;
+        color: #212529;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        min-height: 2.75rem;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile:hover:not(.is-selected) {
+        background: #f8f9fa;
+        border-color: #ced4da;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile.is-selected {
+        background: var(--profile-sede-accent);
+        border-color: var(--profile-sede-accent);
+        color: #fff;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-off {
+        display: none !important;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-on {
+        display: inline-block !important;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile .profile-sede-icon-off {
+        color: #6c757d;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile.is-selected .profile-sede-icon-on {
+        color: #fff;
+    }
+
+    .sede-category-sedes-picker .profile-sede-tile-name {
+        font-size: 0.9375rem;
+        line-height: 1.3;
+        word-break: break-word;
+    }
 </style>
 
 <div class="sede-category-modal-form">

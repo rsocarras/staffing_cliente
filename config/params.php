@@ -1,6 +1,16 @@
 <?php
 
 return [
+    /**
+     * Auditoría global (ActiveRecord, solo app web).
+     * - excludedTables: nombres físicos de tabla (con prefijo si aplica) a ignorar.
+     * - redactAttributes: atributos adicionales a enmascarar en JSON (además de los por defecto en {@see \app\services\AuditLogWriter}).
+     */
+    'auditLog' => [
+        'excludedTables' => [],
+        'redactAttributes' => [],
+    ],
+
     /** ISO alpha-2 para resolver {@see SettingLaboral} cuando la empresa no tiene país. */
     'defaultLocationCountryIso' => getenv('DEFAULT_LOCATION_COUNTRY_ISO') ?: 'CO',
 

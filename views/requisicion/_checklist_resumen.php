@@ -49,15 +49,16 @@ $usuarioMarca = static function (?ChecklistStatus $cs): string {
 $completo = $model->checklistCompleto();
 ?>
 <style>
-.requisicion-checklist-panel .requisicion-checklist-table > :not(caption) > * > * {
-    padding: 0.75rem 0.85rem;
-    vertical-align: middle;
-}
-.requisicion-checklist-panel .requisicion-checklist-head {
-    padding-bottom: 1.25rem;
-    margin-bottom: 0;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
-}
+    .requisicion-checklist-panel .requisicion-checklist-table> :not(caption)>*>* {
+        padding: 0.75rem 0.85rem;
+        vertical-align: middle;
+    }
+
+    .requisicion-checklist-panel .requisicion-checklist-head {
+        padding-bottom: 1.25rem;
+        margin-bottom: 0;
+        border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+    }
 </style>
 <div class="rounded-3 border border-dashed bg-light p-4 mb-3 mt-3 requisicion-checklist-panel">
     <div class="d-flex align-items-start gap-3 flex-wrap requisicion-checklist-head">
@@ -82,44 +83,44 @@ $completo = $model->checklistCompleto();
         <?php endif; ?>
     </div>
     <div class="table-responsive rounded-3 border bg-white mt-3">
-            <table class="table align-middle mb-0 requisicion-checklist-table">
-                <thead class="table-light">
+        <table class="table align-middle mb-0 requisicion-checklist-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Ítem</th>
+                    <th class="text-center">Oblig.</th>
+                    <th class="text-center">Completado</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Observación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($items as $item): ?>
+                    <?php
+                    $cs = $statuses[$item->id] ?? null;
+                    $hecho = $cs !== null && (int) $cs->completado === 1;
+                    ?>
                     <tr>
-                        <th>Ítem</th>
-                        <th class="text-center">Oblig.</th>
-                        <th class="text-center">Completado</th>
-                        <th>Fecha</th>
-                        <th>Usuario</th>
-                        <th>Observación</th>
+                        <td>
+                            <?= Html::encode($item->nombre) ?>
+                            <?php if ($item->descripcion): ?>
+                                <br><small class="text-muted"><?= Html::encode($item->descripcion) ?></small>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-center"><?= (int) $item->es_obligatorio === 1 ? Html::tag('span', 'Sí', ['class' => 'badge badge-soft-danger']) : 'No' ?></td>
+                        <td class="text-center">
+                            <?php if ($hecho): ?>
+                                <span class="text-success"><i class="ti ti-circle-check"></i> Sí</span>
+                            <?php else: ?>
+                                <span class="text-muted"><i class="ti ti-circle-dashed"></i> No</span>
+                            <?php endif; ?>
+                        </td>
+                        <td><?= $cs && $cs->completado_at ? Html::encode($cs->completado_at) : '—' ?></td>
+                        <td><?= Html::encode($usuarioMarca($cs)) ?></td>
+                        <td><?= $cs && $cs->observacion !== null && $cs->observacion !== '' ? Html::encode($cs->observacion) : '—' ?></td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($items as $item): ?>
-                        <?php
-                        $cs = $statuses[$item->id] ?? null;
-                        $hecho = $cs !== null && (int) $cs->completado === 1;
-                        ?>
-                        <tr>
-                            <td>
-                                <?= Html::encode($item->nombre) ?>
-                                <?php if ($item->descripcion): ?>
-                                    <br><small class="text-muted"><?= Html::encode($item->descripcion) ?></small>
-                                <?php endif; ?>
-                            </td>
-                            <td class="text-center"><?= (int) $item->es_obligatorio === 1 ? Html::tag('span', 'Sí', ['class' => 'badge badge-soft-danger']) : 'No' ?></td>
-                            <td class="text-center">
-                                <?php if ($hecho): ?>
-                                    <span class="text-success"><i class="ti ti-circle-check"></i> Sí</span>
-                                <?php else: ?>
-                                    <span class="text-muted"><i class="ti ti-circle-dashed"></i> No</span>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= $cs && $cs->completado_at ? Html::encode($cs->completado_at) : '—' ?></td>
-                            <td><?= Html::encode($usuarioMarca($cs)) ?></td>
-                            <td><?= $cs && $cs->observacion !== null && $cs->observacion !== '' ? Html::encode($cs->observacion) : '—' ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
 </div>

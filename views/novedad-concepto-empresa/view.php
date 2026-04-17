@@ -28,12 +28,14 @@ $this->params['breadcrumbs'][] = $model->nombre;
             padding: .65rem .75rem;
             min-height: 74px;
         }
+
         .concepto-cargo-item .form-check-input {
             margin-top: .2rem;
             width: 1.1rem;
             height: 1.1rem;
             flex: 0 0 auto;
         }
+
         .concepto-cargo-item .cargo-nombre {
             display: block;
             font-weight: 500;
@@ -115,8 +117,7 @@ $this->params['breadcrumbs'][] = $model->nombre;
                             step="0.01"
                             min="0"
                             value="<?= Html::encode($valorPorDefecto) ?>"
-                            placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>"
-                        >
+                            placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>">
                         <small class="text-muted d-block mt-1">
                             <?= Html::encode(Yii::t(
                                 'app',
@@ -143,8 +144,7 @@ $this->params['breadcrumbs'][] = $model->nombre;
                                 step="0.01"
                                 min="0"
                                 value="<?= Html::encode($valorPorDefecto) ?>"
-                                placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>"
-                            >
+                                placeholder="<?= Html::encode(Yii::t('app', 'Opcional')) ?>">
                             <small class="text-muted d-block mt-1">
                                 <?= Html::encode(Yii::t(
                                     'app',
@@ -162,8 +162,7 @@ $this->params['breadcrumbs'][] = $model->nombre;
                                         type="checkbox"
                                         name="cargo_ids[]"
                                         value="<?= Html::encode((string) $cargo->id) ?>"
-                                        <?= in_array((int) $cargo->id, $asignados, true) ? 'checked' : '' ?>
-                                    >
+                                        <?= in_array((int) $cargo->id, $asignados, true) ? 'checked' : '' ?>>
                                     <span class="flex-grow-1">
                                         <span class="cargo-nombre"><?= Html::encode($cargo->nombre) ?></span>
                                         <?php if (!empty($cargo->codigo)): ?>

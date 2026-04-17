@@ -99,15 +99,42 @@ CSS);
                             <div class="table-responsive requisicion-detail-table-wrap">
                                 <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                     <tbody>
-                                        <tr><th class="w-50 text-muted fw-medium">Empresa</th><td><?= Html::encode($model->empresa->nombre ?? '—') ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Ciudad</th><td><?= Html::encode($model->ciudad->name ?? '—') ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Sede</th><td><?= Html::encode($model->sede->nombre ?? '—') ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Área / Subárea</th><td><?= Html::encode($model->area->nombre ?? '—') ?> / <?= Html::encode($model->subArea->nombre ?? '—') ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Cargo</th><td><?= Html::encode($model->cargo->nombre ?? '—') ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Jornada</th><td><?= $model->jornada !== null ? Html::encode((string) $model->jornada) : '—' ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Salario</th><td><?= Yii::$app->formatter->asCurrency($model->salario) ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Auxilio</th><td><?= Yii::$app->formatter->asCurrency($model->auxilio) ?></td></tr>
-                                        <tr><th class="text-muted fw-medium">Fecha de ingreso</th><td><?= $model->fecha_ingreso ? Yii::$app->formatter->asDatetime($model->fecha_ingreso) : '—' ?></td></tr>
+                                        <tr>
+                                            <th class="w-50 text-muted fw-medium">Empresa</th>
+                                            <td><?= Html::encode($model->empresa->nombre ?? '—') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Ciudad</th>
+                                            <td><?= Html::encode($model->ciudad->name ?? '—') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Sede</th>
+                                            <td><?= Html::encode($model->sede->nombre ?? '—') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Área / Subárea</th>
+                                            <td><?= Html::encode($model->area->nombre ?? '—') ?> / <?= Html::encode($model->subArea->nombre ?? '—') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Cargo</th>
+                                            <td><?= Html::encode($model->cargo->nombre ?? '—') ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Jornada</th>
+                                            <td><?= $model->jornada !== null ? Html::encode((string) $model->jornada) : '—' ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Salario</th>
+                                            <td><?= Yii::$app->formatter->asCurrency($model->salario) ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Auxilio</th>
+                                            <td><?= Yii::$app->formatter->asCurrency($model->auxilio) ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-muted fw-medium">Fecha de ingreso</th>
+                                            <td><?= $model->fecha_ingreso ? Yii::$app->formatter->asDatetime($model->fecha_ingreso) : '—' ?></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -128,10 +155,22 @@ CSS);
                                 <div class="table-responsive requisicion-detail-table-wrap">
                                     <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                         <tbody>
-                                            <tr><th class="w-50 text-muted fw-medium">Nombre</th><td><?= Html::encode($model->profile->name ?: '—') ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Documento</th><td><?= Html::encode(trim((string) $model->profile->tipo_doc . ' ' . $model->profile->num_doc)) ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Correo</th><td><?= Html::encode($model->profile->public_email ?: '—') ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Teléfono</th><td><?= Html::encode($model->profile->telefono ?: '—') ?></td></tr>
+                                            <tr>
+                                                <th class="w-50 text-muted fw-medium">Nombre</th>
+                                                <td><?= Html::encode($model->profile->name ?: '—') ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Documento</th>
+                                                <td><?= Html::encode(trim((string) $model->profile->tipo_doc . ' ' . $model->profile->num_doc)) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Correo</th>
+                                                <td><?= Html::encode($model->profile->public_email ?: '—') ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Teléfono</th>
+                                                <td><?= Html::encode($model->profile->telefono ?: '—') ?></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -139,10 +178,22 @@ CSS);
                                 <div class="table-responsive requisicion-detail-table-wrap">
                                     <table class="table table-borderless align-middle mb-0 requisicion-detail-table">
                                         <tbody>
-                                            <tr><th class="w-50 text-muted fw-medium">Nombre</th><td><?= Html::encode($cand->getNombreCompleto() ?: '—') ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Documento</th><td><?= Html::encode(trim((string) $cand->tipo_documento . ' ' . $cand->num_documento)) ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Correo</th><td><?= Html::encode($cand->correo ?: '—') ?></td></tr>
-                                            <tr><th class="text-muted fw-medium">Teléfono</th><td><?= Html::encode($cand->telefono ?: '—') ?></td></tr>
+                                            <tr>
+                                                <th class="w-50 text-muted fw-medium">Nombre</th>
+                                                <td><?= Html::encode($cand->getNombreCompleto() ?: '—') ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Documento</th>
+                                                <td><?= Html::encode(trim((string) $cand->tipo_documento . ' ' . $cand->num_documento)) ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Correo</th>
+                                                <td><?= Html::encode($cand->correo ?: '—') ?></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted fw-medium">Teléfono</th>
+                                                <td><?= Html::encode($cand->telefono ?: '—') ?></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
