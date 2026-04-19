@@ -5,9 +5,17 @@
     "sass": "sass web/assets/scss/main.scss:web/assets/css/style.css",
     "sass:watch": "sass web/assets/scss/main.scss:web/assets/css/style.css --watch",
     "sass:no-map": "sass web/assets/scss/main.scss:web/assets/css/style.css --style=compressed --no-source-map",
-    "build": "npm run sass"
+    "build": "npm run sass",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:install-browsers": "playwright install chromium"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0",
+    "dotenv": "^17.4.2",
     "sass": "^1.92.1"
   }
 }

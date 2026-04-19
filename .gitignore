@@ -32,6 +32,12 @@ tests/_support/_generated
 .env
 .env.local
 .env.*.local
+.env.testing
+
+# Playwright E2E (https://playwright.dev/docs/intro)
+/test-results/
+/playwright-report/
+/playwright/.cache/
 
 # Yii Framework specific
 /runtime/*
