@@ -121,6 +121,10 @@ $config = [
                 'configuracion/novedad-flujo/<action:[\w-]+>' => 'novedad-flujo/<action>',
                 'configuracion/novedad-tipo' => 'novedad-tipo/index',
                 'configuracion/novedad-tipo/<action:[\w-]+>' => 'novedad-tipo/<action>',
+                'configuracion/centros-costo' => 'novedad-centro-costo/index',
+                'configuracion/centros-costo/<action:[\w-]+>' => 'novedad-centro-costo/<action>',
+                'configuracion/centros-utilidad' => 'novedad-centro-utilidad/index',
+                'configuracion/centros-utilidad/<action:[\w-]+>' => 'novedad-centro-utilidad/<action>',
             ],
         ],
 

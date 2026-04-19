@@ -9,6 +9,8 @@ $homeUrl = Yii::$app->homeUrl;
 $isSupportTicket = strpos($path, 'sistema/soporte/tickets') === 0 || $path === 'sistema/soporte/ticket';
 $isAuditLog = strpos($path, 'sistema/auditoria') === 0;
 $canAuditLog = !Yii::$app->user->isGuest && Yii::$app->user->can('audit_log.view');
+$canCentrosCosto = !Yii::$app->user->isGuest && Yii::$app->user->can('novedad_centro_costo.index');
+$canCentrosUtilidad = !Yii::$app->user->isGuest && Yii::$app->user->can('novedad_centro_utilidad.index');
 
 ?>
 
@@ -109,6 +111,12 @@ $canAuditLog = !Yii::$app->user->isGuest && Yii::$app->user->can('audit_log.view
                 <li><a href="<?= Url::to(['/configuracion/sedes']) ?>" class="<?php echo ($path == 'configuracion/sedes') ? 'active' : ''; ?>"><i class="ti ti-building"></i><span>Sedes</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/categoria-sedes']) ?>" class="<?php echo (strpos($path, 'configuracion/categoria-sedes') === 0) ? 'active' : ''; ?>"><i class="ti ti-category"></i><span>Categoría de sedes</span></a></li>
                 <li><a href="<?= Url::to(['/configuracion/novedad-flujo']) ?>" class="<?php echo (strpos($path, 'configuracion/novedad-flujo') === 0) ? 'active' : ''; ?>"><i class="ti ti-route"></i><span>Flujos de novedad</span></a></li>
+                <?php if ($canCentrosCosto): ?>
+                    <li><a href="<?= Url::to(['/configuracion/centros-costo']) ?>" class="<?php echo (strpos($path, 'configuracion/centros-costo') === 0) ? 'active' : ''; ?>"><i class="ti ti-building-bank"></i><span>Centros de costo</span></a></li>
+                <?php endif; ?>
+                <?php if ($canCentrosUtilidad): ?>
+                    <li><a href="<?= Url::to(['/configuracion/centros-utilidad']) ?>" class="<?php echo (strpos($path, 'configuracion/centros-utilidad') === 0) ? 'active' : ''; ?>"><i class="ti ti-building-community"></i><span>Centros de utilidad</span></a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </div>
