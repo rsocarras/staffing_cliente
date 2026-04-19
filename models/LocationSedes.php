@@ -21,6 +21,8 @@ use yii\helpers\ArrayHelper;
  * @property string|null $codigo_externo
  * @property string $created_at
  * @property string $updated_at
+ *
+ * @property-read Empresas|null $empresa
  */
 class LocationSedes extends \yii\db\ActiveRecord
 {
@@ -63,6 +65,14 @@ class LocationSedes extends \yii\db\ActiveRecord
     public function getCity()
     {
         return $this->hasOne(City::class, ['id' => 'city_id']);
+    }
+
+    /**
+     * Organización (tenant) a la que pertenece la sede.
+     */
+    public function getEmpresa()
+    {
+        return $this->hasOne(Empresas::class, ['id' => 'empresa_id']);
     }
 
     /**

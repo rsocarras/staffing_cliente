@@ -298,7 +298,7 @@ class NovedadCentroCostoController extends Controller
         $model = NovedadCentroCosto::find()->alias('ncc')
             ->innerJoin('{{%location_sedes}} ls', 'ls.id = ncc.location_sede_id')
             ->where(['ncc.id' => $id, 'ls.empresa_id' => $empresaId])
-            ->with(['locationSede', 'empresaCliente'])
+            ->with(['locationSede.empresa', 'empresaCliente'])
             ->one();
         if ($model !== null) {
             return $model;

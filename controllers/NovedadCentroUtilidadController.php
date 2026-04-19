@@ -297,7 +297,7 @@ class NovedadCentroUtilidadController extends Controller
         $model = NovedadCentroUtilidad::find()->alias('ncu')
             ->innerJoin('{{%area}} a', 'a.id = ncu.area_id')
             ->where(['ncu.id' => $id, 'a.empresas_id' => $empresaId])
-            ->with(['area', 'empresaCliente'])
+            ->with(['area.empresas', 'empresaCliente'])
             ->one();
         if ($model !== null) {
             return $model;
